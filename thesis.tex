@@ -1,0 +1,343 @@
+\documentclass{style/master-thesis}
+\input{macros/macros.tex}
+
+
+%%% BEGIN DOCUMENT
+\begin{document}
+
+% BEGIN TITLE PAGE
+\thispagestyle{empty}
+\begin{center}
+
+\large
+UNIVERSITY OF TARTU\\[2mm]
+Institute of Computer Science\\
+Computer Science Curriculum\\[2mm]
+
+%\vspace*{\stretch{5}}
+\vspace{25mm}
+
+\Large Vootele Rõtov
+
+\vspace{4mm}
+
+\huge \articleName
+
+%\vspace*{\stretch{7}}
+\vspace{20mm}
+
+\Large Master's Thesis (30 ECTS)
+
+\end{center}
+
+\vspace{2mm}
+
+\begin{flushright}
+ {
+ \setlength{\extrarowheight}{5pt}
+ \begin{tabular}{r l} 
+  \sffamily Supervisor: & \sffamily Vesal Vodjani, PhD \\
+  \sffamily Supervisor: & \sffamily Kalmer Apinis, PhD
+ \end{tabular}
+ }
+\end{flushright}
+
+%\vspace*{\stretch{3}}
+\vspace{10mm}
+
+%{\noindent Author: .................................................................................... ``.....'' ..........\hskip16pt 2048}
+\vspace{2mm}
+
+
+%{\noindent Supervisor: ............................................................................... ``.....'' ..........\hskip16pt 2048}
+
+\vspace{2mm}
+
+%{\noindent Supervisor: ............................................................................... ``.....'' ..........\hskip16pt 2048}
+
+\vspace{8mm}
+
+
+\vfill
+\centerline{Tartu 2016}
+
+% END TITLE PAGE
+
+% If the thesis is printed on both sides of the page then 
+% the second page must be must be empty. Comment this out
+% if you print only to one side of the page comment this out
+\newpage
+\thispagestyle{empty}    
+\phantom{Text to fill the page}
+% END OF EXTRA PAGE WITHOUT NUMBER
+
+
+% Remember to remove this from the final thesis version
+\newpage
+\listoftodos[Oh crap so much to do]
+% END OF TODO PAGE 
+
+% COMPULSORY INFO PAGE
+\newpage
+\selectlanguage{estonian}
+\noindent\textbf{\large Tüübituletus meetodit neljandat järku loogikavalemitele}
+\vspace*{3ex}
+
+\noindent\textbf{Lühikokkuvõte:} 
+\toadd{One or two sentences providing a basic introduction to the field, comprehensible to a scientist in
+any discipline.}
+\toadd{Two to three sentences of
+more detailed background, comprehensible to scientists in related disciplines.}
+\toadd{One sentence clearly stating the general problem being addressed by this particular
+study.}
+\toadd{One sentence summarising the main result (with the words here we show or their equivalent).}
+\toadd{Two or three sentences explaining what
+the main result reveals in direct
+comparison to what was thought to be the case previously, or how the main result adds to previous knowledge.}
+\toadd{One or two sentences to put the results into a more general context.}
+\toadd{Two or three sentences to provide a
+broader perspective, readily
+comprehensible to a scientist in any
+discipline, may be included in the first paragraph
+if the editor considers that the accessibility of
+the paper is significantly enhanced by their inclusion.}
+\vspace*{3ex}
+
+\noindent\textbf{Võtmesõnad:}\toadd{List of keywords}
+\vspace*{3ex}
+
+\noindent\textbf{CERCS:}\toadd{CERCS kood ja nimetus:~\url{https://www.etis.ee/Portal/Classifiers/Details/d3717f7b-bec8-4cd9-8ea4-c89cd56ca46e}}
+\vspace*{6ex}
+
+\selectlanguage{english}
+\noindent\textbf{\large \articleName}
+\vspace*{3ex}
+{\flushleft{\textbf{Abstract:}} }
+Many interpreting program languages are dynamically typed, such as Visual Basic or Python. As a result, it is easy to write programs that crash due to mismatches of provided and expected data types.  One possible solution to this problem is automatic type derivation during compilation. In this work, we consider study how to detect type errors in the \textsc{Whitespace} language by using fourth order logic formulae as annotations. The main result of this thesis is a new triple-exponential type inference algorithm for the fourth order logic formulae. This is a significant advancement as the question whether there exists such an algorithm was an open question. 
+All previous attempts to solve the problem lead lead to logical inconsistencies or required tedious user interaction in terms of interpretative dance. Although the resulting algorithm is slightly inefficient, it can be used to detect obscure programming bugs in the \textsc{Whitespace} language. The latter significantly improves productivity. Our practical experiments showed that productivity is comparable to average Java programmer.   
+From a theoretical viewpoint, the result is only a small advancement in rigorous treatment of higher order logic formulae. The results obtained by us do not generalise to formulae with the fifth or higher order. 
+
+
+\vspace*{3ex}
+{\flushleft{\textbf{Keywords:}\toadd{List of keywords}}}
+\vspace*{3ex}
+
+\noindent\textbf{CERCS:}\toadd{CERCS code and name:~\url{https://www.etis.ee/Portal/Classifiers/Details/d3717f7b-bec8-4cd9-8ea4-c89cd56ca46e}}
+
+
+
+\selectlanguage{english}
+
+
+\newpage
+\tableofcontents
+
+
+
+%Introduction
+\section{Introduction}
+\subfile{introduction/introduction.tex}
+
+\pagebreak
+
+\section{Motivation}
+\subfile{motivation/motivation.tex}
+
+\pagebreak
+
+
+\section{Static analyses} 
+\subfile{static-analyses/static-analyses.tex}
+
+\pagebreak
+
+\section{Static analyses of data races}
+\subfile{data-races-theory/data-races-theory.tex}
+
+
+\section{Field survey}
+\subfile{others/others.tex}
+
+\pagebreak
+
+\section{Goblint implementation}
+\subfile{goblint/goblint.tex}
+
+\pagebreak
+
+
+\section{My contribution}
+\subfile{mine/mine.tex}
+
+\pagebreak
+
+
+
+\begin{comment}
+\subsection{How to use references} \label{sec:using_ref}
+
+\paragraph{Cross-references to figures, tables and other document elements.}
+LaTeX  internally numbers all kind of objects that have sequence numbers:
+\begin{itemize}
+\item chapters, sections, subsections;
+\item figures, tables, algorithms;
+\item equations, equation arrays.
+\end{itemize}
+To reference them automatically, you have to generate a label using \texttt{$\backslash$label\{some-name\}} just after the object that has the number inside. Usually, labels of different objects are split into different namespaces by adding dedicated prefix, such as \texttt{sec:}, \texttt{fig:}. To use the corresponding reference, you must use command \texttt{$\backslash$ref} or \texttt{$\backslash$eqref}. For instance, we can reference this subsection by calling Section~\ref{sec:using_ref}. Note that there should be a nonbreakable space \texttt{\~} between the name of the object and the reference so that they would not appear on different lines.          
+
+
+
+\paragraph{Citations.}
+Usually, you also want to reference articles, webpages, tools or programs or books. For that you should use citations and references. The system is similar to the cross-referencing system in LaTeX. For each reference you must assign a unique label. Again, there are many naming schemes for labels. However, as you have a short document anything works. To reference to a particular source you must use \texttt{$\backslash$cite\{label\}} or \texttt{$\backslash$cite[page]\{label\}}. 
+
+References themselves can be part of a LaTeX source file. For that you need to define a bibliography section. However, this approach is really uncommon. It is much more easier to use BibTeX to synthesise the right reference form for you. For that you must use two commands in the LaTeX source
+\begin{itemize}
+\item $\backslash$bibliographystyle\{alpha\} or $\backslash$bibliographystyle\{plain\}
+\item $\backslash$bibliography\{file-name\}
+\end{itemize}
+The first command determines whether the references are numbered by letter-number combinations or by cryptic numbers. It is more common to use \texttt{alpha} style. The second command determines the file containing the bibliographic entries. The file should end with \texttt{bib} extension. Each reference there is in specific form. The simplest way to avoid all technicalities is to use graphical frontend  Jabref (\url{http://jabref.sourceforge.net/}) to manage references. Another alternative is to use DBLP database of references and copy BibTeX entries directly form there.   
+    
+   
+The following paragraph shows how references can be used. Game-based proving is a way to analyse security of a cryptographic protocol~\cite{GameB_1, GameB_2}. There are automatic provers, such as {CertiCrypt\-}~\cite{certicrypt} and ProVerif~\cite{proVerif}.
+
+
+\section{Other Ways to Represent Data}
+
+
+
+\paragraph{Inference Rules}
+\[ 
+	\inference[addition]{x : T & y : T}{x + y : T} 
+\]
+Bigger example:
+\[
+\inference[assign]{c := a + b & 
+	\inference[addG]{a : \typeRat & 
+		\inference[var]{b : \typeInt & \typeInt \subseteq \typeRat}{b : \typeRat}
+		}{a + b : \typeRat}
+	}{c : \typeRat}
+\]
+
+
+\subsection{algorithm2e}
+
+\begin{algorithm} [!h]
+	\caption{typeChecking} \label{alg:typeChecking}
+	\KwIn{Abstract syntax tree}
+	\KwResult{Type checking result; In addition, type table \typeF{type\_G} for global variables, \typeF{game} for the main game and \typeF{fun} for each $fun \in F$}
+	\SetKwData{s}{s}
+	\BlankLine
+	
+	\While{something changed in last cycle}{
+		\lForEach{global statement \s} {
+			\parseStatement{\s, \typeF{type\_G}}\;
+		}
+		\ForEach{function $fun$} {
+		\lForEach{statement \s in $fun$} {
+			\parseStatement{\s, \typeF{fun}}\;
+		}
+		}
+		\lForEach{statement \s in game} {
+			\parseStatement{\s, \typeF{game}}\;
+		}
+	}
+	%\eIf{error messages were found}{\Return \False\;}{\Return \True\;}
+\end{algorithm}
+
+\subsection{Pseudocode}
+
+\begin{figure} [htb]
+\begin{lstlisting}
+expression
+  : NUMBER
+  | VARIABLE
+  | '+' expression
+  | expression '+' expression
+  | expression '*' expression
+  | function_name '(' parameters ')'
+  | '(' expression ')'
+\end{lstlisting}
+\caption{Grammar of arithmetic expressions}
+\label{fig:parser_exp}
+\end{figure}
+
+\subsection{Frame Around Information}
+
+Tip: We can use minipage to create a frame around some important information.
+\begin{figure} [h]
+\frame{
+\begin{minipage}{\textwidth}
+\begin{enumerate}
+	\item integer division ($\opDiv$) - only usable between \typeInt types
+	\item remainder ($\%$) - only usable between \typeInt types
+\end{enumerate}
+\end{minipage}
+}
+\caption{Arithmetic operations in revisited}
+\label{fig:aritmOp_revisit}
+\end{figure}
+
+\end{comment}
+
+\clearpage
+\section{Conclusion} 
+
+\subfile{conclusion/conclusion.tex}
+
+
+
+\newpage
+
+\selectlanguage{estonian}
+
+\section{Eestikeelne pealkiri}
+Magistriöö(30 EAP) \\
+Vootele Rõtov \\
+Resümee \\
+
+
+\toadd{Use introduction and conclusion to give a brief overview of what this thesis is about}
+
+\selectlanguage{english}
+
+\newpage
+\bibliographystyle{alpha}
+\bibliography{thesis}
+
+\appendix
+\pagebreak
+\section*{\small Non-exclusive licence to reproduce thesis and make thesis public}
+
+
+I, Vootele Rõtov (date of birth: 11th of November 1988),
+
+\begin{tabbing}
+\= Xiii\=\kill
+\>1. \> herewith grant the University of Tartu a free permit (non-exclusive licence) to:\\\\ 
+
+\>1.1\> 
+\begin{minipage}[t]{14.2cm}
+reproduce, for the purpose of preservation and making available to the public, including for addition to the DSpace digital archives until expiry of the term of validity of the copyright, and
+\end{minipage}
+\\\\
+\>1.2 
+\begin{minipage}[t]{14.2cm}
+make available to the public via the web environment of the University of Tartu, including via the DSpace digital archives until expiry of the term of validity of the copyright,\\ 
+
+\articleName\\   
+
+supervised by Vesal Vodjani and Kalmer Apinis
+
+\end{minipage}\\\\ 
+\>2. \>I am aware of the fact that the author retains these rights.\\\\
+\>3. \>
+\begin{minipage}[t]{14.2cm}
+I certify that granting the non-exclusive licence does not infringe the intellectual property rights or rights arising from the Personal Data Protection Act. 
+\end{minipage}\\
+\end{tabbing}
+
+\noindent
+Tartu, \today
+
+
+\end{document}

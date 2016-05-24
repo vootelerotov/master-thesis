@@ -1,0 +1,38 @@
+\documentclass[..thesis.tex]{subfiles}
+
+\begin{document}
+\tocomment{Clumsy. But enough deleting done.}
+As discussed previously, it is possible that the same function of a driver is executed concurrently. Let \textit{thread template}  be the executable code reachable from one of the registered entry points of the driver. There can be any number of threads executing a single thread template at any point, corresponding to multiple calls to the same function of a device driver.
+
+\subsection{Lockset analysis}
+
+Lockset analysis is a high-level idea about how to verify the absence of data races in a program. It relies on the assumption that the access to a shared variable should be governed by a lock. \toask{ Lock needs a further explanation? Or basic term?}
+
+Let us have two threads, $T_1$ and $T_2$ executing thread templates $t_1$ and $t_2$. Lets note that $t_1$ and $t_2$ do not have to be distinct.
+
+Let $S$ be a shared state between those two threads, containing variables that are accessible from both threads and $L$ be a set of all locks that can be held by either thread.
+
+Now, let $O_{T}^v$ be a set of all read or write operations of variable $v \in S$ in thread $T$. Lets define operation $locks : O_{T}^v \to 2^L$, that for a read or write operation of variable $v$ in $T$ returns a set of all the locks that thread $T$ holds when that operation is performed.
+
+If set
+
+\begin{equation*}
+\left( \bigcap \limits_{o \in O_{T_1}^v} locks \left(o \right) \right) \cap  \left( \bigcap \limits_{o \in O_{T_2}^v} locks \left(o \right) \right)
+\end{equation*}
+ is not empty, then that means that there is $l \in L$ such that for every read or write operation of variable $v$ in threads $T_1$ and $T_2$ is protected by $l$ and as such, there is no chance for a data race. If such a lock exists for every variable $v \in S$, we can soundly say that there is no possibility for a data race between threads $T_1$ and $T_2$ executing thread template $t_1$ and $t_2$. Note that this approach can be easily generalized for $n$ threads and $m$ thread templates.
+
+Lets note that although this analysis is sound (we will not verify a program that has possibility of a data race), it is not precise, as there might be other ways than locking to make sure that no data race can take place.
+
+
+\subsection{Happens-Before}
+
+\textit{Happens-Before} relation $R$ is a partial-ordering of the statements, such that if $a$ and $b$ are statements then  $a,b \in R$ if and only if $a$ is executed before $b$. The concept was first introduced by Leslie Lamport \cite{lamport_time_1978}
+
+For $a$ to be executed before $b$, either $a$ has to be a statement before $b$ in the same thread template, there must be a statement $c$ such that $a$ is executed before $c$ and $c$ is executed before $b$ or there must be a synchronization event that is sufficient to say that $a$ was executed before $b$.
+
+\tocomment{code here maybe?}
+As an example of a synchronization event, lets consider two thread templates, in $t_1$ one acquires lock $m$, reads a variable $x$ and releases lock $m$ and in $t_2$ one acquires $m$, writes to $x$ and releases $m$. Here acquiring and releasing the lock works as a synchronization event -- either reading variable $x$ in $t_1$ happens before writing to $x$ in $t_2$ or the other way around.
+
+The key insight concerning data races is that if we can establish happens-before relationship between statements $a$ and $b$, then they cannot race against each other. 
+
+\end{document}
