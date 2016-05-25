@@ -140,7 +140,7 @@
 
 
 %todo
-\usepackage{todonotes}
+\usepackage[disable]{todonotes}
 
 \newcommand{\toadd}[1]{\todo[color=red!60,inline]{#1}}
 \newcommand{\toask}[1]{\todo[color=orange!40,inline]{#1}}
