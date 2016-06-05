@@ -1,0 +1,97 @@
+
+\documentclass[..thesis.tex]{subfiles}
+\begin{document}
+
+\toguide{What is static analysis?}
+Under \textit{program analysis} (or just \textit{analysis}) we mean a process of deciding whether some property holds for a program under analysis.
+Analysis of a program is \textit{static} if the program being analysed does not get executed during the analysis, in contrast to \textit{dynamic} analysis,
+during what program is executed. Static analysis are often used by compilers, for example for finding uses of variables that are not declared beforehand
+in Java or C programs. In addition, modern IDEs constantly run wide selection of static analysis in the background, to enable things such as variable renaming,
+for what one would have to know about all the usages of a specific variable in the program, taking into account the relevant scopes. 
+
+\toguide{Why limit ourselves?}
+There are good reasons for preferring static analyses over dynamic (or combined) analysis.
+To pick a few, it lets us say something about a program that does not compile (and as such, cannot be analyzed dynamically),
+it allows to perform our analyses faster compared to dynamic analysis what one cannot perform faster than the time it takes to execute the program
+and as static analyses do not depend use any information gathered from a specific run then it is possible to have an analysis that says something
+about all the possible runs of a program (and not only, say, for all the possible runs that the analysis has witnessed).
+The last reason is, as one can imagine, very helpful in case of data-races. This enables static analysis to output to find that there
+ are no errors in the program instead of that it is not able to find any errors -- to verify a program instead of testing it.
+
+\toguide{How is static analysis done}?
+As one might guess, there are a lot of techniques that fit the very wide definition given for static analysis. We will be focusing on one of them -- \textit{abstract interpretation}.
+
+\toguide{Okay, what is abstract interpretation?}
+To give an intuation on what is abstract interpretation, consider following program:
+
+\begin{lstlisting}[language=C,style=def]
+int main(void) {
+  int y,z;
+  y = -81;
+  z = -37
+  if (y * z > 0){
+    return 1;
+  }
+  return 0;
+}
+\end{lstlisting}.
+
+One can easily deduce that the program will always exit with error code $1$, without having to calculate the exact value of  $y*z$.
+Instead, we can intepret all the values variables have as negative ($-$), $0$ or positive ($+$) and evaluate $y * z$ as $-*- = +$.
+This is considerable easier task.
+
+With this simplification, we do lose presicion. Lets consider another example:
+
+\begin{lstlisting}[language=C,style=def]
+int main(void) {
+  int y,z;
+  y = -81;
+  z = -37
+  if (y * z > 0){
+    return 1;
+  }
+  if (y * z - y > 0){
+    return 2;
+  }
+  return 0;
+}
+\end{lstlisting}.
+
+Here, using the interpretation what we succesfully applied in previous example, we would not be able to decide the return value of the program. 
+When evaluating $y * z - y $, we can rule out any of the possible values. To be able to evaluate product in a similar way previously described,
+we could assigs variables set of \textit{possible} values instead. In this case, we would evaluate $y * z - y $ as $\left\lbrace - \right\rbrace * \left\lbrace
+- \right\rbrace - \left\lbrace - \right\rbrace = \left\lbrace -,0,+ \right\rbrace$. Although we cannot decide what the program will return,
+we can decide based on the analysis, that the first $if$ block can safely be left out -- an optimization a compiler could perform.
+
+\toguide{Is it useful if you cannot even evaluate this simple program?}
+
+
+
+
+
+
+
+
+  
+
+
+\textit{abstract domain} --$D$,  a set of states for abstract interpretation. Partially ordered $\left(D,\sqsubseteq \right)$ such that if $n \in N$, $d_1,d_2 \in D$,  $n \in \gamma \left(d_1 \right) $ and $d_1 \sqsubseteq d_2$ then $n \in \gamma \left(d_2 \right)$.
+
+\textit{CFG} -- $G_p=\left(N_p,E_p,s_p,r_p\right)$, $E_p \subseteq N_p \times N_p$, where $N_p$ is set of all states of program, $E_p$ set of state tranformations, $s_p$ the starting state of a procedure and $r_p$ the end state of a procedure. $N$ is union of $N_p$ over all procedures.
+
+\textit{abstract function} --$\alpha$,  mapping from $N$ to $D$.
+
+\textit{concreitization function} -- $\gamma$, mapping from $D$ to $2^N$.
+
+
+\textit{context sensitive} -- takes into account the values of parameters of function calls, analyses for each call site vs something that applies for all the call sites.
+
+\textit{complete latice} -- a partially ordered set $\left( D,\sqsubseteq \right)$ is complete lattice if for every $S \subseteq D$ there is a an upper and lower bound and if there exists a greatest and a . We denote uppor bound of set $S$ as $\bigsqcup S $ and lower bound as $\bigsqcap S$. We denote the least element of a lattice ($\bigsqcap D$) as $\bot$ and the greatest element as $\bigsqcup D$ as $\top$. Note that we by $d_1 \bigsqcup d_2$ we mean  $\bigsqcup \left\lbrace d_1, d_2, \right\rbrace $   and by $ d_1 \bigsqcap d_2$ we mean $\bigsqcap \left\lbrace d_1, d_2, \right\rbrace $.
+
+ 
+
+\textit{Merge over all paths} -- 
+
+
+
+\end{document}

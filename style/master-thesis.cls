@@ -51,6 +51,17 @@
 \usepackage{graphicx}
 \graphicspath{{figures/}}
 
+\makeatletter
+\providecommand{\bigsqcap}{%
+  \mathop{%
+    \mathpalette\@updown\bigsqcup
+  }%
+}
+\newcommand*{\@updown}[2]{%
+  \rotatebox[origin=c]{180}{$\m@th#1#2$}%
+}
+\makeatother
+
 % Packages for getting clickable links in PDF file
 \usepackage{hyperref}
 \usepackage[all]{hypcap}
