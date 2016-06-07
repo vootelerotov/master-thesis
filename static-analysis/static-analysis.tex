@@ -1,8 +1,13 @@
 
 \documentclass[..thesis.tex]{subfiles}
+
+\newtheorem{defin}{Definition}[section]
+
 \begin{document}
 
 \toguide{What is static analysis?}
+
+
 Under \textit{program analysis} (or just \textit{analysis}) we mean a process of deciding whether some property holds for a program under analysis.
 Analysis of a program is \textit{static} if the program being analysed does not get executed during the analysis, in contrast to \textit{dynamic} analysis,
 during what program is executed. Static analysis are often used by compilers, for example for finding uses of variables that are not declared beforehand
@@ -10,6 +15,8 @@ in Java or C programs. In addition, modern IDEs constantly run wide selection of
 for what one would have to know about all the usages of a specific variable in the program, taking into account the relevant scopes. 
 
 \toguide{Why limit ourselves?}
+
+
 There are good reasons for preferring static analyses over dynamic (or combined) analysis.
 To pick a few, it lets us say something about a program that does not compile (and as such, cannot be analyzed dynamically),
 it allows to perform our analyses faster compared to dynamic analysis what one cannot perform faster than the time it takes to execute the program
@@ -19,20 +26,25 @@ The last reason is, as one can imagine, very helpful in case of data-races. This
  are no errors in the program instead of that it is not able to find any errors -- to verify a program instead of testing it.
 
 \toguide{How is static analysis done}?
+
+
 As one might guess, there are a lot of techniques that fit the very wide definition given for static analysis. We will be focusing on one of them -- \textit{abstract interpretation}.
 
 \toguide{Okay, what is abstract interpretation?}
+
+
 To give an intuation on what is abstract interpretation, consider following program:
 
 \begin{lstlisting}[language=C,style=def]
 int main(void) {
-  int y,z;
+  int x, y, z;
+  x = 0;
   y = -81;
   z = -37
   if (y * z > 0){
-    return 1;
+    x = 1;
   }
-  return 0;
+  return x;
 }
 \end{lstlisting}.
 
@@ -44,26 +56,57 @@ With this simplification, we do lose presicion. Lets consider another example:
 
 \begin{lstlisting}[language=C,style=def]
 int main(void) {
-  int y,z;
+  int x, y, z;
+  x = 0;
   y = -81;
-  z = -37
+  z = -37;
+
   if (y * z > 0){
-    return 1;
+    x = 1;
   }
+
   if (y * z - y > 0){
-    return 2;
+    x = 2;
   }
-  return 0;
+  return x;
 }
 \end{lstlisting}.
+
 
 Here, using the interpretation what we succesfully applied in previous example, we would not be able to decide the return value of the program. 
 When evaluating $y * z - y $, we can rule out any of the possible values. To be able to evaluate product in a similar way previously described,
 we could assigs variables set of \textit{possible} values instead. In this case, we would evaluate $y * z - y $ as $\left\lbrace - \right\rbrace * \left\lbrace
 - \right\rbrace - \left\lbrace - \right\rbrace = \left\lbrace -,0,+ \right\rbrace$. Although we cannot decide what the program will return,
-we can decide based on the analysis, that the first $if$ block can safely be left out -- an optimization a compiler could perform.
+we can decide based on the analysis, that the first $if$ block can safely be ignored -- an optimization a compiler could perform.
 
-\toguide{Is it useful if you cannot even evaluate this simple program?}
+To build a mathematically sturdy foundation for abstract interpretation we first need to give a more formal definition for executing a program.
+ For that, lets give a formal definition of a program.
+
+\begin{defin}
+Procedure $p$ is a \textit{control flow graph} $\left( N_p,E_p,s_p,r_p \right)$, where $N_p$ is a finite set of nodes, $s_p \in N_p$
+ is the \textit{entry} node with in-degree $0$ and  $r_p \in N_p$ is the \textit{return} node with out-degree $0$. Set of labels $L$ consists of
+\begin{itemize}
+\item statements $s \in Stmt$, other than procedure calls.
+\item procedure calls $p()$, where $p \in Exp$ is an expression, 
+\item positive and negative guards ( $Pos\left( e \right) in Guards$ and  $Neg \left( e \right) \in Guards$, $e \in Exp$),
+\item and thread spawning function $spawn\left( e \right), e \in Exp$.  
+\end{itemize}
+The edge set  $E_p \subseteq N_p \times L \times N_p$. In addition, we require that out-degree of node $n \in N_p$ is no bigger than $2$ 
+and if $e_1$ and $e_2$ are outgoing edges of $n$ and $e_1 \neq e_2$, then one of $e_1$ and $e_2$ is a positive guard and other a negative guard. 
+\end{defin}
+
+It is worth mentioning that although we have constrained ourselves with procedure calls without any arguments and only one return node, 
+but of those issues can be easily solved with use of global variables. 
+
+In addition, we assume that for every $n \in N_p$, there exists a path from $s_p$ to $n$ and from $n$ to $r_p$.    
+
+\begin{defin}
+Program $P = \left( Proc, main \right)$, where $Proc$ is a finite set of procedures such that for every $p,q \in Proc, p \neq q \implies N_p \cap N_q = \emptyset$ and $main \in Proc$ is one of the procedures designated as the main function. Let $N$ be set of all nodes in the program, that is $N = \bigcup_{p \in Proc}N_p$. 
+\end{defin}
+
+
+
+
 
 
 
