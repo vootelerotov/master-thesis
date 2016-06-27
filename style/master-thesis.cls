@@ -3,6 +3,12 @@
 % Subfiles support
 \usepackage{subfiles}
 
+% self-defined pakcage for CFG
+\usepackage{../static-analysis/cfg}
+
+% float for figure placement
+\usepackage{float}
+
 % A package for setting layout and margins for your thesis 
 \usepackage[a4paper]{geometry}
 
@@ -64,7 +70,7 @@
 
 % Packages for getting clickable links in PDF file
 \usepackage{hyperref}
-\usepackage[all]{hypcap}
+%\usepackage[all]{hypcap}
 
 
 % Packages for defining colourful text together with some colours
@@ -136,7 +142,39 @@
 \usepackage{proof}
 \usepackage{semantic} 
 \setlength{\inferLineSkip}{4pt}
-\def\predicatebegin #1\predicateend{$\Gamma \vdash #1$}
+
+%\def\predicatebegin #1\predicateend{$\Gamma \vdash #1$}
+
+
+% doubles-brackets
+\usepackage{stmaryrd}
+
+% shortcuts for brackets/parens
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)} 
+
+\newcommand{\lb}{\left\lbrace}
+\newcommand{\rb}{\right\rbrace}
+
+\newcommand{\lllb}{\left\llbracket}
+
+\newcommand{\rrrb}{\right\rrbracket}
+
+% math-mode separator for inteferences
+\newcommand{\separ}{\hspace{3em}}
+
+\newcommand{\vsepar}{\vspace{2em}}
+
+% inference macros
+
+\newcommand{\intraproc}{\hookrightarrow}
+\newcommand{\interproc}{\dashrightarrow}
+\newcommand{\intrathread}{\twoheadrightarrow}
+\newcommand{\interthread}{\Rrightarrow}
+
+
+% other macros
+\newcommand{\allstates}{\textsl{S} }
 
 % If you really want to draw figures in LaTeX use packages tikz or pstricks
 % However, getting a corresponding illustrations is really painful  
