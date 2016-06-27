@@ -4,7 +4,7 @@
 \usepackage{subfiles}
 
 % self-defined pakcage for CFG
-\usepackage{../static-analysis/cfg}
+\usepackage{static-analysis/cfg}
 
 % float for figure placement
 \usepackage{float}
