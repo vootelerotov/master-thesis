@@ -85,7 +85,7 @@
 % Since the thesis in article format we must define \chapter for
 % the package algorithm2e (otherwise obscure errors occur) 
 \let\chapter\section
-\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+\usepackage[ruled,noline]{algorithm2e}
 
 % Fix a  set of keywords which you use inside algorithms
 \SetKw{True}{true}
@@ -149,32 +149,7 @@
 % doubles-brackets
 \usepackage{stmaryrd}
 
-% shortcuts for brackets/parens
-\newcommand{\lp}{\left(}
-\newcommand{\rp}{\right)} 
 
-\newcommand{\lb}{\left\lbrace}
-\newcommand{\rb}{\right\rbrace}
-
-\newcommand{\lllb}{\left\llbracket}
-
-\newcommand{\rrrb}{\right\rrbracket}
-
-% math-mode separator for inteferences
-\newcommand{\separ}{\hspace{3em}}
-
-\newcommand{\vsepar}{\vspace{2em}}
-
-% inference macros
-
-\newcommand{\intraproc}{\hookrightarrow}
-\newcommand{\interproc}{\dashrightarrow}
-\newcommand{\intrathread}{\twoheadrightarrow}
-\newcommand{\interthread}{\Rrightarrow}
-
-
-% other macros
-\newcommand{\allstates}{\textsl{S} }
 
 % If you really want to draw figures in LaTeX use packages tikz or pstricks
 % However, getting a corresponding illustrations is really painful  
@@ -191,10 +166,6 @@
 %todo
 \usepackage{todonotes}
 
-\newcommand{\toadd}[1]{\todo[color=red!60,inline]{#1}}
-\newcommand{\toask}[1]{\todo[color=orange!40,inline]{#1}}
-\newcommand{\tocomment}[1]{\todo[inline]{#1}}
-\newcommand{\toguide}[1]{\todo[color=green!80,inline]{#1}}
 
 % for comment
 \usepackage{verbatim}
@@ -202,3 +173,5 @@
 % for striked out text
 \usepackage[normalem]{ulem}
 
+% to have whitespace between paragraphs
+\usepackage[parfill]{parskip}

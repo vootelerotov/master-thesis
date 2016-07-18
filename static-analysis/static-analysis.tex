@@ -1,9 +1,13 @@
+
 \documentclass[..thesis.tex]{subfiles}
 
 \newtheorem{defin}{Definition}[section]
+\newtheorem{kleene-fix}{Theorem}[section]
 
 \begin{document}
 
+\toask{Think subsectioning is needed, also subsectioned the motivational section, guess it would be wise to keep the same style}.
+\toask{General style question, I use ``we'' everywhere, comes naturally. Better style available?}
 
 \toguide{What is static analysis?}
 
@@ -50,6 +54,7 @@ int main(void) {
 
 One can easily deduce that the program will always exit with error code $1$, without having to calculate the exact value of  $y*z$.
 Instead, we can interpret all the values variables have as negative ($-$), $0$ or positive ($+$) and evaluate $y * z$ as $-*- = +$.
+
 This is considerable easier task.
 
 With this simplification, we do lose precision. Lets consider another example:
@@ -154,7 +159,7 @@ Program $P = \left( Proc, main \right)$, where $Proc$ is a finite set of procedu
 
 \toask{Should listings be given names? Seems bit too heavyweight to wrap them in figures, but would make citing so much easier}
 
-As it is not feasible to offer a formalization of all the statements and expressions available in any of common higher-level programming languages as a part of this thesis, we have elected to leave the sets $Stmt$ and $Exp$ formally undefined, instead relying on readers previous experience with statements and expressions in any of the C family languages.   For the interested, a formalization of a subset of C is done by Vojdani \todo{Cite to doctoral thesis}.
+As it is not feasible to offer a formalization of all the statements and expressions available in any of common higher-level programming languages as a part of this thesis, we have elected to leave the sets $Stmt$ and $Exp$ formally undefined, instead relying on readers previous experience with statements and expressions in any of the C family languages.   For the interested, a formalization of a subset of C is done by Vojdani \toadd{Cite to doctoral thesis}.
 
 \toask {very clumsy, but would like to bring this up and not just leave the sets undefined}
 
@@ -237,7 +242,7 @@ where $enter_{proc}$ and $return_{proc}$ are state transformers that initialize 
 
 \end{defin}d 
 
-\toask{What about threads?}
+\toguide{What about threads?}
 
 To support multithreaded programs, we will first expand our inter-procedural evaluation relation to support the thread spawning function $spawn$.
 
@@ -281,7 +286,7 @@ The $\lp \interthread \rp$ lets us define a set of all possible states of a prog
 
 Equipped with set \allstates we would have information about the program at any possible execution point. At the same time, it is clear that computing the set \allstates is not feasible in most cases -- the set might not be finite and even if it is, the all possible states of even a simple program might be quite big.
 
-As in the example we gave at the start of this section, we can however simplify the program by \textit{abstracting} away parts of the state that are not interesting for us for finding out if a certain property holds for the program under analyses. However, it is not easy to get the level of abstraction right, as abstracting away too much does not let us tell much about non-trivial properties of the program and abstracting away too little leaves us with task that is too big to feasible compute.
+As in the example we gave at the start of this section, we can however simplify the program by \textit{abstracting} away parts of the state that are not interesting for us for finding out if a certain property holds for the program under. However, it is not easy to get the level of abstraction right, as abstracting away too much does not let us tell much about non-trivial properties of the program and abstracting away too little leaves us with task that is too big to feasible compute.
 
 \toask{So, how are we abstracting?}
 
@@ -329,7 +334,7 @@ First of all, let $D$ be $\lb true, false \rb$ and let $\sqsubseteq = \lb \lp fa
   \caption{$\lp \lb false, true \rb, \lb \lp false, true \rp \rb \rp$ as an Hasse diagram.}
 \end{figure}
  
-Secondly, to in the example we used to gain intuition about abstract interpertation, we gave each variable a set of its possible values at that program state. Under the values we differianted between negative integers, zero and positive integers. The corresponding lattice would be the following.
+Secondly, to in the example we used to gain intuition about abstract interpretation, we gave each variable a set of its possible values at that program state. Under the values we differentiated between negative integers, zero and positive integers. The corresponding lattice would be the following.
 
 
 \begin{figure}[H]
@@ -406,40 +411,311 @@ The flat lattice is one way to create a complete lattice from any kind of set.
 
 \toask{Okay, but what it has anything to do with abstract interpretation?}
 
-Lattices will serve as \textit{abstract domains} for abstract interpretation.  For our running example, we 
+Lattices will serve as \textit{abstract domains} for abstract interpretation. Intuitively, the elements of abstract domain will fulfill the same role as the states in concrete interpretation, offering context for interpreting the program. For abstract domain (that is, a complete lattice) $D,\sqsubseteq$, we will choose $D$ to be a (finite) set of elements that each describe some set of states of our concrete implementation. To analyze the program we would like to find the most precise element of $D$ -- that is, that describes the least amount of states in our concrete implementation, while describing that specific state for every state in our program. So, an \textit{analyze} of program $P$ is a function $\analyze : N \to D$.
 
- The idea is to construct the abstract domain  in a way that information about the program is 
+For our running example, as we care only about the signs of variable, a suitable $D$ would be a set of functions from set of all variables in program $P$ to power set of $\lb -, 0, + \rb$, that is $d \in D, d : Var_P \to 2^{\lb -, 0, + \rb}$. 
+$D$ is ordered point-wise, that is $d_1 \sqsubseteq d_2 \iff \forall v \in Var_p, d_1 v \subseteq d_2 v$. 
+
+\toguide{Is that even a lattice?}
+
+It is worth noting that $D$ is also a lattice as for every subset $X$, $\bigcup X = \lb \lp v, b \rp | \forall v \in Var, b = \bigcup \lb d \lp v \rp | d \in X \rb \rb$ and $\bigcap X$ is defined dually \toask{Is dually even a word and if so, does it get the point across?}.   
+
+\toguide{So, why bother with the lattice, what does it give us?}
+
+One might still be wondering, why do we want to use lattices here, instead of simple sets. Consider following program.
+
+\begin{figure}[H]
+  \begin{center}
+    \begin{tikzpicture}[node distance=2cm]
+
+      \node (start) [end] {$s_{main}$};
+      \node (decl) [decision, below of=start] {$1$};
+
+      \node (rand_pos) [node,below right of = decl] {$3$};
+      \node (rand_neg) [node, below left of = decl] {$2$};
+
+      \node (after_if) [node, below left of = rand_pos] {$4$};
+
+      \node (end) [end, below of = after_if] {$r_{main}$};
+
+      \draw [arrow] (start) -- node [anchor=west] {\small{int x }} (decl);
+
+      \draw [arrow] (decl) --
+        node [ anchor=west] {\small{$Pos$(rand() \% 2 == 0)}} (rand_pos);
+      \draw [arrow] (rand_pos) -- node [ anchor=west] {\small{x = 1}} (after_if);
+
+      \draw [arrow] (decl) --
+        node [ anchor=east] {\small{$Neg$(rand() \% 2 == 0)}} (rand_neg);
+      \draw [arrow] (rand_neg) -- node [ anchor=east] {\small{x = 0}} (after_if);   
+      
+      \draw [arrow] (after_if) -- node [ anchor=west] {\small{return x}} (end);
+
+    \end{tikzpicture}
+  \end{center}
+  \caption{An example program}
+\end{figure}
 
 
+When taking the $Pos$ edge in the example program then the most precise element of the domain that would describe the state at node $4$ would be $d_1 = \lb \lp x, \lb + \rb \rp \rb$. When taking the $Neg$ edge, the most precise element for describing state at node $4$ would be $ d_2 = \lb \lp x, \lb 0 \rb \rp \rb$. However, based on static analysis, it is not possible to say which edge will be picked as it depends on a random number generated during runtime. In this case, we would like to describe the state at node $4$ with an element from domain that describes the state most precisely, taking into account that either of the conditional branches could be taken. Based on how we have constructed this domain, the suitable element would be $d_1 \bigsqcup d_2 = \lb \lp (x, \lb 0, + \rb \rp \rb$.
+
+To be able to use the least upper bound when joining information from different possible incoming edges to state, the domain should be ordered in a way that if $d_1 \sqsubseteq d_2$ then if a property $P$ that we are interested in holds for $d_1$, it should always hold for $d_2$ as well. More concisely, $d_1 \sqsubseteq d_2 \implies\lp  P \lp d_1 \rp \implies P \lp d_2 \rp \rp$.
+
+In our example, the properties we were considering were whether a specific variables value \textit{may} be positive, negative or zero. If the value of a variable may be $0$, then it also may be $0$ or positive so we would want $\lb 0 \rb \sqsubseteq \lb 0, + \rb$. However, if we would wonder about whether a specific variable value would \textit{not} be positive, negative or zero then if we know that if the value is not 0 or positive then it also is not zero, meaning that we would want to have a lattice $\lp 2^{-,0,+}, \sqsubseteq_{must} \rp$ such that $\lb 0 , + \rb \sqsubseteq_{must} \lb 0 \rb$. We could define $\sqsubseteq_{must}$ to be
+
+\begin{equation*}
+d_1 \sqsubseteq_{must} d_2 \iff d_2 \sqsubseteq d_1 \text{.} 
+\end{equation*} 
+
+\toguide{Okay, I get the idea with the bounds, but how does this help us?}
 
 
+More formally, let $P$ be a program, $\allstates$ be set of all the possible states of the program and let $L = \lp D, \sqsubseteq \rp$ be a lattice. We say that $\descriptor \subseteq \allstates \times D$ is a \textit{descriptor relation} if there is no $s \in \allstates$ such that $s \descriptor \bot_L$, for every state $s \in \allstates$, $s \descriptor \top_L$ and for all $d_1,d_2 \in D, s \in \allstates$,
 
+\begin{equation*}
+s \descriptor d_1 \land d_1 \sqsubseteq d_2 \implies s \descriptor d_2 \text{.}
+\end{equation*}
 
+In concrete interpretation, to evaluate a program statement $\lp v, s, u \rp$ we used function $\lllb s \rrrb_{Stmt} : S \to S$. To evaluate the same program statement in abstract interpretation over domain $D$, we need to define functions $\lllb s \rrrb_{Stmt}^{\absint} : D \to D$, that we can use to evaluate the program in context of domain element $d$. For example, in case of our running example, we could define $\lllb x =  x + 2 \rrrb_{Stmt}^{\absint}$ as
 
+\begin{equation*}
+\lllb x = x + 1 \rrrb_{Stmt}^{\absint} \left( d \right) =
+\begin{cases}
+d \lbk x : \lb + \rb \rbk & d \lp x \rp  \in \lb  \lb 0  \rb, \lb + \rb, \lb 0, + \rb \rb  \\
+d \lbk x : \lb -, 0 \rb \rbk & d \lp x \rp =  \lb - \rb \\
+d \lbk x : \lb -, 0, + \rb \rbk & d \lp x \rp \in \lb \lb -,0 \rb, \lb -, + \rb, \lb -, 0, + \rb \rb \\
+\end{cases}
+\text{.}      
+\end{equation*}
 
+We demand that the functions $\lllb s \rrrb_{Stmt}^{\absint}$ are consistent to functions $\lllb s \rrrb_{Stmt}$, that is, for each $s \in S, d \in D$ if $s \descriptor d$ then $ \lllb s \rrrb_{Stmt} \descriptor \lllb d \rrrb_{Stmt}^{\absint}$.
 
+\begin{figure}[H]
+  \begin{centering}
+    \begin{tikzpicture}
+      \node (start) at (0,5) {$s = \lb \lp x, 0 \rp \rb$};
+      \node (start_a) at (5,5) {$d = \lb \lp x , \lb 0 \rb \rp \rb$};
+      \node (end) at (0,0) {$s' = \lb \lp x, 1 \rp \rb$};
+      \node (end_a) at (5,0) {$d' = \lb \lp x , \lb + \rb \rp \rb$};
+      
+      \draw [arrow] (start) -- node[anchor = east] {$s'=\lllb x = x +1  \rrrb_{Stmt} \lp s \rp$}  (end);
+      \draw [arrow] (start_a) -- node[anchor = west] {$d'=\lllb x = x + 1 \rrrb_{Stmt}^{\absint} \lp d \rp$} (end_a);
+      
+      \draw [dashed] (start) -- node[anchor = south] {$s \descriptor d$} (start_a);
+      \draw [dashed] (end) -- node[anchor = south] {$s' \descriptor d'$} (end_a);
+    \end{tikzpicture}
+  \end{centering}
+  \caption{The connections between $\allstates$, $D$, $\lllb x = x +1  \rrrb_{Stmt}$ and $\lllb x = x + 1 \rrrb_{Stmt}^{\absint}$.}
+\end{figure}{H}
 
+Also, we will want all the functions $\lllb s \rrrb_{Stmt}^{\absint}$ to be \textit{monotonic}.
 
+\begin{defin}
+Let $\lp X, \leq_X \rp$ and $Y, \leq_Y$ be partially ordered sets. Then $f : X -> Y$ is \textit{monotonic} if for every $x_1, x_2$, $x_1 \leq_X x_2 \implies f \lp x_1 \rp \leq_y f \lp x_2 \rp$.   
+\end{defin}
 
-  
+This requirement is quite natural -- the monotonicy of the evaluation functions means that if we abstractly evaluate a program statement in context of domain element then the resulting state has to be at least as precise as if we would have evaluated the same statement in context of less precise domain element.  
 
-
-\textit{abstract domain} --$D$,  a set of states for abstract interpretation. Partially ordered $\left(D,\sqsubseteq \right)$ such that if $n \in N$, $d_1,d_2 \in D$,  $n \in \gamma \left(d_1 \right) $ and $d_1 \sqsubseteq d_2$ then $n \in \gamma \left(d_2 \right)$.
-
-
-\textit{abstract function} --$\alpha$,  mapping from $N$ to $D$.
-
-\textit{concreitization function} -- $\gamma$, mapping from $D$ to $2^N$.
-
-
-\textit{context sensitive} -- takes into account the values of parameters of function calls, analyses for each call site vs something that applies for all the call sites.
-
-\textit{complete latice} -- a partially ordered set $\left( D,\sqsubseteq \right)$ is complete lattice if for every $S \subseteq D$ there is a an upper and lower bound and if there exists a greatest and a . We denote uppor bound of set $S$ as $\bigsqcup S $ and lower bound as $\bigsqcap S$. We denote the least element of a lattice ($\bigsqcap D$) as $\bot$ and the greatest element as $\bigsqcup D$ as $\top$. Note that we by $d_1 \bigsqcup d_2$ we mean  $\bigsqcup \left\lbrace d_1, d_2, \right\rbrace $   and by $ d_1 \bigsqcap d_2$ we mean $\bigsqcap \left\lbrace d_1, d_2, \right\rbrace $.
-
+For now, lets limit ourselves to intraprocedural analyses in following.
  
+As mentioned before, we want to define analyze $\analyze : N \to D$ such that for every node $n$ in program $P$, every state $s \in \allstates$ that can happen when the execution has reached node $n$, $s \descriptor f \lp n \rp$.
+  
+Let $n$ be a node in program $P$. Let $w$ be a finite walk in program $P$, starting from state $s_P$ and ending in $n$, that is $w = \lp s_P, stmt_0, s_1, stmt_1, \ldots, s_i, stmt_i, n \rp$. Lets note if $d_s$ is the abstract starting state, that is $s_P \descriptor d_s$  that we can evaluate the edges on this path in the following way:
 
-\textit{Merge over all paths} -- 
+\begin{equation*}
+d_w = \lllb stmt_i \rrrb_{Stmt}^{\absint} \circ \lllb stmt_{i-1} \rrrb_{Stmt}^{\absint} \circ \ldots \circ  \lllb stmt_0 \rrrb_{Stmt}^{\absint} \lp d_s \rp  
+\end{equation*}
+  
+If we define $W_n$ to be the set of all the finite paths from $s_P$ to $n$ in program P, then could now define $f$ as
+
+\begin{equation*}
+\analyze \lp n \rp = \bigsqcup \lb d_w \| p \in W_n \rb \text{.} 
+\end{equation*}  
+
+This approach, knows as \textit{meet over all  paths (MOP)}, has downsides, the most obvious is the possible computational complexity as the number of paths can grow exponentially with the size of the program and, even worse, the number of walks do not have to be finite. Additionally, it is not clear how to handle infinite walks. 
+
+We will be using another approach for defining $\analyze$.
+
+\toask{I would like to convince reader, that the constraint system is natural, but it somehow very difficult. Leave it out or try to approach from another angle?}
+
+Lets consider a specific edge in our program, $\lp v, s, u \rp$. Now, let $d = \analyze v$. Then, presuming that $d$ is precise, $\analyze u$ should not be more precise than $\lllb s \rrrb_{Stmt} \lp d \rp$ as ...
+
+\toadd{Fix this}
+  
+From this, we get a following constraint system
+
+\begin{equation*}
+\label{constraints}
+\analyze \lp  u \rp \sqsupseteq \lllb s \rrrb_{Stmt} \lp \analyze \lp v \rp \rp \forall \lp e = \lp u, s, v \rp \rp \in E_P \text{.}
+\end{equation*}
+
+Additionally, the abstract starting state should also be an lower bound to $\analyze \lp s_P \rp$, so $\analyze \lp s_p \rp \sqsupseteq d_S$. 
+
+We can now define $\analyze$ to be a function that is the least solution to the given constraint system.
+
+\toguide{Hmm, constraint system, need to digest this. An example?}
+
+As an example, lets look at example program $B$: 
+
+\begin{figure}[H]
+  \begin{center}
+    \begin{tikzpicture}[node distance=2cm]
+      \node (start) [end] {$s_{main}$};
+      \node (decl) [decision, below of=start] {$1$};
+
+      \node (rand_pos) [node, right  = 4 cm of  decl] {$3$};
+      \node (rand_neg) [node, below of = decl] {$2$};
+
+      \node (after_if) [node, below of = rand_neg] {$4$};
+
+      \node (end) [end, below of = after_if] {$r_{main}$};
+
+      \draw [arrow] (start) -- node [anchor=east] {\code{int x = 0 }} (decl);
+
+      \draw [arrow] (decl) edge [bend left]
+        node [ anchor=south] {\code{$Pos$(rand() \% 2 == 0)}} (rand_pos);
+      \draw [arrow, bend right] (rand_pos) edge [bend left] node [ anchor=north] {\code{x = x + 1}} (decl);
+
+      \draw [arrow] (decl) --
+        node [ anchor=east] {\code{$Neg$(rand() \% 2 == 0)}} (rand_neg);
+      \draw [arrow] (rand_neg) -- node [ anchor=east] {\code{x = 0}} (after_if);   
+      
+      \draw [arrow] (after_if) -- node [ anchor=east] {\code{return x}} (end);
+
+    \end{tikzpicture}
+  \end{center}
+  \caption{An example program B}
+\end{figure}
+
+Let $d_s = \lb \lp x, \lb \rb \rp \rb $ be the abstract starting state. Then $\analyze_B : N_B \to \lp Var \to 2^{ \lb -, 0, + \rb } \rp $ must satisfiy the following constraint system
+
+\begin{equation*}
+  \begin{split}
+    \analyze_B \lp s_{main} \rp & \sqsupseteq d_s \\
+    \analyze_B \lp 1 \rp & \sqsupseteq \lllb \mcode{int x = 0} \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp s_{main} \rp \rp \\
+    \analyze_B \lp 1 \rp & \sqsupseteq \lllb \mcode{x = x +1}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 3 \rp \rp \\
+    \analyze_B \lp 2 \rp & \sqsupseteq \lllb  \mcode{$Neg$(rand() \% 2 == 0)}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
+    \analyze_B \lp 3 \rp & \sqsupseteq \lllb  \mcode{$Pos$(rand() \% 2 == 0)}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
+    \analyze_B \lp 4 \rp & \sqsupseteq \lllb \mcode{ x = 0 } \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 2 \rp \rp \\
+    \analyze_B \lp r_{main} \rp  & \sqsupseteq \lllb  \mcode{return x}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 4 \rp \rp
+  \end{split} 
+\end{equation*}
+
+\toguide{Okay,but is this of any help, is it more constructive definition than MOP? Can we solve it?}
+
+It is clear that the constraint system does have a solution -- if we take $analyze_B \lp x \rp = \top$, then all the constraints will be satisfied. However, the result is of course very inprecise. To achieve as precise result as possible we  would like to find the \textit{least} solution to this constraint system. 
+
+In the following, we will see when can we find the least solution to the constraint system and how to find such an solution. For this, lets give a more formal definition for constraint system.
+
+\begin{defin}
+A \textit{constraint system} $C$ over lattice $\lp D, \sqsubseteq \rp$ is a set of \textit{constraints} -- pairs $\lp v, f \rp$, where $v$ is a constraint variable $v \in Var_C$ and $f$ is a function from assignment of constraint variables $asg: Var_C \to D$ to domain element $d \in D$, that is $f : \lp Var_C \to D \rp \to D$.
+
+A \textit{solution} is such an assignment of variables $s : Var_C -> D$ that for every constraint $\lp v, f \rp$ , $ s \lp v \rp \sqsupseteq f \lp s \rp$. 
+\end{defin}
+
+A classic result from lattice theory will help us in determining when we can find a least solution to the constraint system.
+
+\begin{defin}
+  A \textit{strictly ascending chain} of size $k$ in lattice $\lp D, \sqsubseteq \rp$ is a tuple $\lp d_1, \ldots, d_k \rp$, $d_i \in D$, such that
+  \begin{equation*}
+    \bot \sqsubset d_1 \sqsubset d_2 \sqsubset \ldots \sqsubset d_k \text{.}
+  \end{equation*}
+\end{defin}
+
+\begin{defin}[Lattice height]
+  The \textit{height} of lattice $L=\lp D, \sqsubseteq \rp$ is $h$  if it is the cardinality of the largest strictly ascending chain.
+\end{defin}
+
+\begin{defin}
+  An element $x \in X$ is a  \textit{fixed-point} of function  $f : X \to X$ if $ f \lp x \rp = x$.
+\end{defin}
+
+\begin{defin}
+  Let $L = \lp D, \sqsubseteq \rp$ be a lattice and $C$ a \textit{chain} in that lattice, that is a tuple $ \lp d_1, d_2, \ldots, d_k, \ldots \rp$ such that
+  \begin{equation*}
+    \bot \sqsubseteq d_1 \sqsubseteq d_2 \sqsubseteq \ldots \sqsubset d_k \ldots \text{.}
+  \end{equation*}
+  We say that the chain \textit{stabilizes} at index $i$ if for every $d_j$ where $ i \leq j$, $ d_j = d_i$. 
+\end{defin}
+
+\begin{kleene-fix}[Kleene's fixed point iteration]
+Let $L = \lp D, \sqsubseteq \rp $ be a lattice and $f : D \to D$ be a monotonic function. Then if chain 
+
+\begin{equation*}
+\bot \sqsubseteq f \lp \bot \rp \sqsubseteq f^2 \lp \bot \rp \sqsubseteq \ldots \sqsubseteq f^n \lp \bot \rp \sqsubseteq \ldots
+\end{equation*}
+
+stabilizes at index $i$, then $f^{i}$ will be the least fixed point of $f$. Furthermore, if the height of $L$ is finite, then the chain will stabilize.
+\end{kleene-fix}
+
+Let $C$ be a constraint system with constraint variables $Var_C= \lb v_1, v_2, \ldots, v_n \rb$ over lattice $L = \lp D, \sqsubseteq \rp$. Then we can find a solution to this constraint system by solving following inequation
+
+\begin{equation}
+  \label{one-function}
+  \vec{d} \gg F \lp \vec{d}  \rp 
+\end{equation}
 
 
+where $\vec{d} : D^n$, $F :  D^{n} \to D^{n}$
 
+\begin{equation*}
+  F \lp \vec{d} \rp  = \lp f_1 \lp \vec{d} \rp , \ldots, f_n \lp \vec{d} \rp \rp \text{,}
+\end{equation*}   
+
+
+\begin{equation*}
+  h_i \lp d_1, \ldots, d_n \rp = \bigsqcup_{\lp v_i, g \rp} g \lp \lambda v_i. d_i \rp
+\end{equation*}
+
+and $\gg$ is defined point-wise, that is 
+
+\begin{equation*}
+\lp d_1, \ldots, d_n \rp \gg \lp d_1', \ldots, d_n' \rp \iff  d_1 \sqsupseteq d_1' \land d_2 \sqsupseteq d_2' \land \ldots \land d_n \sqsupseteq d_n' \text{.}
+\end{equation*}
+
+It is easy to verify that if $L$ is a lattice then also $M = \lp D^n, \gg \rp$ is a lattice. Let $\lp d_1, \ldots, d_n \rp $ be a solution to \ref{one-function}. Then we can define a solution $s$ to constraint system $C$ as $s \lp v_i \rp = d_i$. Indeed, let $ \lp v_i, f \rp \in C$, then by definition of $h_i$, $s \lp v \rp = d_i \sqsupset f \lp s \rp$. This means that if $F$ is monotonic and height of $L$ is finite, then based on Kleene's fixed point iteration theorem, we can find the least solution to the constraint system. Furthermore, the theorem also offers us an algorithm for finding the solution.
+
+It is easy to verify if all the function $f$ in constraint system $C$ are monotonic, then $F$ is also monotonic. Lets note that the constraints defined in \ref{constraints} are monotonic and so is the constant function that constraints the starting state, meaning that the constraint system we proposed to calculate $\analyze$ is solvable, presuming that the lattice it is defined on does have finite height.
+
+\toguide{We can solve it in theory, but is this computable in practice?}
+
+As mentioned before, we could calculate the chain in Kleene's fixed point iteration to find the solution to the constraint system. However, there are also other approaches, that are computationally cheaper. In the following, we will look at one of the simplest of them and show that computing the solution with it is feasible.
+
+The solver we will analyze is the \textit{round-robin} solver:
+
+
+\begin{algorithm}[H]
+\label{round-robin}
+\caption{Round-robin solver for constraint systems on lattices}
+\Begin{
+  \ForEach{$v \in Var_C$}{
+    $s \lbk v \rbk \leftarrow \bot$\; 
+  }
+  dirty $\leftarrow$ \True \;
+  \While{dirty}{
+    dirty $\leftarrow$ \False \;
+    \ForEach{$\lp v, f \rp \in C$}{
+      updated $\leftarrow s \lbk v \rbk \sqcup f \lp s \rp$\;
+      \If{updated $\neq s \lbk v \rbk$}{
+        $s \lbk v \rbk \leftarrow$ updated \;
+        dirty $\leftarrow$ \True \;
+        }
+    }
+  }
+  \Return{$s$}
+}
+\end{algorithm}
+The algorithm firstly initializes the potential solution with $\bot$ elements.
+
+Then it checks for every constraint if it is satisfied -- if it is, then $s \lbk v \rbk \sqsupseteq f \lp s \rp$ what directly implies that $s \lbk v \rbk = \s \lbk v \rbk \sqcup f \lp s \rp$. If the constraint $\lp v, f \rp$  is not satisfied the value of $v$ in the potential solution is updated with the upper bound of current value and the value of the $f$ on current potential solution.
+
+Let $L = \lp D, \sqsubseteq \rp$ be a lattice where the constraint system $C$ being solved with the round-robin solver is defined on. As the maximum number of times a value for a constraint system variable can be updated is the height of the lattice then the outer loop of the algorithm cannot run more than $h \cdot \| Var_C \| + 1$ times, while the inner loop runs for $\| C \|$ times. Altogether, the maximum amount times we have to evaluate the constraint function is upper bounded by $h \cdot \| Var_C\| \cdot C + C$. Although this algorithm is efficient enough to be feasible used in practice, there are faster algorithms that can be used to solve the constraint system and the round-robin algorithm serves here as a proof of the feasibility of a computation for solving the constraint system.
+
+\toask{Mention Kalmer's thesis here? Or leave it for the section about Goblint?}
+
+With this we have given a brief overview of abstract interpretation and how to compute analyses. In the latter, we did limit ourselves to single procedure programs. As this approach can be generalized, with some effort, to multithreaded programs involving procedure calls, ...
+
+\toadd{Good explanation on why not to extend this up to threads?} 
+\toask{Actually, I would not mind going to threads, at least at some level -- I have formalized program to support it so it would make sense, but this theoretical background part seems to be long enough? If there is time and there is not too much material, I would not mind expanding this. Opinions?}
+
+Next we will look into two key ideas on what the static detection of data-races lies on.
 \end{document}
