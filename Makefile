@@ -4,7 +4,10 @@
 # Names
 TARGET-FOLDER = build
 SOURCE-FILE = thesis.tex
-OUTPUT-PDF = thesis.pdf
+OUTPUT=thesis
+OUTPUT-PDF = ${OUTPUT}.pdf
+BIB=bib
+LOG=pdf-latex.log
 
 # Env
 RM = rm -rf
@@ -16,14 +19,25 @@ PDF-READER = gnome-open
 
 # Builds the whole thing
 
-
 all: pdf open
+
+# Does not do bib
+
+raw: raw-pdf open
 
 # Create the PDF
 
-pdf: folders
+pdf: bib raw-pdf
+
+# Create PDF without taking the bib into account
+
+raw-pdf:
 	$(PDFLATEX) $(PDFLATEX-ARGS)  $(SOURCE-FILE)
 
+bib: folders
+	$(PDFLATEX) $(PDFLATEX-ARGS)  $(SOURCE-FILE)
+	TEXMFOUTPUT="${TARGET-FOLDER}:" BIBINPUTS="${BIB}:" bibtex $(TARGET-FOLDER)/$(OUTPUT)
+	$(PDFLATEX) $(PDFLATEX-ARGS)  $(SOURCE-FILE)
 # Clean up
 clean:
 	$(RM) $(TARGET-FOLDER)
