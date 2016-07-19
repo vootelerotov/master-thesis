@@ -6,7 +6,7 @@
 
 \begin{document}
 
-\toask{Think subsectioning is needed, also subsectioned the motivational section, guess it would be wise to keep the same style}.
+\toask{Think subsectioning is needed, also subsectioned the motivational section, guess it would be wise to keep the same style.}
 \toask{General style question, I use ``we'' everywhere, comes naturally. Better style available?}
 
 \toguide{What is static analysis?}
@@ -100,12 +100,15 @@ The edge set  $E_p \subseteq N_p \times L \times N_p$. In addition, we require t
 and if $e_1$ and $e_2$ are outgoing edges of $n$ and $e_1 \neq e_2$, then one of $e_1$ and $e_2$ is a positive guard and other a negative guard. 
 \end{defin}
 
-It is worth mentioning that although we have constrained ourselves with procedure calls without any arguments and only one return node, those issues can be easily solved with use of global variables. 
+It is worth mentioning that although we have constrained ourselves with procedure calls without any arguments and only one return node,
+ those issues can be easily solved with use of global variables. 
 
 In addition, we assume that for every $n \in N_p$, there exists a path from $s_p$ to $n$ and from $n$ to $r_p$. \toadd{do I need this?} 
 
 \begin{defin}
-Program $P = \left( Proc, main \right)$, where $Proc$ is a finite set of procedures such that for every $p,q \in Proc, p \neq q \implies N_p \cap N_q = \emptyset$ and $main \in Proc$ is one of the procedures designated as the main function. Let $N$ be set of all nodes in the program, that is $N = \bigcup_{p \in Proc}N_p$ and $E$ be a set of all edges in the program, that is $E = \bigcup_{p \in Proc}E_p$. 
+Program $P = \left( Proc, main \right)$, where $Proc$ is a finite set of procedures such that for every $p,q \in Proc, p \neq q \implies N_p \cap N_q = \emptyset$ 
+and $main \in Proc$ is one of the procedures designated as the main function.
+ Let $N$ be set of all nodes in the program, that is $N = \bigcup_{p \in Proc}N_p$ and $E$ be a set of all edges in the program, that is $E = \bigcup_{p \in Proc}E_p$. 
 \end{defin}
 
 
@@ -159,7 +162,9 @@ Program $P = \left( Proc, main \right)$, where $Proc$ is a finite set of procedu
 
 \toask{Should listings be given names? Seems bit too heavyweight to wrap them in figures, but would make citing so much easier}
 
-As it is not feasible to offer a formalization of all the statements and expressions available in any of common higher-level programming languages as a part of this thesis, we have elected to leave the sets $Stmt$ and $Exp$ formally undefined, instead relying on readers previous experience with statements and expressions in any of the C family languages.   For the interested, a formalization of a subset of C is done by Vojdani \toadd{Cite to doctoral thesis}.
+As it is not feasible to offer a formalization of all the statements and expressions available in any of common higher-level programming languages
+as a part of this thesis, we have elected to leave the sets $Stmt$ and $Exp$ formally undefined, instead relying on readers previous experience
+with statements and expressions in any of the C family languages.   For the interested, a formalization of a subset of C is done by Vojdani \toadd{Cite to doctoral thesis}.
 
 \toask {very clumsy, but would like to bring this up and not just leave the sets undefined}
 
@@ -179,7 +184,9 @@ f \left[ x : a \right] \left( y \right) =
   \end{cases}
 \end{equation*}.
 
-Lets first consider single threaded programs. Let $S$ be set of states of the program, that is $s : Var \to Val$, where $Var$ is set of variables in the program and $Val$ is set of possible values. Again, we will not formally define sets $Val$ and $Var$ here. For every statement $stmt \in Stmt$, let $ \lllb s \rrrb_{Stmt} : S \to S$ be a function that updates the state of the program. 
+Lets first consider single threaded programs. Let $S$ be set of states of the program, that is $s : Var \to Val$, where $Var$ is set of
+variables in the program and $Val$ is set of possible values. Again, we will not formally define sets $Val$ and $Var$ here.
+For every statement $stmt \in Stmt$, let $ \lllb s \rrrb_{Stmt} : S \to S$ be a function that updates the state of the program. 
 
 For example
 
@@ -204,7 +211,8 @@ Then
 With this in mind, we can define a relation for intra-procedural evaluation of our programs as follows:
 
 \begin{defin}
-Intra-procedural evaluation relation of procedure $p$, $\intraproc_p \subseteq  \lp N_p  \times S \rp  \times \lp N_p \times S \rp$ is a relation for what following rules hold:
+Intra-procedural evaluation relation of procedure $p$, $\intraproc_p \subseteq  \lp N_p  \times S \rp  \times \lp N_p \times S \rp$
+is a relation for what following rules hold:
 
 \addtolength{\jot}{2em}
 \begin{gather*}
@@ -216,17 +224,22 @@ Intra-procedural evaluation relation of procedure $p$, $\intraproc_p \subseteq  
 
 \end{defin}
 
-This relation gives a formal definition for one atomic step during evaluation of a procedure, when evaluating a procedure step with the relation $\intraproc$, the rule applied depends on the type of the edge under evaluation. 
+This relation gives a formal definition for one atomic step during evaluation of a procedure, when evaluating a procedure step with the relation $\intraproc$,
+the rule applied depends on the type of the edge under evaluation. 
 
 \toguide{ What about procedure calls?}
 
-To support inter-procedural evaluation of our program, we need to keep track of the caller of process. For that we will use, as is usually done, a \textit{call stack}. Call stack is a tuple of CFG nodes, first node is current CFG node (the one being evaluated) and rest of nodes are call sites, points from where program evaluation should continue after reaching the return node. Let $Stack$ be set of all call stacks of program $P$. 
+To support inter-procedural evaluation of our program, we need to keep track of the caller of process. For that we will use, as is usually done, a \textit{call stack}.
+Call stack is a tuple of CFG nodes, first node is current CFG node (the one being evaluated) and rest of nodes are call sites, points from where program evaluation
+ should continue after reaching the return node. Let $Stack$ be set of all call stacks of program $P$. 
 
 We will define inter-procedural evaluation relation for single-threaded program $P$ as follows:
 
 \begin{defin}
 
-Inter-procedural evaluation relation of single-threaded program $P$, $\interproc \subseteq \lp Stack \times S \rp \times \lp Stack \times S \rp$ is a relation for what following rules hold:
+Inter-procedural evaluation relation of single-threaded program $P$, 
+$\interproc \subseteq \lp Stack \times S \rp \times \lp Stack \times S \rp$ 
+is a relation for what following rules hold:
 
 \addtolength{\jot}{2em}
 \begin{gather*}
@@ -248,14 +261,20 @@ To support multithreaded programs, we will first expand our inter-procedural eva
 
 \begin{defin}
 
-Intra-thread evaluation relation of $P$, $\intrathread \subseteq  \lp Stack \times S \rp \times \lp Stack \times S \times Proc^\ast \rp$ is a relation for what following rules hold:
+  Intra-thread evaluation relation of $P$,
 
-\addtolength{\jot}{2em}
-\begin{gather*}
-  \inference[Spawn]{\lp u, spawn(p), v \rp \in E  \separ  \lllb p \rrrb_{Exp} = proc \separ proc \in Proc  }{ \lp u :: xs, s \rp \intrathread \lp v :: xs, s, (proc) \rp} \\
-  \inference[Pos,Neg,Call,Return] {\lp u, stmt, v \rp \in E \separ \lp xs , s \rp \interproc \lp ys, s' \rp }{ \lp xs , s \rp \intrathread \lp ys, s', \lp \rp \rp}
-\end{gather*}
-\addtolength{\jot}{-2em}
+  \begin{equation*}
+    \intrathread \subseteq  \lp Stack \times S \rp \times \lp Stack \times S \times Proc^\ast \rp
+  \end{equation*}
+
+  is a relation for what following rules hold:
+
+  \addtolength{\jot}{2em}
+  \begin{gather*}
+    \inference[Spawn]{\lp u, spawn(p), v \rp \in E  \separ  \lllb p \rrrb_{Exp} = proc \separ proc \in Proc  }{ \lp u :: xs, s \rp \intrathread \lp v :: xs, s, (proc) \rp} \\
+    \inference[Pos,Neg,Call,Return] {\lp u, stmt, v \rp \in E \separ \lp xs , s \rp \interproc \lp ys, s' \rp }{ \lp xs , s \rp \intrathread \lp ys, s', \lp \rp \rp}
+  \end{gather*}
+  \addtolength{\jot}{-2em}
 
 \end{defin}
 
@@ -265,15 +284,22 @@ The added information about spawned threads will be used by the following relati
 
 \begin{defin}
 
- The inter-thread evaluation relation of $P$, $\interthread \subseteq \lp Stack^\ast \times S \rp \times \lp Stack^\ast \times S \rp$ is a relation for what following rule holds:   
+  The inter-thread evaluation relation of $P$, 
+ 
+  \begin{equation*}
+    \interthread \subseteq \lp Stack^\ast \times S \rp \times \lp Stack^\ast \times S \rp
+  \end{equation*}
 
-\begin{equation*}
-  \inference{ 0 \leq i \leq n  \separ \lp xs , s \rp \intrathread \lp ys, s', \lp p_1^\star, \ldots, p_k^{\star} \rp \rp}{ \lp \lp t_0, \ldots, t_n \rp, s \rp \interthread  \lp \lp t_0, \ldots, t_n, \lp s_{p_1^{\star}} \rp, \ldots, \lp s_{p_k^{\star}} \rp  \rp , s' \rp} \text{.}
-\end{equation*}
+  is a relation for what following rule holds:   
+
+  \begin{equation*}
+    \inference{ 0 \leq i \leq n  \separ \lp xs , s \rp \intrathread \lp ys, s', \lp p_1^\star, \ldots, p_k^{\star} \rp \rp}{ \lp \lp t_0, \ldots, t_n \rp, s \rp \interthread  \lp \lp t_0, \ldots, t_n, \lp s_{p_1^{\star}} \rp, \ldots, \lp s_{p_k^{\star}} \rp  \rp , s' \rp} \text{.}
+  \end{equation*}
 
 \end{defin}
 
-In the $\lp \interthread \rp$ relation, the list of stacks corresponds to call stacks of all the threads currently running. It is worth noting that relation $\lp \interthread \rp$ is non-deterministic if there is more than one thread in the program -- a property that multithreaded programs have.
+In the $\lp \interthread \rp$ relation, the list of stacks corresponds to call stacks of all the threads currently running.
+It is worth noting that relation $\lp \interthread \rp$ is non-deterministic if there is more than one thread in the program -- a property that multithreaded programs have.
 
 The $\lp \interthread \rp$ lets us define a set of all possible states of a program $P$, with starting state $s_0$ :
 
@@ -284,20 +310,28 @@ The $\lp \interthread \rp$ lets us define a set of all possible states of a prog
 
 \toask{So, what is the point of this?}
 
-Equipped with set \allstates we would have information about the program at any possible execution point. At the same time, it is clear that computing the set \allstates is not feasible in most cases -- the set might not be finite and even if it is, the all possible states of even a simple program might be quite big.
+Equipped with set \allstates we would have information about the program at any possible execution point. At the same time,
+ it is clear that computing the set \allstates is not feasible in most cases -- the set might not be finite and even if it is,
+ the all possible states of even a simple program might be quite big.
 
-As in the example we gave at the start of this section, we can however simplify the program by \textit{abstracting} away parts of the state that are not interesting for us for finding out if a certain property holds for the program under. However, it is not easy to get the level of abstraction right, as abstracting away too much does not let us tell much about non-trivial properties of the program and abstracting away too little leaves us with task that is too big to feasible compute.
+As in the example we gave at the start of this section, we can however simplify the program by \textit{abstracting} away parts
+of the state that are not interesting for us for finding out if a certain property holds for the program under.
+However, it is not easy to get the level of abstraction right, as abstracting away too much does not let us tell much about non-trivial properties
+of the program and abstracting away too little leaves us with task that is too big to feasible compute.
 
 \toask{So, how are we abstracting?}
 
-To have our abstraction on a sound footing, we need a formalization of the idea. The mathematical  theory of \textit{complete lattices} offers a suitable framework. We will now give a short introduction to the lattice theory.
+To have our abstraction on a sound footing, we need a formalization of the idea.
+ The mathematical theory of \textit{complete lattices} offers a suitable framework.
+ We will now give a short introduction to the lattice theory.
 
 \toask{Okay, lattice theory?}
 
 First of all, a quick reminder from set theory.
 
 \begin{defin}[Partial Order]
-A set $D$ with relation $\sqsubseteq \subseteq D \times D$ is called a \textbf{partially ordered set} if $\sqsubseteq$ is a \textbf{partial order}, that is reflexive, antisymmetric and transitive.
+A set $D$ with relation $\sqsubseteq \subseteq D \times D$ is called a \textbf{partially ordered set} if $\sqsubseteq$ 
+is a \textbf{partial order}, that is reflexive, antisymmetric and transitive.
 \end{defin}
 
 \begin{defin}[Upper bound]
@@ -418,7 +452,13 @@ $D$ is ordered point-wise, that is $d_1 \sqsubseteq d_2 \iff \forall v \in Var_p
 
 \toguide{Is that even a lattice?}
 
-It is worth noting that $D$ is also a lattice as for every subset $X$, $\bigcup X = \lb \lp v, b \rp | \forall v \in Var, b = \bigcup \lb d \lp v \rp | d \in X \rb \rb$ and $\bigcap X$ is defined dually \toask{Is dually even a word and if so, does it get the point across?}.   
+It is worth noting that $D$ is also a lattice as for every subset $X$,
+\begin{equation*}
+  \bigcup X = \lb \lp v, b \rp | \forall v \in Var, b = \bigcup \lb d \lp v \rp | d \in X \rb \rb
+\end{equation*}
+and $\bigcap X$ is defined dually.
+
+\toask{Is dually even a word and if so, does it get the point across?}
 
 \toguide{So, why bother with the lattice, what does it give us?}
 
@@ -505,7 +545,7 @@ We demand that the functions $\lllb s \rrrb_{Stmt}^{\absint}$ are consistent to 
     \end{tikzpicture}
   \end{centering}
   \caption{The connections between $\allstates$, $D$, $\lllb x = x +1  \rrrb_{Stmt}$ and $\lllb x = x + 1 \rrrb_{Stmt}^{\absint}$.}
-\end{figure}{H}
+\end{figure}
 
 Also, we will want all the functions $\lllb s \rrrb_{Stmt}^{\absint}$ to be \textit{monotonic}.
 
@@ -514,6 +554,9 @@ Let $\lp X, \leq_X \rp$ and $Y, \leq_Y$ be partially ordered sets. Then $f : X -
 \end{defin}
 
 This requirement is quite natural -- the monotonicy of the evaluation functions means that if we abstractly evaluate a program statement in context of domain element then the resulting state has to be at least as precise as if we would have evaluated the same statement in context of less precise domain element.  
+
+
+\toask{Quite jump?}
 
 For now, lets limit ourselves to intraprocedural analyses in following.
  
@@ -531,13 +574,15 @@ If we define $W_n$ to be the set of all the finite paths from $s_P$ to $n$ in pr
 \analyze \lp n \rp = \bigsqcup \lb d_w \| p \in W_n \rb \text{.} 
 \end{equation*}  
 
+\toask{Even bother with introducing MOP? Could try to explain the constraint system through it?}
+
 This approach, knows as \textit{meet over all  paths (MOP)}, has downsides, the most obvious is the possible computational complexity as the number of paths can grow exponentially with the size of the program and, even worse, the number of walks do not have to be finite. Additionally, it is not clear how to handle infinite walks. 
 
 We will be using another approach for defining $\analyze$.
 
 \toask{I would like to convince reader, that the constraint system is natural, but it somehow very difficult. Leave it out or try to approach from another angle?}
 
-Lets consider a specific edge in our program, $\lp v, s, u \rp$. Now, let $d = \analyze v$. Then, presuming that $d$ is precise, $\analyze u$ should not be more precise than $\lllb s \rrrb_{Stmt} \lp d \rp$ as ...
+Lets consider a specific edge in our program, $\lp v, s, u \rp$. Now, let $d = \analyze \lp v \rp$. Then, presuming that $d$ is precise, $\analyze \lp u \rp $ should not be more precise than $\lllb s \rrrb_{Stmt} \lp d \rp$ as ...
 
 \toadd{Fix this}
   
@@ -708,7 +753,7 @@ The algorithm firstly initializes the potential solution with $\bot$ elements.
 
 Then it checks for every constraint if it is satisfied -- if it is, then $s \lbk v \rbk \sqsupseteq f \lp s \rp$ what directly implies that $s \lbk v \rbk = \s \lbk v \rbk \sqcup f \lp s \rp$. If the constraint $\lp v, f \rp$  is not satisfied the value of $v$ in the potential solution is updated with the upper bound of current value and the value of the $f$ on current potential solution.
 
-Let $L = \lp D, \sqsubseteq \rp$ be a lattice where the constraint system $C$ being solved with the round-robin solver is defined on. As the maximum number of times a value for a constraint system variable can be updated is the height of the lattice then the outer loop of the algorithm cannot run more than $h \cdot \| Var_C \| + 1$ times, while the inner loop runs for $\| C \|$ times. Altogether, the maximum amount times we have to evaluate the constraint function is upper bounded by $h \cdot \| Var_C\| \cdot C + C$. Although this algorithm is efficient enough to be feasible used in practice, there are faster algorithms that can be used to solve the constraint system and the round-robin algorithm serves here as a proof of the feasibility of a computation for solving the constraint system.
+Let $L = \lp D, \sqsubseteq \rp$ be a lattice where the constraint system $C$ being solved with the round-robin solver is defined on. As the maximum number of times a value for a constraint system variable can be updated is the height of the lattice then the outer loop of the algorithm cannot run more than $h \cdot \left| Var_C \right| + 1$ times, while the inner loop runs for $\left| C \right|$ times. Altogether, the maximum amount times we have to evaluate the constraint function is upper bounded by $h \cdot \left| Var_C \right| \cdot \left| C \right| + \left| C \right|$. Although this algorithm is efficient enough to be feasible used in practice, there are faster algorithms that can be used to solve the constraint system and the round-robin algorithm serves here as a proof of the feasibility of a computation for solving the constraint system.
 
 \toask{Mention Kalmer's thesis here? Or leave it for the section about Goblint?}
 
