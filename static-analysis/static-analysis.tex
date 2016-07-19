@@ -543,10 +543,10 @@ Lets consider a specific edge in our program, $\lp v, s, u \rp$. Now, let $d = \
   
 From this, we get a following constraint system
 
-\begin{equation*}
+\begin{equation}
 \label{constraints}
-\analyze \lp  u \rp \sqsupseteq \lllb s \rrrb_{Stmt} \lp \analyze \lp v \rp \rp \forall \lp e = \lp u, s, v \rp \rp \in E_P \text{.}
-\end{equation*}
+\analyze \lp  u \rp \sqsupseteq \lllb s \rrrb_{Stmt} \lp \analyze \lp v \rp \rp ~~ \forall \lp e = \lp u, s, v \rp \rp \in E_P \text{.}
+\end{equation}
 
 Additionally, the abstract starting state should also be an lower bound to $\analyze \lp s_P \rp$, so $\analyze \lp s_p \rp \sqsupseteq d_S$. 
 
@@ -672,9 +672,9 @@ and $\gg$ is defined point-wise, that is
 \lp d_1, \ldots, d_n \rp \gg \lp d_1', \ldots, d_n' \rp \iff  d_1 \sqsupseteq d_1' \land d_2 \sqsupseteq d_2' \land \ldots \land d_n \sqsupseteq d_n' \text{.}
 \end{equation*}
 
-It is easy to verify that if $L$ is a lattice then also $M = \lp D^n, \gg \rp$ is a lattice. Let $\lp d_1, \ldots, d_n \rp $ be a solution to \ref{one-function}. Then we can define a solution $s$ to constraint system $C$ as $s \lp v_i \rp = d_i$. Indeed, let $ \lp v_i, f \rp \in C$, then by definition of $h_i$, $s \lp v \rp = d_i \sqsupset f \lp s \rp$. This means that if $F$ is monotonic and height of $L$ is finite, then based on Kleene's fixed point iteration theorem, we can find the least solution to the constraint system. Furthermore, the theorem also offers us an algorithm for finding the solution.
+It is easy to verify that if $L$ is a lattice then also $M = \lp D^n, \gg \rp$ is a lattice. Let $\lp d_1, \ldots, d_n \rp $ be a solution to (\ref{one-function}). Then we can define a solution $s$ to constraint system $C$ as $s \lp v_i \rp = d_i$. Indeed, let $ \lp v_i, f \rp \in C$, then by definition of $h_i$, $s \lp v \rp = d_i \sqsupset f \lp s \rp$. This means that if $F$ is monotonic and height of $L$ is finite, then based on Kleene's fixed point iteration theorem, we can find the least solution to the constraint system. Furthermore, the theorem also offers us an algorithm for finding the solution.
 
-It is easy to verify if all the function $f$ in constraint system $C$ are monotonic, then $F$ is also monotonic. Lets note that the constraints defined in \ref{constraints} are monotonic and so is the constant function that constraints the starting state, meaning that the constraint system we proposed to calculate $\analyze$ is solvable, presuming that the lattice it is defined on does have finite height.
+It is easy to verify if all the function $f$ in constraint system $C$ are monotonic, then $F$ is also monotonic. Lets note that the constraints defined in (\ref{constraints}) are monotonic and so is the constant function that constraints the starting state, meaning that the constraint system we proposed to calculate $\analyze$ is solvable, presuming that the lattice it is defined on does have finite height.
 
 \toguide{We can solve it in theory, but is this computable in practice?}
 
@@ -718,4 +718,5 @@ With this we have given a brief overview of abstract interpretation and how to c
 \toask{Actually, I would not mind going to threads, at least at some level -- I have formalized program to support it so it would make sense, but this theoretical background part seems to be long enough? If there is time and there is not too much material, I would not mind expanding this. Opinions?}
 
 Next we will look into two key ideas on what the static detection of data-races lies on.
+
 \end{document}
