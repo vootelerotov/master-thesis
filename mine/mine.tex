@@ -7,13 +7,34 @@
 \tikzset{xzp/.style={canvas is xz plane at y=#1}}
 \tikzset{yzp/.style={canvas is yz plane at x=#1}}
 
+\pgfmathsetmacro{\cubex}{5}
+\pgfmathsetmacro{\cubey}{5}
+\pgfmathsetmacro{\cubez}{5}
+
+\newcommand{\opacity}{0.8}
+
+% 1 - x_1, 2 - y_1, 3 - z_1, 4 - x_2, 5 - y_2, 6 - z_2, 7 - color
+\newcommand{\drawcube}[7]
+{
+      \filldraw[opacity=\opacity, #7, draw=black, dashed, xzp=#2] (#1,#3) rectangle (#4,#6);
+      \filldraw[opacity=\opacity, #7, draw=black, dashed, xzp=#5] (#1,#3) rectangle (#4,#6);
+      \filldraw[opacity=\opacity, #7, draw=black, dashed, xyp=#3] (#1,#2) rectangle (#4,#5);
+      \filldraw[opacity=\opacity, #7, draw=black, dashed, xyp=#6] (#1,#2) rectangle (#4,#5);
+      % not drawing left side intentionally
+      \filldraw[opacity=\opacity, #7, draw=black, dashed, yzp=#4] (#2,#3) rectangle (#5,#6);
+}
+
+\newcommand{\drawcubeoverz}[5]{
+ \drawcube{#1}{#2}{0}{#3}{#4}{\cubez}{#5}
+}
+
 
 \begin{document}
 
 \toguide{Okay, what's next?}
 
 The key challenge for Goblint is the number of false-positives. It is clear that even if one can guarantee the soundness of the 
-underlying analysis, then there is a threshold of incorrect warnings above what the results of the analysis contain too much noice
+underlying analysis, then there is a threshold of incorrect warnings above what the results of the analysis contain too much noise
 to be of help for a programmer.
 
 \toguide{I buy it, what can be done about it?}
@@ -36,11 +57,23 @@ static int file_open(file f, ...)
     return 0;
 }
 
-static int file_open(file f, ...)
+static int file_close(file f, ...)
 {
-    printk( "Opening device \n");
+    printk( "Closing device \n");
     j -= 1;
     return 0;
+}
+
+int a(file f, ...)
+{
+  j += 1;
+  return 0;
+}
+
+int b(file f, ...)
+{
+  j += 1
+  return 0;
 }
 
 struct file_operations f_ops = {
@@ -106,12 +139,10 @@ void g()
       \pgfmathsetmacro{\cubex}{5}
       \pgfmathsetmacro{\cubey}{5}
       \pgfmathsetmacro{\cubez}{5}
-      \draw[thick,-] (0,0,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,-] (0,0,0)  -- ++(0,0,\cubez) --  node [anchor = north] {$A$} ++(0.5*\cubex,0,0) -- node [anchor = north] {$B$} ++(0.5*\cubex,0,0)   --  ++(0,0,-\cubez) -- ++(-\cubex,0,0);
       \draw[thick,dashed] (0.5*\cubex,0,0) -- ++(0,0,\cubez);
-      \fill[opacity=0.3,black!30,draw=black,xzp=0] (0,0) rectangle (2.5,5);
-      \fill[opacity=0.3,black!65,,draw=black,xzp=0] (2.5,0) rectangle (5,5);
-      \node at (0.25*\cubex,0,2.5) (A) {$A$};
-      \node at (0.75*\cubex,0,2.5) (B) {$B$};
+      \fill[opacity=0.3,red!20,draw=black,xzp=0] (0,0) rectangle (2.5,5);
+      \fill[opacity=0.3,red!75,draw=black,xzp=0] (2.5,0) rectangle (5,5);
 
       \node at (0.15*\cubex,0,0.6*\cubez) (p) {$\&p$};
       \node at (0.8*\cubex,0,0.75*\cubez) (q) {$\&q$};
@@ -142,29 +173,30 @@ Going back to the example driver, this does allow to eliminate the data race bet
       \draw[thick,dashed] (0.5*\cubex,0,0) -- ++(0,0,\cubez) -- ++(0,\cubey,0) -- ++(0,0,-\cubez) -- ++(0,-\cubey,0);
       \draw[thick,dashed] (0.5*\cubex,0.5*\cubey,0) -- ++(0,0,\cubez); 
 
-      \fill[opacity=0.3,black!30,draw=black,xzp=0] (0,0) rectangle (0.5*\cubex,\cubez);
-      \fill[opacity=0.3,black!30,draw=black,xyp=0] (0,0) rectangle (0.5*\cubex,0.5*\cubey);
-      \fill[opacity=0.3,black!30,draw=black,xyp=\cubez] (0,0) rectangle (0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,red!20,draw=black,xzp=0] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.3,red!20,draw=black,xyp=0] (0,0) rectangle (0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,red!20,draw=black,xyp=\cubez] (0,0) rectangle (0.5*\cubex,0.5*\cubey);
 
-      \fill[opacity=0.3,blue!30,draw=black,xzp=\cubez] (0,0) rectangle (2.5,5);
-      \fill[opacity=0.3,blue!30,draw=black,xzp=0.5*\cubez] (0,0) rectangle (2.5,5);
-      \fill[opacity=0.3,blue!30,draw=black,xyp=0] (0,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
-      \fill[opacity=0.3,blue!30,draw=black,xyp=\cubez] (0,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,blue!20,draw=black,xzp=\cubez] (0,0) rectangle (2.5,5);
+      \fill[opacity=0.3,blue!20,draw=black,xzp=0.5*\cubez] (0,0) rectangle (2.5,5);
+      \fill[opacity=0.3,blue!20,draw=black,xyp=0] (0,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,blue!20,draw=black,xyp=\cubez] (0,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+      
+      \newcommand{\colorSW}{red!75}
+      
+      \fill[opacity=0.3,\colorSW,draw=black,xzp=0] (2.5,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\colorSW,draw=black,xyp=0] (0.5*\cubex,0) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,\colorSW,draw=black,xyp=\cubez] (0.5*\cubex,0) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,\colorSW,draw=black,yzp=\cubex] (0,0) rectangle (0.5*\cubey,\cubez);
 
-      \fill[opacity=0.3,green!65,draw=black,xzp=0] (2.5,0) rectangle (\cubex,\cubez);
-      \fill[opacity=0.3,green!65,draw=black,xyp=0] (0.5*\cubex,0) rectangle ++(0.5*\cubex,0.5*\cubey);
-      \fill[opacity=0.3,green!65,draw=black,xyp=\cubez] (0.5*\cubex,0) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \newcommand{\colorNW}{blue!75}
 
-      \fill[opacity=0.3,red!30,draw=black,xzp=\cubey] (2.5,0) rectangle (\cubex,\cubez);
-      \fill[opacity=0.3,red!30,draw=black,xzp=0.5*\cubey] (2.5,0) rectangle (\cubex,\cubez);
-      \fill[opacity=0.3,red!30,draw=black,xyp=0] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
-      \fill[opacity=0.3,red!30,draw=black,xyp=\cubez] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,\colorNW,draw=black,xzp=\cubey] (2.5,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\colorNW,draw=black,xzp=0.5*\cubey] (2.5,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\colorNW,draw=black,xyp=0] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,\colorNW,draw=black,xyp=\cubez] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=0.3,\colorNW,draw=black,yzp=\cubex] (0.5*\cubey,0) rectangle (\cubey,\cubez);
 
-
-      \node at (0.265*\cubex,0.125*\cubey,0.775*\cubez) (A) {$A_{init}$};
-      \node at (0.765*\cubex,0.125*\cubey,0.775*\cubez) (B) {$B_{init}$};
-      \node at (0.265*\cubex,0.625*\cubey,0.775*\cubez) (Ap) {$A_{postInit}$};
-      \node at (0.765*\cubex,0.625*\cubey,0.775*\cubez) (Bp) {$B_{postInit}$};
 
       
       \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {$i_{init}$};
@@ -185,7 +217,7 @@ The information tracked is divided into \textit{left} and \textit{right} side.
 
 On the left side, information regarding the memory region of the variable is stored as a set of sets, $C$, such that every element of $C$, $I$ describes an intersection of memory regions.
 
-In our example driver, the $C$ for the increment operation in the $init$ function would be 
+In our example driver, the $C$ for the increment operation on $i$ in the $init$ function would be 
 
 \begin{equation*}
 \lb \lb A, init \rb \rb \text{.}
@@ -198,7 +230,7 @@ When deciding if there is a possibility of a data race between operations $a$ an
 The first of those predicates is defined as follows
 
 \begin{equation*}
-L \lp C_a, C_b \rp = \left| C_a \cap C_b \right| > 0 \text{.}
+L \lp C_a, C_b \rp =  C_a \cap C_b \neq \emptyset \text{.}
 \end{equation*}
 
 If $L \lp C_a, C_b \rp$ evaluates to false it means that the two operations do not share a common memory region and hence there cannot be a data race. 
@@ -216,6 +248,8 @@ holds.
 
 Comming back to our example driver, one can see that using the enhanced region analyses, we can now see that there cannot be a race between $i_{init}$ and $i_{exit}$. Indeed, as
 
+\toask{Or should we take A as a set of regions, i.e instead of $\lb A, init \rb $ have $C_A \cup \lb init \rb$ ? Would be more correct, but increases complexity?}
+
 \begin{equation*}
  \lb \lb A, init \rb \rb \cap  \lb \lb A, postInit \rb \rb = \emptyset
 \end{equation*}
@@ -231,6 +265,357 @@ R \lp M_{i_{init}}, M_{i_{init}} \rp
 we can take into account that Linux kernel does not allow one to register the same driver more than once and as such, we can guarantee that the thread running the $init$ function is unique.
 
 Based on that information $R \lp M_{i_{init}}, M_{i_{init}} \rp$ holds and so does the implication (\ref{implication}).
+
+\toguide{Does this thing scale, anything else you can do other than init/exit?}
+
+
+One might have noticed that our example drivers has two extra function, $a$ and $b$. Lets now suppose that similar property holds for $a$ and $b$ -- during the lifetime of driver, we can only call $a$ once and $b$ once and call to $a$  must happen before call to $b$.
+
+Let this be the regions of the program, enhanced with the extra dimension, taking into account only the division by $a$ and $b$:
+
+\begin{figure}[H]
+  \centering
+    \begin{tikzpicture}
+      \pgfmathsetmacro{\cubex}{5}
+      \pgfmathsetmacro{\cubey}{5}
+      \pgfmathsetmacro{\cubez}{5}
+      \draw[thick,-] (0,0,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- node [anchor = north] {$B$} ++(-0.5*\cubex,0,0) --  node [anchor = north] {$A$} ++(-0.5*\cubex,0,0)  --   ++(0,0,-\cubez);
+      \draw[thick,-] (0,\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --   ++(0,0,-\cubez)  ;
+
+      \draw[thick,dashed] (0,0.2*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,dashed] (0.5*\cubex,0.2*\cubey,0) -- ++(0,0,\cubez); 
+
+      \draw[thick,dashed] (0,0.45*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,dashed] (0.5*\cubex,0.45*\cubey,0) -- ++(0,0,\cubez); 
+
+      \draw[thick,dashed] (0,0.8*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,dashed] (0.5*\cubex,0.8*\cubey,0) -- ++(0,0,\cubez); 
+      
+      \draw[thick,-] (0,0,0) -- (0,\cubey,0);
+      \draw[thick,-] (\cubex,0,0) -- (\cubex,\cubey,0);
+      
+      \pgfmathsetmacro{\defaultH}{0.2}
+      \pgfmathsetmacro{\readH}{0.45}
+      \pgfmathsetmacro{\writeH}{0.8}
+      
+      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$default$} ++(0,\defaultH*\cubey,0) -- node[anchor= east] {$a$}  ++(0,{(\readH - \defaultH)*\cubey},0)  --
+      node[anchor= east] {$b$}  ++(0,{(\writeH - \readH)*\cubey},0) -- node[anchor= east] {$default$}  ++(0,{(1 - \writeH)*\cubey},0);
+      \draw[thick,-] (\cubex,0,\cubez) -- ++(0,\cubey,0);
+
+      
+      
+      \draw[thick,dashed] (0.5*\cubex,0,0) -- ++(0,0,\cubez) -- ++(0,\cubey,0) -- ++(0,0,-\cubez) -- ++(0,-\cubey,0);
+
+      \newcommand{\defaultColor}{red}
+      \newcommand{\defaultLColor}{\defaultColor!20}
+      \newcommand{\defaultRColor}{\defaultColor!75}
+
+
+      \fill[opacity=0.3,\defaultLColor,draw=black,xzp=0] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.3,\defaultLColor,draw=black,xyp=0] (0,0) rectangle (0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.3,\defaultLColor,draw=black,xyp=\cubez] (0,0) rectangle (0.5*\cubex,\defaultH*\cubey);
+
+      \newcommand{\readColor}{blue}
+      \newcommand{\readLColor}{\readColor!20}
+      \newcommand{\readRColor}{\readColor!75}
+
+      \fill[opacity=0.3,\readLColor,draw=black,xzp=\readH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.3,\readLColor,draw=black,xzp=\defaultH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.3,\readLColor,draw=black,xyp=0] (0,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.3,\readLColor,draw=black,xyp=\cubez] (0,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+
+      \newcommand{\writeColor}{green}
+      \newcommand{\writeLColor}{\writeColor!20}
+      \newcommand{\writeRColor}{\writeColor!75}
+
+      \fill[opacity=0.3,\writeLColor,draw=black,xzp=\readH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.3,\writeLColor,draw=black,xzp=\writeH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.3,\writeLColor,draw=black,xyp=0] (0,\readH*\cubey) rectangle ++(0.5*\cubex,{(\writeH - \readH)*\cubey});
+      \fill[opacity=0.3,\writeLColor,draw=black,xyp=\cubez] (0,\readH*\cubey) rectangle ++(0.5*\cubex,{(\writeH - \readH)*\cubey});
+
+
+      \fill[opacity=0.3,\defaultLColor,draw=black,xzp=\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.3,\defaultLColor,draw=black,xyp=0] (0,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      \fill[opacity=0.3,\defaultLColor,draw=black,xyp=\cubez] (0,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+
+      \fill[opacity=0.3,\defaultRColor,draw=black,xzp=0] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\defaultRColor,draw=black,xyp=0] (0.5*\cubex,0) rectangle ++(0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.3,\defaultRColor,draw=black,xyp=\cubez] (0.5*\cubex,0) rectangle ++(0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.3,\defaultRColor,draw=black,yzp=\cubex] (0,0) rectangle (\defaultH*\cubey,\cubez);
+
+      \fill[opacity=0.3,\readRColor,draw=black,xzp=\readH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\readRColor,draw=black,xzp=\defaultH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\readRColor,draw=black,xyp=0] (0.5*\cubex,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.3,\readRColor,draw=black,xyp=\cubez] (0.5*\cubex,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.3,\readRColor,draw=black,yzp=\cubex] (\defaultH*\cubey,0) rectangle (\readH*\cubey,\cubez);
+
+      \fill[opacity=0.3,\writeRColor,draw=black,xzp=\readH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\writeRColor,draw=black,xzp=\writeH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\writeRColor,draw=black,xyp=0] (0.5*\cubex,\readH*\cubey) rectangle ++(0.5*\cubex,{(\writeH - \readH)*\cubey});
+      \fill[opacity=0.3,\writeRColor,draw=black,xyp=\cubez] (0.5*\cubex,\readH*\cubey) rectangle ++(0.5*\cubex,{(\writeH - \readH)*\cubey});
+      \fill[opacity=0.3,\writeRColor,draw=black,yzp=\cubex] (\readH*\cubey,0) rectangle (\writeH*\cubey,\cubez);
+
+      \fill[opacity=0.3,\defaultRColor,draw=black,xzp=\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.3,\defaultRColor,draw=black,xyp=0] (0.5*\cubex,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      \fill[opacity=0.3,\defaultRColor,draw=black,xyp=\cubez] (0.5*\cubex,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      \fill[opacity=0.3,\defaultRColor,draw=black,yzp=\cubex] (\writeH*\cubey,0) rectangle (\cubey,\cubez);
+
+      
+      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {$j_{a}$};
+      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {$j_{b}$};
+    \end{tikzpicture}
+    \caption{Memory partition with addition of time dimension by $a$ and $b$}
+\end{figure}
+
+If we want to combine this time division with the one we could find the Cartesian product of the two and use that as demonstrated on the next figure.
+
+\begin{figure}[H]
+  \centering
+    \begin{tikzpicture}
+      \pgfmathsetmacro{\cubex}{5}
+      \pgfmathsetmacro{\cubey}{5}
+      \pgfmathsetmacro{\cubez}{5}
+      \draw[thick,-] (0,0,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- node [anchor = north] {$B$} ++(-0.5*\cubex,0,0) --  node [anchor = north] {$A$} ++(-0.5*\cubex,0,0)  --   ++(0,0,-\cubez);
+      \draw[thick,-] (0,\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --   ++(0,0,-\cubez)  ;
+
+      \draw[thick,dashed] (0,0.2*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,dashed] (0.5*\cubex,0.2*\cubey,0) -- ++(0,0,\cubez); 
+
+      \draw[thick,dashed] (0,0.45*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,dashed] (0.5*\cubex,0.45*\cubey,0) -- ++(0,0,\cubez); 
+
+      \draw[thick,dashed] (0,0.5*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,dashed] (0.5*\cubex,0.45*\cubey,0) -- ++(0,0,\cubez); 
+
+      \draw[thick,dashed] (0,0.8*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,dashed] (0.5*\cubex,0.8*\cubey,0) -- ++(0,0,\cubez); 
+      
+      \draw[thick,-] (0,0,0) -- (0,\cubey,0);
+      \draw[thick,-] (\cubex,0,0) -- (\cubex,\cubey,0);
+      
+      \pgfmathsetmacro{\defaultH}{0.2}
+      \pgfmathsetmacro{\readH}{0.45}
+      \pgfmathsetmacro{\writeH}{0.8}
+      
+      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$default \land init$} (0,\defaultH*\cubey,\cubez) -- node[anchor= east] {$a \land init$}  (0,\readH*\cubey,\cubez) 
+      -- node[anchor= east] {$b \land init$}  (0,0.5*\cubey,\cubez)-- node[anchor= east] {$b \land postInit$}  ++(0,{(\writeH - 0.5)*\cubey},0) --
+      node[anchor= east] {$default \land postInit$}  ++(0,{(1 - \writeH)*\cubey},0);
+      \draw[thick,-] (\cubex,0,\cubez) -- ++(0,\cubey,0);
+
+      
+      
+      \draw[thick,dashed] (0.5*\cubex,0,0) -- ++(0,0,\cubez) -- ++(0,\cubey,0) -- ++(0,0,-\cubez) -- ++(0,-\cubey,0);
+
+      \newcommand{\defaultColor}{red}
+      \newcommand{\defaultLColor}{\defaultColor!30}
+      \newcommand{\defaultRColor}{\defaultColor!75}
+
+
+      \fill[opacity=0.8,\defaultLColor,draw=black,xzp=0] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\defaultLColor,draw=black,xyp=0] (0,0) rectangle (0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.8,\defaultLColor,draw=black,xyp=\cubez] (0,0) rectangle (0.5*\cubex,\defaultH*\cubey);
+
+      \newcommand{\readColor}{blue}
+      \newcommand{\readLColor}{\readColor!30}
+      \newcommand{\readRColor}{\readColor!75}
+
+      \fill[opacity=0.8,\readLColor,draw=black,xzp=\readH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\readLColor,draw=black,xzp=\defaultH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\readLColor,draw=black,xyp=0] (0,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.8,\readLColor,draw=black,xyp=\cubez] (0,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+
+      \newcommand{\writeColor}{green}
+      \newcommand{\writeLColor}{\writeColor!50}
+      \newcommand{\writeRColor}{\writeColor!95}
+      
+      \newcommand{\writeIColor}{purple}
+      \newcommand{\writeILColor}{\writeIColor!30}
+      \newcommand{\writeIRColor}{\writeIColor!95}
+
+
+      \fill[opacity=0.8,\writeILColor,draw=black,xzp=\readH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\writeILColor,draw=black,xzp=0.5*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\writeILColor,draw=black,xyp=0] (0,\readH*\cubey) rectangle ++(0.5*\cubex,{(0.5 - \readH)*\cubey});
+      \fill[opacity=0.8,\writeILColor,draw=black,xyp=\cubez] (0,\readH*\cubey) rectangle ++(0.5*\cubex,{(0.5 - \readH)*\cubey});
+
+      \fill[opacity=0.8,\writeLColor,draw=black,xzp=0.5*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\writeLColor,draw=black,xzp=\writeH*\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\writeLColor,draw=black,xyp=0] (0,0.5*\cubey) rectangle ++(0.5*\cubex,{(\writeH - 0.5)*\cubey});
+      \fill[opacity=0.8,\writeLColor,draw=black,xyp=\cubez] (0,0.5*\cubey) rectangle ++(0.5*\cubex,{(\writeH - 0.5)*\cubey});
+
+      \newcommand{\defaultPColor}{yellow}
+      \newcommand{\defaultPLColor}{\defaultPColor!50}
+      \newcommand{\defaultPRColor}{\defaultPColor!75}
+
+      \fill[opacity=0.8,\defaultPLColor,draw=black,xzp=\cubey] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=0.8,\defaultPLColor,draw=black,xyp=0] (0,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      \fill[opacity=0.8,\defaultPLColor,draw=black,xyp=\cubez] (0,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+
+      \fill[opacity=0.8,\defaultRColor,draw=black,xzp=0] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\defaultRColor,draw=black,xyp=0] (0.5*\cubex,0) rectangle ++(0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.8,\defaultRColor,draw=black,xyp=\cubez] (0.5*\cubex,0) rectangle ++(0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.8,\defaultRColor,draw=black,yzp=\cubex] (0,0) rectangle (\defaultH*\cubey,\cubez);
+
+      \fill[opacity=0.8,\readRColor,draw=black,xzp=\readH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\readRColor,draw=black,xzp=\defaultH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\readRColor,draw=black,xyp=0] (0.5*\cubex,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.8,\readRColor,draw=black,xyp=\cubez] (0.5*\cubex,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.8,\readRColor,draw=black,yzp=\cubex] (\defaultH*\cubey,0) rectangle (\readH*\cubey,\cubez);
+
+      \fill[opacity=0.8,\writeIRColor,draw=black,xzp=\readH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeIRColor,draw=black,xzp=0.5*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeIRColor,draw=black,xyp=0] (0.5*\cubex,\readH*\cubey) rectangle ++(0.5*\cubex,{(0.5 - \readH)*\cubey});
+      \fill[opacity=0.8,\writeIRColor,draw=black,xyp=\cubez] (0.5*\cubex,\readH*\cubey) rectangle ++(0.5*\cubex,{(0.5 - \readH)*\cubey});
+      \fill[opacity=0.8,\writeIRColor,draw=black,yzp=\cubex] (\readH*\cubey,0) rectangle (0.5*\cubey,\cubez);
+
+      \fill[opacity=0.8,\writeRColor,draw=black,xzp=0.5*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeRColor,draw=black,xzp=\writeH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeRColor,draw=black,xyp=0] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,{(\writeH - 0.5)*\cubey});
+      \fill[opacity=0.8,\writeRColor,draw=black,xyp=\cubez] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,{(\writeH - 0.5)*\cubey});
+      \fill[opacity=0.8,\writeRColor,draw=black,yzp=\cubex] (0.5*\cubey,0) rectangle (\writeH*\cubey,\cubez);
+
+      \fill[opacity=0.8,\defaultPRColor,draw=black,xzp=\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\defaultPRColor,draw=black,xyp=0] (0.5*\cubex,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      \fill[opacity=0.8,\defaultPRColor,draw=black,xyp=\cubez] (0.5*\cubex,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      \fill[opacity=0.8,\defaultPRColor,draw=black,yzp=\cubex] (\writeH*\cubey,0) rectangle (\cubey,\cubez);
+
+      
+      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {$j_{a}$};
+      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {$j_{b}$};
+
+      \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {$i_{init}$};
+      \node at (0.285*\cubex,0.8*\cubey,0.65*\cubez) (i) {$i_{exit}$};
+    \end{tikzpicture}
+    \caption{Memory partition with addition of combined time dimension}
+\end{figure}
+
+Here, the set $C$ for the increment operation of $i$ in the $init$ function would be
+
+\begin{equation*}
+\lb \lb A, init, default \rb, \lb A, init, a \rb, \lb A, init, b \rb \rb
+\end{equation*}
+
+and for the decrement operation of $j$ in $b$ it would be
+
+\begin{equation*}
+\lb \lb B, init, b \rb, \lb B, postInit, b \rb \rb \text{.}
+\end{equation*}
+
+\toguide{Wait, this does not really scale, does it?}
+
+It is easy to see that this approach does not scale too well -- in the worst case the computational difficulty will grow exponentially with added time partition.
+
+\toask{Memory region?}
+
+However, lets notice that when we evaluate the left sides of two operations, the time dimension only has an effect if memory regions of the operations match. 
+
+Indeed, let $Mem$ be the set of all memory regions, let $i_{a}$ and $i_{b}$ be two operations with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region, that is
+
+\begin{equation*}
+\forall \lp c_1, c_2 \rp, c_1 \in C_{i_a} , c_2 \in C_{i_b} , \lnot \lp \exists m \in Mem,  m \in c_1 \land m \in c_2 \rp
+\end{equation*} 
+
+\toask{Should require this somewhere?}
+
+and as at same time, all the entries of the left hand side must contain a memory region then it is clear that $C_{i_{a}} \cap C_{i_{b}} = \emptyset$ and by definition,  $\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
+
+With that in mind, then for the time partition of memory region $A$ we can take Cartesian product off all the time partitions that effect an operation located in region $A$. For our running example, the partition would look as follows:
+
+\begin{figure}[H]
+  \centering
+    \begin{tikzpicture}
+      \pgfmathsetmacro{\cubex}{5}
+      \pgfmathsetmacro{\cubey}{5}
+      \pgfmathsetmacro{\cubez}{5}
+
+      \pgfmathsetmacro{\defaultH}{0.2}
+      \pgfmathsetmacro{\readH}{0.45}
+      \pgfmathsetmacro{\writeH}{0.8}
+
+
+      \newcommand{\defaultColor}{red}
+      \newcommand{\defaultRColor}{\defaultColor!75}
+
+      
+      \newcommand{\readColor}{blue}
+      \newcommand{\readRColor}{\readColor!75}
+
+      \newcommand{\writeColor}{green}
+      \newcommand{\writeRColor}{\writeColor!95}
+      
+      \newcommand{\writeIColor}{purple}
+      \newcommand{\writeIRColor}{\writeIColor!95}
+
+
+      \newcommand{\defaultPColor}{yellow}
+      \newcommand{\defaultPLColor}{\defaultPColor!50}
+      \newcommand{\defaultPRColor}{\defaultPColor!75}
+
+      
+      
+      \draw[thick,dashed] (0.5*\cubex,0,0) -- ++(0,0,\cubez) -- ++(0,\cubey,0) -- ++(0,0,-\cubez) -- ++(0,-\cubey,0);
+      \draw[thick,dashed] (0.5*\cubex,0.5*\cubey,0) -- ++(0,0,\cubez); 
+
+      
+      \fill[opacity=\opacity,cyan!40,draw=black,xzp=0] (0,0) rectangle (0.5*\cubex,\cubez);
+      \fill[opacity=\opacity,cyan!40,draw=black,xyp=0] (0,0) rectangle (0.5*\cubex,0.5*\cubey);
+      \fill[opacity=\opacity,cyan!40,draw=black,xyp=\cubez] (0,0) rectangle (0.5*\cubex,0.5*\cubey);
+
+      \fill[opacity=\opacity,yellow!50!red,draw=black,xzp=\cubez] (0,0) rectangle (2.5,5);
+      \fill[opacity=\opacity,yellow!50!red,draw=black,xzp=0.5*\cubez] (0,0) rectangle (2.5,5);
+      \fill[opacity=\opacity,yellow!50!red,draw=black,xyp=0] (0,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+      \fill[opacity=\opacity,yellow!50!red,draw=black,xyp=\cubez] (0,0.5*\cubey) rectangle ++(0.5*\cubex,0.5*\cubey);
+
+      \fill[opacity=0.8,\defaultRColor,draw=black,xzp=0] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\defaultRColor,draw=black,xyp=0] (0.5*\cubex,0) rectangle ++(0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.8,\defaultRColor,draw=black,xyp=\cubez] (0.5*\cubex,0) rectangle ++(0.5*\cubex,\defaultH*\cubey);
+      \fill[opacity=0.8,\defaultRColor,draw=black,yzp=\cubex] (0,0) rectangle (\defaultH*\cubey,\cubez);
+
+      \fill[opacity=0.8,\readRColor,draw=black,xzp=\readH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\readRColor,draw=black,xzp=\defaultH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\readRColor,draw=black,xyp=0] (0.5*\cubex,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.8,\readRColor,draw=black,xyp=\cubez] (0.5*\cubex,\defaultH*\cubey) rectangle ++(0.5*\cubex,{(\readH - \defaultH)*\cubey});
+      \fill[opacity=0.8,\readRColor,draw=black,yzp=\cubex] (\defaultH*\cubey,0) rectangle (\readH*\cubey,\cubez);
+
+      \fill[opacity=0.8,\writeIRColor,draw=black,xzp=\readH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeIRColor,draw=black,xzp=0.5*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeIRColor,draw=black,xyp=0] (0.5*\cubex,\readH*\cubey) rectangle ++(0.5*\cubex,{(0.5 - \readH)*\cubey});
+      \fill[opacity=0.8,\writeIRColor,draw=black,xyp=\cubez] (0.5*\cubex,\readH*\cubey) rectangle ++(0.5*\cubex,{(0.5 - \readH)*\cubey});
+      \fill[opacity=0.8,\writeIRColor,draw=black,yzp=\cubex] (\readH*\cubey,0) rectangle (0.5*\cubey,\cubez);
+
+      \fill[opacity=0.8,\writeRColor,draw=black,xzp=0.5*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeRColor,draw=black,xzp=\writeH*\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      \fill[opacity=0.8,\writeRColor,draw=black,xyp=0] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,{(\writeH - 0.5)*\cubey});
+      \fill[opacity=0.8,\writeRColor,draw=black,xyp=\cubez] (0.5*\cubex,0.5*\cubey) rectangle ++(0.5*\cubex,{(\writeH - 0.5)*\cubey});
+      \fill[opacity=0.8,\writeRColor,draw=black,yzp=\cubex] (0.5*\cubey,0) rectangle (\writeH*\cubey,\cubez);
+
+      %\filldraw[opacity=0.8, dashed, draw=black, \defaultPRColor,xzp=\cubey] (0.5*\cubex,0) rectangle (\cubex,\cubez);
+      %\filldraw[opacity=0.8,\defaultPRColor,draw=black,xyp=0, dashed] (0.5*\cubex,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      %\filldraw[opacity=0.8,\defaultPRColor,draw=black,xyp=\cubez, dashed] (0.5*\cubex,\writeH*\cubey) rectangle ++(0.5*\cubex,{(1-\writeH)*\cubey});
+      %\filldraw[opacity=0.8,\defaultPRColor,draw=black,yzp=\cubex, dashed] (\writeH*\cubey,0) rectangle (\cubey,\cubez);
+
+      \drawcubeoverz{0.5*\cubex}{\writeH*\cubey}{\cubex}{\cubey}{\defaultPRColor}
+      
+      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {$j_{a}$};
+      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {$j_{b}$};
+
+      \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {$i_{init}$};
+      \node at (0.285*\cubex,0.8*\cubey,0.65*\cubez) (i) {$i_{exit}$};
+
+
+      \draw[thick,-] (0,0,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- node [anchor = north] {$B$} ++(-0.5*\cubex,0,0) --  node [anchor = north] {$A$} ++(-0.5*\cubex,0,0)  --   ++(0,0,-\cubez);
+      \draw[thick,-] (0,\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --   ++(0,0,-\cubez)  ;
+      \draw[thick,dashed] (0,0.5*\cubey,0) -- ++(\cubex,0,0) -- ++(0,0,\cubez) -- ++(-\cubex,0,0) --  ++(0,0,-\cubez);
+      \draw[thick,-] (0,0,0) -- (0,\cubey,0);
+      \draw[thick,-] (\cubex,0,0) -- (\cubex,\cubey,0);
+      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$init$} ++(0,0.5*\cubey,0)  -- node[anchor= east] {$postInit$}  ++(0,0.5*\cubey,0);
+      \draw[thick,-] (\cubex,0,\cubez) -- ++(0,\cubey,0);
+
+
+    \end{tikzpicture}
+    \caption{Memory partition with local time partition}
+\end{figure}
+
 
 
 
