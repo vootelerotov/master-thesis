@@ -84,23 +84,25 @@ One of the steps taken to reduce the the number of false-positives is the usage 
 
 \toguide{How can you use happen-before here?}
 
-Consider following device driver:
+Consider following simplified device driver:
 
 \begin{lstlisting}[language=c,style=def]
 
 static int i = 0;
 static int j = 0;
 
-static int file_open(file f, ...)
+static int file_open(file* f, ...)
 {
     printk( "Opening device \n");
+    file -> private_data += 1;
     j += 1;
     return 0;
 }
 
-static int file_close(file f, ...)
+static int file_close(file* f, ...)
 {
     printk( "Closing device \n");
+    file -> private_data -= 1
     j -= 1;
     return 0;
 }
@@ -436,7 +438,72 @@ With that in mind, then for the time partition of memory region $A$ we can take 
     \caption{Memory partition with local time partition}
 \end{figure}
 
+With this partitino, the set $C$ for the increment operation of $i$ in the $init$ function would be
 
+\begin{equation*}
+\lb \lb A, init \rb \rb
+\end{equation*}
+
+and for the decrement operation of $j$ in $b$ it would be
+
+\begin{equation*}
+\lb \lb B, init, b \rb \rb \text{.}
+\end{equation*}
+
+
+This approach scales well if we are able to divide memory into small areas and although there are no theorecital guarantees for that, in case of Linux device drivers in the Goblint benchmark suit this is possible.
+
+\toask{To bold of a claim?}
+
+\toguide{Okay, neat, solves the scaling issue. That is it?}
+
+In addition, the finer granularity of this approach lets us easily support more specific guarantees.
+
+Once again, consider the running example driver we have used in this section, more specifically, the functions $file\_open$ and $file\_close$.
+
+\begin{lstlisting}[language=c,style=def]
+static int file_open(file* f, ...)
+{
+    printk( "Opening device \n");
+    file -> private_data += 1;
+    j += 1;
+    return 0;
+}
+
+static int file_close(file* f, ...)
+{
+    printk( "Closing device \n");
+    file -> private_data -= 1
+    j -= 1;
+    return 0;
+}
+\end{lstlisting}
+
+It is guaranteed that file $f$ can only be closed one time after it has been opened. This means that the operations on $file -> private\_data$ cannot race in functions $file\_open$ and $file\_closed$. At same time, it is very possible that there is a race between the opertaions on $j$ in $file\_open$ and $file\_close$ -- it is possible that file $f_1$ is being opened at same time as $f_2$ is being closed. 
+
+If we are able to separte the memory region only containing $file$ then we can partition this further by dividing the time dimension to $default, file\_open$ and $file\_closed$, while not applying the same division of time dimension to the region containing $j$. 
+
+\toguide{Neat. Is this all of any use?}
+
+Evaluating this approach on the set of character devices used as benchmark suit for Goblint gave following result.
+
+\toadd{Actual benchmark}
+
+As seen by the results of the benchmark, the effect this partitioning has depends heavily on the driver. In most of the drivers the effect can be attributed to the exclusion of races between init and exit functions. 
+
+\toask{Should mention this?} 
+
+It is worth noting that the motivation for introducing \textit{happens-before} based analysis to Goblint did came from analysing the common issues on a subset of those very same drivers. However, the fact that there were other drivers, outside the subset of the benchmark drivers that was manually analyzed, that greatly benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelyhood that the benefits are not limited to this specific set of drivers.
+
+\toguide{Okay, got it. Seems cool. Anything else we should know?}
+
+The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledege to specify and cannot be used for analyzing other C programs. This is a serious limitation and most of the analyses currently incorporated in Goblint are able to handle any program written in C. 
+
+\toask{Pretty sure I am correct here?}
+
+However, at the same time it is very hard to imagine a domain independent analysis that would be able to safely exclude the raceses that we have looked at in this section.
+
+Currently, the rules mentioned in this section are hardcoded into Goblint. This approach does not completely solve the issue of how to make Goblint take the domain specific happen-before guarantees into account -- sadly it is not possible for the team behind Goblint to cover all the possible domains. In the long term, offering either the user of a Goblint or an intreseted thiry party a way to specify those guarantees, for example through a DSL,  would help to solve this limitation. In addition, an approach that would try to deduce possible happens-before guarantees dynamically could be something that would lessen the burden on the party specifing the guarantees. 
 
 
 \end{document}
