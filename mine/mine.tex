@@ -139,7 +139,10 @@ int exit(...)
 
 \end{lstlisting}
 
-As mentioned previously, \textit{init} and \textit{exit} functions are used by kernel register and deregister a device. As after publishing the file operations, Goblint cannot assume that the functions of the driver are called by one thread, a possible data-race is detected between the operations on variable $i$ in functions \textit{init} and \textit{exit}. At same time, the Linux Kernel does not allow a call to the \textit{exit} function until the call to the \textit{init} function is called and all the opened files are released.
+As mentioned previously, \textit{init} and \textit{exit} functions are used by kernel register and deregister a device.
+ As after publishing the file operations, Goblint cannot assume that the functions of the driver are called by one thread,
+ a possible data-race is detected between the operations on variable $i$ in functions \textit{init} and \textit{exit}.
+ At same time, the Linux Kernel does not allow a call to the \textit{exit} function until the call to the \textit{init} function is called and all the opened files are released.
 
 We would like to have Goblin know about that guarantee and make use of the information that the call to \textit{init} will always complete before call to \textit{exit}.
 
@@ -174,7 +177,9 @@ void g()
 
  
 
- If we can divide the memory used by the program to two regions, $A$ and $B$ that are disjoint and we can guarantee that the pointer $p$ points to integer variable stored in region $A$ and $q$ points to integer variable stored in region $B$ then we can safely assume that there can be no data-race between the increment and decrement operations in function $f$ and $g$.
+If we can divide the memory used by the program to two regions, $A$ and $B$ that are disjoint and we can guarantee that the pointer $p$ points
+to integer variable stored in region $A$ and $q$ points to integer variable stored in region $B$ then we can safely assume that there
+can be no data-race between the increment and decrement operations in function $f$ and $g$.
 
 \begin{figure}[H]
   \centering
@@ -195,7 +200,9 @@ void g()
     \caption{Memory partition as done by region analyses}
 \end{figure}
 
-Going back to the example driver, this does allow to eliminate the data race between the assignments to $i$ in $init$ and $exit$ functions. However, if we would enhance the region analyses with one more dimension that would roughly correspond to time, we could divide the memory as seen on the following illustration. 
+Going back to the example driver, this does allow to eliminate the data race between the assignments to $i$ in $init$ and $exit$ functions.
+However, if we would enhance the region analyses with one more dimension that would roughly correspond to time,
+we could divide the memory as seen on the following illustration. 
 
 \begin{figure}[H]
   \centering
@@ -222,14 +229,15 @@ Going back to the example driver, this does allow to eliminate the data race bet
 This would let Goblint exclude the possibility of race between these two operations. 
 
 \toguide{How is it done?}
-1
+
 To do this, Goblint needs to track information for each read and write operation.
 
 \toask{operation bad word?}
 
 The information tracked is divided into \textit{left} and \textit{right} side. 
 
-On the left side, information regarding the memory region of the variable is stored as a set of sets, $C$, such that every element of $C$, $I$ describes an intersection of memory regions.
+On the left side, information regarding the memory region of the variable is stored as a set of sets, $C$,
+ such that every element of $C$, $I$ describes an intersection of memory regions.
 
 In our example driver, the $C$ for the increment operation on $i$ in the $init$ function would be 
 
@@ -237,7 +245,8 @@ In our example driver, the $C$ for the increment operation on $i$ in the $init$ 
 \lb \lb A, init \rb \rb \text{.}
 \end{equation*} 
 
-On the right side, information regarding possible reasons why data race cannot take place with another read or write operation is stored in a set $M$. For an example, $M$ could contain the set of locks held at the specific operation or whether or not the thread running the procedure containing the operation is guaranteed to be unique.
+On the right side, information regarding possible reasons why data race cannot take place with another read or write operation is stored in a set $M$.
+ For an example, $M$ could contain the set of locks held at the specific operation or whether or not the thread running the procedure containing the operation is guaranteed to be unique.
 
 When deciding if there is a possibility of a data race between operations $a$ and $b$, Goblint uses two predicates, $L$ and $R$ to evaluate left and right sides of these operations. 
 
@@ -249,7 +258,9 @@ L \lp C_a, C_b \rp =  C_a \cap C_b \neq \emptyset \text{.}
 
 If $L \lp C_a, C_b \rp$ evaluates to false it means that the two operations do not share a common memory region and hence there cannot be a data race. 
 
-The second predicate, $R$ evaluates the sets $M_a$ and $M_b$ and returns true if there is something that guarantees that the operations $a$ and $b$ cannot race. For example, it could be when performing both of these operations, lock $l$ must be held or in case of $a=b$, there is a guarantee that there can be only one thread running that executes the operation.
+The second predicate, $R$ evaluates the sets $M_a$ and $M_b$ and returns true if there is something that guarantees that the operations $a$ and $b$ cannot race.
+ For example, it could be when performing both of these operations, lock $l$ must be held or in case of $a=b$,
+ there is a guarantee that there can be only one thread running that executes the operation.
 
 Equipped with those definitions, we can guarantee that operations $a$ and $b$ cannot race if the implication
 
@@ -260,7 +271,8 @@ L \lp C_a, C_b \rp \implies R \lp M_a, M_b \rp
 
 holds.
 
-Coming back to our example driver, one can see that using the enhanced region analyses, we can now see that there cannot be a race between $i_{init}$ and $i_{exit}$. Indeed, as
+Coming back to our example driver, one can see that using the enhanced region analyses, we can now see that there cannot be a race between $i_{init}$ and $i_{exit}$.
+Indeed, as
 
 \toask{Or should we take A as a set of regions, i.e instead of $\lb A, init \rb $ have $C_A \cup \lb init \rb$ ? Would be more correct, but increases complexity?}
 
@@ -276,14 +288,15 @@ As an example of right hand sides excluding an data race, if we take both $a$ an
 R \lp M_{i_{init}}, M_{i_{init}} \rp
 \end{equation*} 
 
-we can take into account that Linux kernel does not allow one to register the same driver more than once and as such, we can guarantee that the thread running the $init$ function is unique.
+we can take into account that Linux kernel does not allow one to register the same driver more than once and as such,
+ we can guarantee that the thread running the $init$ function is unique.
 
 Based on that information $R \lp M_{i_{init}}, M_{i_{init}} \rp$ holds and so does the implication (\ref{implication}).
 
 \toguide{Does this thing scale, anything else you can do other than init/exit?}
 
-
-One might have noticed that our example drivers has two extra function, $a$ and $b$. Lets now suppose that similar property holds for $a$ and $b$ -- during the lifetime of driver, we can only call $a$ once and $b$ once and call to $a$  must happen before call to $b$.
+One might have noticed that our example drivers has two extra function, $a$ and $b$. Lets now suppose that similar property holds for $a$ and $b$ --
+ during the lifetime of driver, we can only call $a$ once and $b$ once and call to $a$  must happen before call to $b$.
 
 Let this be the regions of the program, enhanced with the extra dimension, taking into account only the division by $a$ and $b$:
 
@@ -393,7 +406,8 @@ It is easy to see that this approach does not scale too well -- in the worst cas
 
 However, lets notice that when we evaluate the left sides of two operations, the time dimension only has an effect if memory regions of the operations match. 
 
-Indeed, let $Mem$ be the set of all memory regions, let $i_{a}$ and $i_{b}$ be two operations with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region, that is
+Indeed, let $Mem$ be the set of all memory regions, let $i_{a}$ and $i_{b}$ be two operations with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region,
+that is
 
 \begin{equation*}
 \forall \lp c_1, c_2 \rp, c_1 \in C_{i_a} , c_2 \in C_{i_b} , \lnot \lp \exists m \in Mem,  m \in c_1 \land m \in c_2 \rp
@@ -401,9 +415,11 @@ Indeed, let $Mem$ be the set of all memory regions, let $i_{a}$ and $i_{b}$ be t
 
 \toask{Should require this somewhere?}
 
-and as at same time, all the entries of the left hand side must contain a memory region then it is clear that $C_{i_{a}} \cap C_{i_{b}} = \emptyset$ and by definition,  $\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
+and as at same time, all the entries of the left hand side must contain a memory region then it is clear that $C_{i_{a}} \cap C_{i_{b}} = \emptyset$ and by definition,
+$\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
 
-With that in mind, then for the time partition of memory region $A$ we can take Cartesian product off all the time partitions that effect an operation located in region $A$. For our running example, the partition would look as follows:
+With that in mind, then for the time partition of memory region $A$ we can take Cartesian product off all the time partitions that effect an operation located in region $A$.
+For our running example, the partition would look as follows:
 
 \begin{figure}[H]
   \centering
@@ -451,9 +467,10 @@ and for the decrement operation of $j$ in $b$ it would be
 \end{equation*}
 
 
-This approach scales well if we are able to divide memory into small areas and although there are no theoretical guarantees for that, in case of Linux device drivers in the Goblint benchmark suit this is possible.
+This approach scales well if we are able to divide memory into small areas and although there are no theoretical guarantees for that,
+in case of Linux device drivers in the Goblint benchmark suit this is possible.
 
-\toask{To bold of a claim?}
+\toask{Too bold of a claim?}
 
 \toguide{Okay, neat, solves the scaling issue. That is it?}
 
@@ -479,9 +496,12 @@ static int file_close(file* f, ...)
 }
 \end{lstlisting}
 
-It is guaranteed that file $f$ can only be closed one time after it has been opened. This means that the operations on $file -> private\_data$ cannot race in functions $file\_open$ and $file\_closed$. At same time, it is very possible that there is a race between the operations on $j$ in $file\_open$ and $file\_close$ -- it is possible that file $f_1$ is being opened at same time as $f_2$ is being closed. 
+It is guaranteed that file $f$ can only be closed one time after it has been opened. This means that the operations on $file -> private\_data$
+cannot race in functions $file\_open$ and $file\_closed$. At same time, it is very possible that there is a race between the operations on $j$ in $file\_open$ and $file\_close$
+-- it is possible that file $f_1$ is being opened at same time as $f_2$ is being closed. 
 
-If we are able to separate the memory region only containing $file$ then we can partition this further by dividing the time dimension to $default, file\_open$ and $file\_closed$, while not applying the same division of time dimension to the region containing $j$. 
+If we are able to separate the memory region only containing $file$ then we can partition this further by dividing the time dimension to $default, file\_open$ and $file\_closed$,
+while not applying the same division of time dimension to the region containing $j$. 
 
 \toguide{Neat. Is this all of any use?}
 
@@ -489,21 +509,32 @@ Evaluating this approach on the set of character devices used as benchmark suit 
 
 \toadd{Actual benchmark}
 
-As seen by the results of the benchmark, the effect this partitioning has depends heavily on the driver. In most of the drivers the effect can be attributed to the exclusion of races between init and exit functions. 
+As seen by the results of the benchmark, the effect this partitioning has depends heavily on the driver.
+In most of the drivers the effect can be attributed to the exclusion of races between init and exit functions. 
 
 \toask{Should mention this?} 
 
-It is worth noting that the motivation for introducing \textit{happens-before} based analysis to Goblint did came from analyzing the common issues on a subset of those very same drivers. However, the fact that there were other drivers, outside the subset of the benchmark drivers that was manually analyzed, that greatly benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelihood that the benefits are not limited to this specific set of drivers.
+It is worth noting that the motivation for introducing \textit{happens-before} based analysis to Goblint did came from analyzing the common issues on a subset of those very same drivers.
+However, the fact that there were other drivers, outside the subset of the benchmark drivers that was manually analyzed,
+that greatly benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelihood
+that the benefits are not limited to this specific set of drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
 
-The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify and cannot be used for analyzing other C programs. This is a serious limitation and most of the analyses currently incorporated in Goblint are able to handle any program written in C. 
+The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify and cannot be used for analyzing other C programs.
+This is a serious limitation and most of the analyses currently incorporated in Goblint are able to handle any program written in C. 
 
 \toask{Pretty sure I am correct here?}
 
 However, at the same time it is very hard to imagine a domain independent analysis that would be able to safely exclude the races that we have looked at in this section.
 
-Currently, the rules mentioned in this section are hard-coded into Goblint. This approach does not completely solve the issue of how to make Goblint take the domain specific happen-before guarantees into account -- sadly it is not possible for the team behind Goblint to cover all the possible domains. In the long term, offering either the user of a Goblint or an interested thirty party a way to specify those guarantees, for example through a DSL,  would help to solve this limitation. In addition, an approach that would try to deduce possible happens-before guarantees dynamically could be something that would lessen the burden on the party specifying the guarantees. 
+Currently, the rules mentioned in this section are hard-coded into Goblint. This approach does not completely solve the issue of how to make Goblint take the domain specific happen-before
+guarantees into account -- sadly it is not possible for the team behind Goblint to cover all the possible domains.
+In the long term, offering either the user of a Goblint or an interested thirty party a way to specify those guarantees,
+for example through a DSL,  would help to solve this limitation. In addition, an approach that would try to deduce possible happens-before guarantees dynamically 
+could be something that would lessen the burden on the party specifying the guarantees.
+
+\toadd{Some kind of ending}
 
 
 \end{document}
