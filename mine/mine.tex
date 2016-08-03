@@ -521,15 +521,14 @@ that the benefits are not limited to this specific set of drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
 
-The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify and cannot be used for analyzing other C programs.
-This is a serious limitation and most of the analyses currently incorporated in Goblint are able to handle any program written in C. 
-
-\toask{Pretty sure I am correct here?}
+The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify. This is an hindarance,
+specially taking into account that the number of possible coventions that guarantee race freedom between two operations is very likely large.  
 
 However, at the same time it is very hard to imagine a domain independent analysis that would be able to safely exclude the races that we have looked at in this section.
 
 Currently, the rules mentioned in this section are hard-coded into Goblint. This approach does not completely solve the issue of how to make Goblint take the domain specific happen-before
-guarantees into account -- sadly it is not possible for the team behind Goblint to cover all the possible domains.
+guarantees into account -- sadly it is not possible for the team behind Goblint to cover all the possible domains nor even fully cover the domain of device drivers.
+
 In the long term, offering either the user of a Goblint or an interested thirty party a way to specify those guarantees,
 for example through a DSL,  would help to solve this limitation. In addition, an approach that would try to deduce possible happens-before guarantees dynamically 
 could be something that would lessen the burden on the party specifying the guarantees.

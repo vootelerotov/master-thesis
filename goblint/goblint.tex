@@ -1,6 +1,173 @@
 \documentclass[..thesis.tex]{subfiles}
 
+\tikzstyle{component} = [rectangle, rounded corners = 5pt, inner sep  = 5pt, draw=black, text width=2.5cm, text centered]
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\lstdefinestyle{caml}{
+	showstringspaces=false,
+        language=Caml,
+        literate=
+               {->}{$\rightarrow$}{1},
+        morekeywords ={module, sig, val, include},
+        emph = {int, bool, unit}, emphstyle={\textit}
+}
+
+
+
 \begin{document}
+
+\toguide{What is the point here?}
+
+In this section, we give an overview  of \textit{Goblint}, a static analyzer for race detection in C programs with focus on Linux device drivers that has been developed for over 10 years in Univeristy of Tartu and in the Technical Univerity of Munich.
+
+\toadd{Cite the arctile written, doctorial thesis of Kalmer and Vesal, github repo}
+
+\toask{Should cite something else?}
+
+\toguide{Why are we intrested in Goblint?}
+
+The original work presented in this thesis builds on top done on Goblint. The background information given in this section will hopefully enable one to put that into context.
+
+\toguide{Okay, got it. So, what is Goblint?}
+
+Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the ideas described in previous section. goblint is written in ocaml and is publicly available on github.
+
+\toadd{check that it is previous section.}
+
+as an input, goblint takes a $c$ program and uses the cil framework to process it into intermediate form that can then be converted into control flow graph (\textit{cfg}). 
+
+\toadd{cite cil}
+
+as a next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and \textit{cfg} of the program is produced.
+
+the generated constraint system in then solved with a generic constraint system solver. 
+
+finally, the output is mapped to the original $c$ program and displayed to user in a suitable format.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[node distance = 2.5cm and 1.5cm]
+    \node (cil) [component] {CIL preprocessor};
+    \node (cfg) [component, below of=cil] {control flow graph constructor};
+    \node (conssyst) [component, below of = cfg] {constraint system constructor} ;
+    \node (analyses) [component, right  =of conssyst] {analyses combiner};
+    \node (analysesb) [component, right  =of analyses] {analyses b};
+    \node (analysesa) [component, above of = analysesb] {analyses a};
+    \node (analysesrest) [component, below of = analysesb] {$\ldots$};
+    \node (analyzer) [component, below of = conssyst] {analayzer};
+    \node (generic) [component, right  =of analyzer] {generic constraint system solver};
+    \node (output) [component, below of = analyzer] {output formatter};
+
+    \draw [arrow] (cil) -- (cfg);
+    \draw [arrow] (cfg) -- (conssyst);
+    \draw [arrow] (conssyst) -- (analyzer);
+    \draw [arrow] (analyzer) -- (output);
+    
+    \draw [arrow] (analyses) -- (conssyst);
+    
+    \draw [arrow] (analysesa) -- (analyses);
+    \draw [arrow] (analysesb) -- (analyses);
+    \draw [arrow] (analysesrest) -- (analyses);
+
+    \draw [arrow] (generic) -- (analyzer);
+
+  \end{tikzpicture}
+  \caption{The structure of Goblint}
+\end{figure}
+
+
+\toguide{Okay, do we need to understand all of it?}
+
+The most interesting components of Goblint are the provided solvers for the constraint systems and the wide array of analyses provided. We will be focusing on the structure of an analyses using as an example the mutex analyses that makes use of the previously discussed ideas of lockset analyses -- this will hopefully both introduce one of the key analyses for Goblint and give an high level idea of how an implementation of an analyses looks like. In addition, we will briefly touch the region analyses that we will use as a building block later on. 
+
+\toadd{Thesis of Kalmer and Vesal, something else?}
+The solvers implemented in Goblint do not fall into scope of this thesis. An thorough overview can be found from ...
+
+\toguide{So, how does an analyses look like?}
+
+As previously described, for each analyses, we need an abstract domain to perform the abstract interpretation on. In Goblint, all the domains implement interface Lattice. The functions \textit{join} and \textit{meet} correspond to binary least upper bound and greatest lower bound operations.  
+
+
+\begin{lstlisting}[language=Caml,style=caml]
+module type Lattice =
+sig
+  include Printable
+  val leq: t -> t -> bool
+  val join: t -> t -> t
+  val meet: t -> t -> t
+  val bot: unit -> t
+  val is_bot: t -> bool
+  val top: unit -> t
+  val is_top: t -> bool
+  ...
+end
+\end{lstlisting}
+
+The Lattice type includes module type Printable, that defines, in addition to the shown functions, a set of functions that enable conversion of type t to strings with different format. The type t in Ocaml module type leaves the type abstract. 
+
+
+\begin{lstlisting}[language=Caml,style=caml]
+module type Printable =
+sig
+  type t
+  val equal: t -> t -> bool
+  val hash: t -> int
+  val compare: t -> t -> int
+  ...
+end
+\end{lstlisting}
+
+In case of the lockset analyses, the domain is reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analyses and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are intrested in the set off all the locks that must be held at a specific statement. In a situation where we have to take an upper bound of two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
+
+Analyses in Goblint must implement the module type Spec. Following is the simplified version of the 
+
+\toask{Did I not cover something important? Or something left is maybe not important in context of thesis?}
+
+\begin{lstlisting}[language=Caml,style=caml]
+module type Spec =
+sig
+  module D : Lattice
+  module G : Lattice
+
+  val name : string
+
+  val startstate : varinfo -> D.t
+  val exitstate  : varinfo -> D.t
+  val otherstate : varinfo -> D.t
+
+  val part_access: (D.t, G.t) ctx -> exp -> varinfo option -> bool -> (Access.LSSSet.t * Access.LSSet.t)
+
+  val sync  : (D.t, G.t) ctx -> D.t * (varinfo * G.t) list
+  val query : (D.t, G.t) ctx -> Queries.t -> Queries.Result.t
+  val assign: (D.t, G.t) ctx -> lval -> exp -> D.t
+  val branch: (D.t, G.t) ctx -> exp -> bool -> D.t
+  val body  : (D.t, G.t) ctx -> fundec -> D.t
+  val return: (D.t, G.t) ctx -> exp option  -> fundec -> D.t
+  val intrpt: (D.t, G.t) ctx -> D.t
+
+
+  val special : (D.t, G.t) ctx -> lval option -> varinfo -> exp list -> D.t
+
+  val enter   : (D.t, G.t) ctx -> lval option -> varinfo -> exp list -> (D.t * D.t) list
+  val combine : (D.t, G.t) ctx -> lval option -> exp -> varinfo -> exp list -> D.t -> D.t
+
+  ...
+
+end
+\end{lstlisting}
+
+Each analayses includes two lattices, lattice $D$ will contain the abstract states and lattice $G$ will contain abstract values for global variables.
+
+The functions $startstate$,$exitstate$ and $otherstate$ provide an initial abstract state for a thread depending on whether the thread starts an
+initialization function (in context of device drivers, the function that registers the driver and exposes the callback functions),
+a cleanup function (where deregistration happens in device drivers) or it is any other function that can be used to spawn a new thread (all the file operations).
+
+The functions take as argument information about the function declaration, enabling Goblint to diffreniate between different file operations.
+In case of mutex analyses, all the functions always return empty locksets.
+
+
+
 
 
 

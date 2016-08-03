@@ -100,9 +100,8 @@
 % Proper way to create coloured code listings
 \usepackage{listings}
 \lstset{ 
-  %language=python,                % the language of the code
-  language=C++,
-  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  %language=python,                % the language of the code,
+  basicstyle=\footnotesize,        % the size of the fonts tat are used for the code
   %numbers=left,                   % where to put the line-numbers
   %numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
   numberstyle=\tiny\color{gray}, 
@@ -131,8 +130,13 @@
   morekeywords={*,game, fun}       % if you want to add more keywords to the set
 }
 \lstdefinestyle{def}{
-	showstringspaces=false
+	showstringspaces=false,
+        language = C,
+        literate = 
+            {-}{-}{1}
 }
+
+
 
 
 % Obscure packages to write logic formulae and program semantics
