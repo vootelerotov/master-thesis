@@ -23,7 +23,7 @@
 
 \toguide{What is the point here?}
 
-In this section, we give an overview  of \textit{Goblint}, a static analyzer for race detection in C programs with focus on Linux device drivers that has been developed for over 10 years in Univeristy of Tartu and in the Technical Univerity of Munich.
+In this section, we give an overview  of \textit{Goblint}, a static analyzer for race detection in C programs with focus on Linux device drivers that has been developed for over 10 years in University of Tartu and in the Technical University of Munich.
 
 \toadd{Cite the arctile written, doctorial thesis of Kalmer and Vesal, github repo}
 
@@ -35,13 +35,13 @@ The original work presented in this thesis builds on top done on Goblint. The ba
 
 \toguide{Okay, got it. So, what is Goblint?}
 
-Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the ideas described in previous section. goblint is written in ocaml and is publicly available on github.
+Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the ideas described in previous section. Goblint is written in OCaml and is publicly available on Github.
 
 \toadd{check that it is previous section.}
 
-as an input, goblint takes a $c$ program and uses the cil framework to process it into intermediate form that can then be converted into control flow graph (\textit{cfg}). 
+as an input, Goblint takes a $c$ program and uses the CIL framework to process it into intermediate form that can then be converted into control flow graph (\textit{cfg}). 
 
-\toadd{cite cil}
+\toadd{cite CIL}
 
 as a next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and \textit{cfg} of the program is produced.
 
@@ -59,7 +59,7 @@ finally, the output is mapped to the original $c$ program and displayed to user 
     \node (analysesb) [component, right  =of analyses] {analyses b};
     \node (analysesa) [component, above of = analysesb] {analyses a};
     \node (analysesrest) [component, below of = analysesb] {$\ldots$};
-    \node (analyzer) [component, below of = conssyst] {analayzer};
+    \node (analyzer) [component, below of = conssyst] {analyzer};
     \node (generic) [component, right  =of analyzer] {generic constraint system solver};
     \node (output) [component, below of = analyzer] {output formatter};
 
@@ -122,7 +122,7 @@ sig
 end
 \end{lstlisting}
 
-In case of the lockset analyses, the domain is reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analyses and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are intrested in the set off all the locks that must be held at a specific statement. In a situation where we have to take an upper bound of two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
+In case of the lockset analyses, the domain is reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analyses and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are interested in the set off all the locks that must be held at a specific statement. In a situation where we have to take an upper bound of two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
 
 Analyses in Goblint must implement the module type Spec. Following is the simplified version of the
 
@@ -161,7 +161,7 @@ end
 
 Here the underscored types are the ones defined in the CIL library.
 
-Each analayses includes two lattices, lattice $D$ will contain the abstract states and lattice $G$ will contain abstract values for global variables.
+Each analyses includes two lattices, lattice $D$ will contain the abstract states and lattice $G$ will contain abstract values for global variables.
 
 The type \textit{ctx} with type parameters $\lp D.t, G.t \rp$ encapsulates the both the local and global state, offering access to helper functions on them. 
 
@@ -169,7 +169,7 @@ The functions \textit{startstate},\textit{exitstate} and \textit{otherstate} pro
 initialization function (in context of device drivers, the function that registers the driver and exposes the callback functions),
 a cleanup function (where deregistration happens in device drivers) or it is any other function that can be used to spawn a new thread (all the file operations).
 
-The functions take as argument information about the function declaration, enabling Goblint to diffreniate between different file operations.
+The functions take as argument information about the function declaration, enabling Goblint to differentiate between different file operations.
 In case of mutex analyses, all the functions always return empty locksets.
 
 The \textit{part\_access} function enables one partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race.
@@ -177,19 +177,19 @@ In addition, it also associates a set of locks held with the partition. This fun
 unlike, for example, the region analyses.
 
 The \textit{query} function enables communication between different analyses that have have been combined into one and are being performed at the same time -- 
-the analyses must be able to answer the query based on the current context. This allows analyses to avoid duplication and allows one to design more modular analyses consitnig of subanalalyses.More regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
+the analyses must be able to answer the query based on the current context. This allows analyses to avoid duplication and allows one to design more modular analyses consisting of sub-analyses. More regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
 
 The functions \textit{assign}, \textit{branch}, \textit{body} and \textit{return} are functions from abstract state to abstract state, for assignment statements,
 branching statments and for entering and exiting from function calls. They corresponding to the $\lllb s \rrrb^{*}$ family of functions introduced in previous section.
 
 \toadd{Confirm previous.} 
 
-In the implementation for mutex analyses, those tranfer functions do not actually change the abstract state as none of the statments do infulence the set of locks held.
+In the implementation for mutex analyses, those transfer functions do not actually change the abstract state as none of the statements do influence the set of locks held.
 However, they do register accesses to variables, for example, an access in registered for both the left and right hand side of an assignment with further distinction
 that the access to the left hand side is a write access.
 
 The \textit{special} function handles functions for what the source code is not available for Goblint to analyze. In mutex analyses,
- this function modifes the abstract state -- functions calls to functions such as \textit{\_\_raw\_lock\_unlock} and \textit{\_lock\_kernel} 
+ this function modifies the abstract state -- functions calls to functions such as \textit{\_\_raw\_lock\_unlock} and \textit{\_lock\_kernel} 
 remove and add mutexes to the set of held locks.
 
 \toadd{Enter and combine, makes sense if I had this to theoretical part as well}
@@ -292,7 +292,7 @@ In case of the hash table, the most obvious partition for the regions would be t
     \caption{Memory partition of the hash table}
 \end{figure}
 
-The partitioning of memory in a such way is done in Goblint by the region analyses. More informatino regarding the ideas used can be found ... \toadd{Cite Vesal}
+The partitioning of memory in a such way is done in Goblint by the region analyses. More information regarding the ideas used can be found ... \toadd{Cite Vesal}
 
 With that we have given a quick overview of Goblint and how an analyses is implemented in it. In addition, a quick overview of a region analyses was given, that we use as bases in the next section.
 
