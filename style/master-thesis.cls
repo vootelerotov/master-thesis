@@ -15,6 +15,7 @@
 % Utf8 for the win!
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{lmodern}
 
 % Use package babel for English or Estonian 
 % If you use Estonian make sure that Estonian hyphenation is installed 
@@ -179,3 +180,9 @@
 
 % to have whitespace between paragraphs
 \usepackage[parfill]{parskip}
+
+
+% tikz libraries
+
+\usetikzlibrary{3d}
+\usetikzlibrary{patterns}

@@ -1,5 +1,6 @@
 \documentclass[..thesis.tex]{subfiles}
 
+
 \tikzstyle{component} = [rectangle, rounded corners = 5pt, inner sep  = 5pt, draw=black, text width=2.5cm, text centered]
 
 \tikzstyle{arrow} = [thick,->,>=stealth]
@@ -10,8 +11,11 @@
         literate=
                {->}{$\rightarrow$}{1},
         morekeywords ={module, sig, val, include},
-        emph = {int, bool, unit}, emphstyle={\textit}
+        emph = [1]{int, bool, unit, list, option}, emphstyle=[1]{\textit},
+        emph = [2]{varinfo, exp, lval, fundec}, emphstyle=[2]{\underline} 
 }
+
+
 
 
 
@@ -104,7 +108,7 @@ sig
 end
 \end{lstlisting}
 
-The Lattice type includes module type Printable, that defines, in addition to the shown functions, a set of functions that enable conversion of type t to strings with different format. The type t in Ocaml module type leaves the type abstract. 
+The Lattice type includes module type Printable, that defines, in addition to the shown functions, a set of functions that enable conversion of type t to strings with different format. The type t in Ocaml module type leaves the type abstract. The types written in italic are built-in types in OCaml. 
 
 
 \begin{lstlisting}[language=Caml,style=caml]
@@ -120,9 +124,9 @@ end
 
 In case of the lockset analyses, the domain is reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analyses and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are intrested in the set off all the locks that must be held at a specific statement. In a situation where we have to take an upper bound of two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
 
-Analyses in Goblint must implement the module type Spec. Following is the simplified version of the 
+Analyses in Goblint must implement the module type Spec. Following is the simplified version of the
 
-\toask{Did I not cover something important? Or something left is maybe not important in context of thesis?}
+\toask{Did I not cover something important? Or something left is maybe not important in context of thesis? Left out: sync, intrpt, }
 
 \begin{lstlisting}[language=Caml,style=caml]
 module type Spec =
@@ -138,14 +142,12 @@ sig
 
   val part_access: (D.t, G.t) ctx -> exp -> varinfo option -> bool -> (Access.LSSSet.t * Access.LSSet.t)
 
-  val sync  : (D.t, G.t) ctx -> D.t * (varinfo * G.t) list
   val query : (D.t, G.t) ctx -> Queries.t -> Queries.Result.t
+
   val assign: (D.t, G.t) ctx -> lval -> exp -> D.t
   val branch: (D.t, G.t) ctx -> exp -> bool -> D.t
   val body  : (D.t, G.t) ctx -> fundec -> D.t
   val return: (D.t, G.t) ctx -> exp option  -> fundec -> D.t
-  val intrpt: (D.t, G.t) ctx -> D.t
-
 
   val special : (D.t, G.t) ctx -> lval option -> varinfo -> exp list -> D.t
 
@@ -157,19 +159,141 @@ sig
 end
 \end{lstlisting}
 
+Here the underscored types are the ones defined in the CIL library.
+
 Each analayses includes two lattices, lattice $D$ will contain the abstract states and lattice $G$ will contain abstract values for global variables.
 
-The functions $startstate$,$exitstate$ and $otherstate$ provide an initial abstract state for a thread depending on whether the thread starts an
+The type \textit{ctx} with type parameters $\lp D.t, G.t \rp$ encapsulates the both the local and global state, offering access to helper functions on them. 
+
+The functions \textit{startstate},\textit{exitstate} and \textit{otherstate} provide an initial abstract state for a thread depending on whether the thread starts an
 initialization function (in context of device drivers, the function that registers the driver and exposes the callback functions),
 a cleanup function (where deregistration happens in device drivers) or it is any other function that can be used to spawn a new thread (all the file operations).
 
 The functions take as argument information about the function declaration, enabling Goblint to diffreniate between different file operations.
 In case of mutex analyses, all the functions always return empty locksets.
 
+The \textit{part\_access} function enables one partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race.
+In addition, it also associates a set of locks held with the partition. This function return empty sets in case of mutex analyses as it does not make use of partitioning,
+unlike, for example, the region analyses.
+
+The \textit{query} function enables communication between different analyses that have have been combined into one and are being performed at the same time -- 
+the analyses must be able to answer the query based on the current context. This allows analyses to avoid duplication and allows one to design more modular analyses consitnig of subanalalyses.More regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
+
+The functions \textit{assign}, \textit{branch}, \textit{body} and \textit{return} are functions from abstract state to abstract state, for assignment statements,
+branching statments and for entering and exiting from function calls. They corresponding to the $\lllb s \rrrb^{*}$ family of functions introduced in previous section.
+
+\toadd{Confirm previous.} 
+
+In the implementation for mutex analyses, those tranfer functions do not actually change the abstract state as none of the statments do infulence the set of locks held.
+However, they do register accesses to variables, for example, an access in registered for both the left and right hand side of an assignment with further distinction
+that the access to the left hand side is a write access.
+
+The \textit{special} function handles functions for what the source code is not available for Goblint to analyze. In mutex analyses,
+ this function modifes the abstract state -- functions calls to functions such as \textit{\_\_raw\_lock\_unlock} and \textit{\_lock\_kernel} 
+remove and add mutexes to the set of held locks.
+
+\toadd{Enter and combine, makes sense if I had this to theoretical part as well}
+
+\toguide{Okay, pretty dense stuff. You mentioned region analyses?}
+
+Lastly, another analyses that the author would like to briefly introduce is the region analyses.
+
+\toguide{Okay, what is the point of it?}
+
+Consider a hash table using chaining to handle hash collisions that has a lock for each of the buckets.
+
+\toask{Just one figure with the hash keys shown in good enough?}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \foreach \y in {0,...,5}
+      {
+        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$L_{\y}$};
+        \draw[->, thick] (1,5 - \y + 0.5) -- ++(0.5,0);
+        \foreach \x in {1,...,5}
+        {
+          \draw (1.5*\x, 5 -\y+0.2) rectangle ++(0.6,0.6);
+
+        }
+        \foreach \x in {1,...,4}
+        {
+          \draw[->] (1.5*\x + 0.3, 5 - \y + 0.8) to [bend left=45] ++(1.5,0);
+        }
+      }
+  \end{tikzpicture}
+  \caption{Separate chaining hash table} 
+\end{figure}
+An usual way to synchronize such an hash table is to protect each bucket with its own lock -- if the hashes of the keys $k_1$ and $k_2$ are different then accessing them in the hash table cannot cause a data race. On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real risk for data race.
 
 
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \foreach \y in {0,...,5}
+      {
+        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$L_{\y}$};
+        \draw[->, thick] (1,5 - \y + 0.5) -- ++(0.5,0);
+        \foreach \x in {1,...,5}
+        {
+          \draw (1.5*\x, 5 -\y+0.2) rectangle ++(0.6,0.6);
+
+        }
+        \foreach \x in {1,...,4}
+        {
+          \draw[->] (1.5*\x + 0.3, 5 - \y + 0.8) to [bend left=45] ++(1.5,0);
+        }
+      }
+    \draw[red, ->, shorten >= 5pt, thick] (-2,2.5) node [black, anchor =  east] {$H\lp k_3 \rp$} -- (0,3.5);
+    \draw[red, ->, shorten >= 5pt, thick] (-2,0.5) node [black, anchor =  east] {$H\lp k_2 \rp$} -- (0,0.5); 
+    \draw[red, ->, shorten >= 5pt, thick] (-2,4.5) node [black, anchor =  east] {$H\lp k_1 \rp$} -- (0,3.5);
+      
+  \end{tikzpicture}
+  \caption{Separate chaining hash table} 
+\end{figure}
 
 
+The way region analyses is able to detect that cannot be a data race between additions of an element to hash table with for key $k_1$ and $k_3$ we need to be able to divide the memory that the program uses into disjoint \textit{regions} such that we can guarantee that memory accesses in different regions cannot race.
 
+In case of the hash table, the most obvious partition for the regions would be to separate the buckets of the hash table.
+
+
+\begin{figure}[H]
+  \centering
+    \begin{tikzpicture}
+
+      
+      \tikzset{xzp/.style={canvas is xz plane at y=#1}}
+
+      \pgfmathsetmacro{\cubex}{10}
+      \pgfmathsetmacro{\cubey}{5}
+      \pgfmathsetmacro{\cubez}{5}
+
+
+      \foreach \x in {1,...,5} 
+      {
+        \draw[thick,dashed] (\x*\cubex*0.2,0,0) -- ++(0,0,\cubez);
+      }
+
+      \fill[opacity=0.8,red!30,draw=black,xzp=0] (0,0) rectangle (0.2*\cubex,\cubez);
+      \fill[opacity=0.8,blue!40,draw=black,xzp=0] (0.2*\cubex,0) rectangle (0.4*\cubex,\cubez);
+      \fill[opacity=0.8,green!40,draw=black,xzp=0] (0.4*\cubex,0) rectangle (0.6*\cubex,\cubez);
+      \fill[opacity=0.8,yellow!50!red,draw=black,xzp=0] (0.6*\cubex,0) rectangle (0.8*\cubex,\cubez);
+      \fill[opacity=0.8,cyan!40,draw=black,xzp=0] (0.8*\cubex,0) rectangle (\cubex,\cubez);
+
+      \node at (0.275*\cubex,0,0.4*\cubez) (p) {$H \lp k_1 \rp$};
+      \node at (0.3*\cubex,0,0.75*\cubez) (q) {$H \lp k_3 \rp$};
+
+      \node at (0.9*\cubex,0,0.35*\cubez) (q) {$H \lp k_2 \rp$};
+
+
+      \draw[thick,-] (0,0,0)  -- ++(0,0,\cubez) --  node [anchor = north] {$R_1$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_2$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_3$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_4$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_5$} ++(0.2*\cubex,0,0)  --  ++(0,0,-\cubez) -- ++(-\cubex,0,0);
+    \end{tikzpicture}
+    \caption{Memory partition of the hash table}
+\end{figure}
+
+The partitioning of memory in a such way is done in Goblint by the region analyses. More informatino regarding the ideas used can be found ... \toadd{Cite Vesal}
+
+With that we have given a quick overview of Goblint and how an analyses is implemented in it. In addition, a quick overview of a region analyses was given, that we use as bases in the next section.
 
 \end{document}
