@@ -33,6 +33,7 @@ In this section, we give an overview  of \textit{Goblint}, a static analyzer for
 
 The original work presented in this thesis builds on top done on Goblint. The background information given in this section will hopefully enable one to put that into context.
 
+\tosup{So keep in mind that this is the main objective! I will give some comments, but you should also go through each paragraph of this section and ask if it helps provide context to the next section or is just distracting details.}
 \toguide{Okay, got it. So, what is Goblint?}
 
 Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the ideas described in previous section. Goblint is written in OCaml and is publicly available on Github.
@@ -110,6 +111,8 @@ end
 
 The Lattice type includes module type Printable, that defines, in addition to the shown functions, a set of functions that enable conversion of type t to strings with different format. The type t in Ocaml module type leaves the type abstract. The types written in italic are built-in types in OCaml. 
 
+\tosup{I would not talk about Printable, so I suggest just inlining the type t into the Lattice. Maybe also remove is\_top \& is\_bot. Say somewhere on top that these are simplified/partial signatures.}
+
 
 \begin{lstlisting}[language=Caml,style=caml]
 module type Printable =
@@ -127,6 +130,7 @@ In case of the lockset analyses, the domain is reversed set domain of all the po
 Analyses in Goblint must implement the module type Spec. Following is the simplified version of the
 
 \toask{Did I not cover something important? Or something left is maybe not important in context of thesis? Left out: sync, intrpt, }
+\toans{No, and I think you can remove more, such as exitstate \& otherstate, but this signature seems okay to me.}
 
 \begin{lstlisting}[language=Caml,style=caml]
 module type Spec =
@@ -175,6 +179,7 @@ In case of mutex analyses, all the functions always return empty locksets.
 The \textit{part\_access} function enables one partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race.
 In addition, it also associates a set of locks held with the partition. This function return empty sets in case of mutex analyses as it does not make use of partitioning,
 unlike, for example, the region analyses.
+\tosup{This function is important and maybe deserves more explanations, or you should at least highlight (forward-ref perhaps) that this function is what you had to interface with and plays an important role for this thesis.}
 
 The \textit{query} function enables communication between different analyses that have have been combined into one and are being performed at the same time -- 
 the analyses must be able to answer the query based on the current context. This allows analyses to avoid duplication and allows one to design more modular analyses consisting of sub-analyses. More regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
@@ -195,6 +200,7 @@ remove and add mutexes to the set of held locks.
 \toadd{Enter and combine, makes sense if I had this to theoretical part as well}
 
 \toguide{Okay, pretty dense stuff. You mentioned region analyses?}
+\tosup{This is a pretty big shift in tone from internals to a conceptual description of the analysis. I think both are needed, but it's pretty bad structurally. I might even suggest merging region analysis with your conceptual description of your own contribution and put all implementation details after that chapter where you describe goblint as is and show what changes you made.}
 
 Lastly, another analyses that the author would like to briefly introduce is the region analyses.
 
