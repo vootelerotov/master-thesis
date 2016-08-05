@@ -21,62 +21,53 @@ The role of Linux device drivers is to enable such groupings that can contain ar
 
 This is done by enabling access to the devices via a small set of well-defined interfaces that other parts of Linux kernel can make use of. 
 
-In this paper we will focus on a subset of device drivers called \textit{character (char) device drivers}. Character device drivers allow unbuffered access to the underlying `hardware'. Both of the drivers for the example devices are char drivers.
+In this paper we will focus on a subset of device drivers called \textit{character (char) device drivers}. Character device drivers allow unbuffered access to the underlying ``hardware''. Both of the drivers for the example devices are char drivers.
 
 \subsection{Interface of a character device driver}
 
 Devices are exposed to end user as entries in the file system and so it is natural to use the same terminology for talking about device drivers operations as about normal file operations. So device drivers expose end points for \textit{reading}, \textit{writing to}, \textit{opening} and \textit{releasing} the device. This list is not exhaustive\cite[include/linux/fs.h]{torvalds_linux}, but it is not necessary for a driver to expose them all.
 
-As a running example we will introduce the driver \textit{Counter}. \textit{Counter} keeps track of the difference between how many times kernel has read from it and how many times kernel has written to it.
+As a running example we will introduce the driver \textit{Counter}. \textit{Counter} keeps track of the difference between how many times kernel has read from it and how many times kernel has written to it \footnote{The full source code is avalible in Appendix \ref{A:example-driver}}.
 
 In the following code snippet, the parameters of the functions are omitted as they are not relevant for this example.
 
-The \textit{read} function of \textit{Counter} increases the global counter by one:
+
 
 \begin{lstlisting}[language=C,style=def]
 static ssize_t file_read(...){
     ++i;
     printk("++i, new value:: %d \n",i);
-    return 1;
+    ...
 }
-\end{lstlisting}
 
-The \textit{write} function of \textit{Counter} decreases the global counter by one:
-
-\begin{lstlisting}[language=C,style=def]
 static ssize_t file_write(...){
     --i;
     printk("--i, new value: %d \n",i);
-    return s;
+    ...
 }
-\end{lstlisting}
-\tosup{Meaning of the return types: what is this ``s''?}
 
-And both the \textit{open} and \textit{release} functions output info to kernel log.
-
-
-\begin{lstlisting}[language=C,style=def]
 static int file_open(...)
 {
     printk( "Opening device \n");
     return 0;
 }
-\end{lstlisting}
 
-\begin{lstlisting}[language=C,style=def]
 static int file_release(...){
     printk( "Closing device \n");
     return 0;
 }
+
+
 \end{lstlisting}
+\tosup{\sout{Meaning of the return types: what is this ``s''?}}
+\todisc{ ``s'' was left over from copy-pasteing from the working driver, does not make sense here after simplification. The total amount of bytes either read or written. As I have left out the buffer argument where one actually would write to, I have removed it from here. Can add the code for the driver into the appendix?}
 
-When a user reads from a file that exposes the driver, one can see that the file was opened, read and then closed. For a concrete example, 
+\toadd{\sout{Add code of the driver to appendix}}
 
-\begin{lstlisting}[language=sh,style=def]
-head -c 1 < counter
-\end{lstlisting}
+The \textit{read} function increases the global counter by one, while \textit{write} function of decreases it by one. Both the \textit{open} and \textit{release} functions only output info to kernel log.
 
-produces the following entries in the kernel log:
+When a user reads from a file that exposes the driver, one can see that the file was opened, read and then closed. For a concrete example,
+\textit{head -c 1 < counter} produces the following entries in the kernel log:
 
 \begin{lstlisting}[language=sh,style=def]
 vootele kernel: Opening file 
@@ -84,13 +75,7 @@ vootele kernel: Increasing i, new value: 1
 vootele kernel: Closing file 
 \end{lstlisting}
 
-And similarly, when writing to the file, for example with
-
-\begin{lstlisting}[language=sh,style=def]
-echo hi > my-driver
-\end{lstlisting}
-then the file is opened, written into and then closed.
-
+And similarly, when writing to the file, for example with \textit{echo hi > my-driver} then the file is opened, written into and then closed.
 
 
 Drivers expose the device to the kernel via \textit{file operations} structure. When registering a driver to the kernel, the \textit{file operations} structure is registered with kernel and kernel can invoke any of the methods specified in the structure.
@@ -112,21 +97,15 @@ Device drivers also expose \textit{init} and \textit{exit}, which kernel can use
 
 
 
-
-
-
- 
-
-
-
-
-\toadd{\sout{What are they, interface they expose}, \sout{life-cycle}} \tocomment{ taken to concurency section}
+\toadd{\sout{What are they, interface they expose}, \sout{life-cycle}} \tocomment{ taken to concurrency section}
 \toask{ Something missing? Also, I have inlined a lot of code here. I think it does serve its purpose -- makes the paper less dense . Also, I use this as a running example, so I will be referring back to it. Linux commands could be cut, for me they bridged the cap between the devices and my experience as Linux user, but they will not do that for someone who has very little experience with Linux (?). Ideas welcome.  }
-\tosup{I don't like the interleaving of single sentence text with the code. I would put all the device code in a single listing, or at least group open/close and read/write. More importantly, very short commands that are embedded in the text should be inlined. This head c 1 < counter with text continuing on the next line is not very nice.}
+\tosup{\sout{I don't like the interleaving of single sentence text with the code. I would put all the device code in a single listing, or at least group open/close and read/write. More importantly, very short commands that are embedded in the text should be inlined. This head c 1 < counter with text continuing on the next line is not very nice.}}
+\todisc{Agreed, the listing look mediocre as well, will see if I can get them to look better. The file operations are in the one listing now and the commands are inlined.}
 
 \tocomment{inlined with interface description}
 
-\toadd{ \sout{ Concrete example, what it does, exposed interface, snippets of interesting parts of code. Best case, something that contains actual concurrency issue (or something that gets flagged as one).  Hopefully a running example that can be turned back to}} \tocomment{Running with my own example, does not do much, but easy enough to show code inline and that has obvious concurrency issues.The fonts are also inconsistent with the previous section.}
+\toadd{ \sout{ Concrete example, what it does, exposed interface, snippets of interesting parts of code. Best case, something that contains actual concurrency issue (or something that gets flagged as one).  Hopefully a running example that can be turned back to}} 
+\tocomment{Running with my own example, does not do much, but easy enough to show code inline and that has obvious concurrency issues.The fonts are also inconsistent with the previous section.}
 
 \subsection{Data-races in device drivers}
 
@@ -138,30 +117,47 @@ When registering our driver, we exposed multiple endpoints to the kernel. From t
 
 The multitude of entry points to the programs and lack of control over when they are entered makes avoiding data races a challenge when writing Linux device drivers. 
 
-For an example of a data-race in device drivers, it is quite obvious that when one writes to a `device' exposed by the example driver concurrently, then the value of counter after all the write operations is not determined -- it is easily possible that between the read and write operations of the counter, its value gets updated.
+For an example of a data-race in device drivers, it is quite obvious that when one writes to a ``device'' exposed by the example driver concurrently, then the value of counter after all the write operations is not determined -- it is easily possible that between the read and write operations of the counter, its value gets updated.
+
+To be more concrete, on Figure \ref{fig:driver-race} is a snippet of kernel log after running a script \footnote{Available in Appendix \ref{A:test-script}} that reads and writes to the example driver in a loop that
+runs 10 000 times in 3 proccesses at the same time. As the read operation increases $i$ and write operation decreases it, the expected value without data-races would have been $0$.
+
 
 \tocomment{ In presentation, I can easily start a script and show that this is the case. I do not that this translates to writing very well, I could Monte Carlo it and and the distribution table of the final value of the counter, but I think it would be too much noise? Feedback appreciated on this one.}
-\tosup{It would be helpful to discuss one concrete case where the race happens.  Maybe a screenshot of the unexpected output? }
+
+\tosup{\sout{It would be helpful to discuss one concrete case where the race happens.  Maybe a screenshot of the unexpected output?} }
+\todisc{Added.}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{driver-race}
+\caption{Snippet from kernel log after data-race in an example device driver}
+\label{fig:driver-race}
+\end{figure}
 
 
 \toguide{ There are ways around them, right?}
 
-To avoid data-races, Linux kernel offers multiple locking primitives. One of the most commonly used locking primitives is the \textit{mutually exclusive lock} (mutex). It also the one that one should use, if possible \cite[Documentation/locking/mutex-design.txt]{torvalds_linux}.
+To avoid data-races, Linux kernel offers multiple locking primitives. 
 
-Another popular locking primitive is the \textit{spinlock}, which blocks until the lock has been acquired (same behaviour has been added to mutex). Its name comes from the tight loop that is used to acquire the lock. Spinlocks also offer a lock that differentiates between reads and writes, allowing multiple concurrent reads.
-\tosup{Wait, spinlock blocks until the lock has been acquired. What do you mean by blocking? This typically refers to giving up the CPU. Spinlocks do not block, they spin!}
+A popular locking primitive is the \textit{spinlock}, which runs a tight loop, inside what it tries to acquire the lock, until it succeeds. This tight loop gives the lock its name. Using spinlocks avoids explicitly putting the thread to sleep when acquiring a lock fails. If it is known that lock is held only for a very short time then the computational cost of putting a thread to sleep and then later awakening it out-weights the extra CPU cycles used by the tight loop of a spinlock.
+
+Spinlocks also offer a lock that differentiates between reads and writes, allowing multiple concurrent reads.
+
+One of the most commonly used locking primitives is the \textit{mutually exclusive lock} (mutex). It also the one that one should use, if possible \cite[Documentation/locking/mutex-design.txt]{torvalds_linux}. The older implementations of mutex put the thread to sleep if acquiring the lock failed whereas the current implementation is also capable of spinning for a limited time before resorting to explicitly putting the thread to sleep.
+
+\tosup{\sout{Wait, spinlock blocks until the lock has been acquired. What do you mean by blocking? This typically refers to giving up the CPU. Spinlocks do not block, they spin!}}
+\todisc{Think I meant ``block'' as ``blocking IO'', but that would be kinda pointless as well. Rewritten.}
 
 To eliminate a possible data race from our example driver, we could add a lock to the driver and acquire it on every read and write operation. With the added lock, the read operation would look as follows:
 
 \begin{lstlisting}[language=C,style=def]
-static ssize_t file_read(struct file *fp,
- char __user *buf, size_t nbytes, 
- loff_t *pointer){
+static ssize_t file_read(...){
     mutex_lock(&my_mutex);
     ++i;
-    printk("++i, new value:: %d \n",i);
+    printk("++i, new value: %d \n",i);
     mutex_unlock(&my_mutex);
-    return 1;
+    ...
 }
 \end{lstlisting}
 
@@ -215,7 +211,8 @@ In any case, I will most likely look for a citation for this in my master thesis
 
 
 \toask{ \sout{ Extra section overkill? Combine with Motivation?} Think it is needed, I am atleast convinced that it is a real problem worth tackling}
-\toans{\sout{This is all relevant, but rename section to ``Device Drivers''?} Agreed, although I would go without the up-style in section/subsection names if acceptable.}
+\toans{\sout{This is all relevant, but rename section to ``Device Drivers''?}}
+\todisc{ Agreed, although I would go without the up-style in section/subsection names if acceptable.}
 
 
 \end{document}

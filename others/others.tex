@@ -3,17 +3,17 @@
 
 \begin{document}
 
-We will now give an overview of notable tools that detect data races in device drivers.
+We will now give an overview of notable tools other than Goblint that detect data races in device drivers.
 
 \toadd{\sout{KernelStrider}}
 
-\subsection{KernelStrider}
+\subsubsection{KernelStrider}
 
 KernelStrider\cite{shatokhin_kernel} is a dynamic analyser front-end for kernel space programs. It collects information about execution of device driver and forwards it to user-space. This makes it possible for one to use programs developed to detect data races in any C program to be used with device drivers. KernelStrider aims to make use of ThreadSanitizer\cite{serebryany_threadsanitizer_2009}, a dynamic data-race analyzer by Google for user-space, that makes use of both lockset analysis and happens-before. Another user-space dynamic analyser that KernelStrider output could be used with would be Helgrind ,\cite{_helgrind,nethercote_valgrind_2007} that makes use of happen-before.
 
 \toadd{\sout{Race Hound,\cite{komarov_implementation_2013})}}
 
-\subsection{RaceHound}
+\subsubsection{RaceHound}
 
 RaceHound\cite{komarov_implementation_2013} is a dynamic analyser for Linux device drivers. It borrows heavily from DataCollider \cite{erickson_effective_2010}, an analyser for Microsoft drivers. RaceHound places random software breakpoints to the driver under testing, then finds out which memory address was accessed and attaches a hardware breakpoint to that memory address and stops the thread for a while. When the hardware breakpoint is triggered by another thread, a data race has taken place.
 
@@ -21,7 +21,7 @@ The main benefit of this approach is the relatively low overhead of around 5\% t
 
 \toadd{\sout{Locksmith}, \cite{pratikakis_locksmith_2006}, \cite{pratikakis_locksmith_2011}}
 
-\subsection{Locksmith}
+\subsubsection{Locksmith}
 Locksmith\cite{pratikakis_locksmith_2006} is a static analyser for data races in C programs, including device drivers. Locksmith was one of the earliest static analysers available for Linux device drivers and it validated the lockset based approach for static analyses. 
 
 For practically inclined, the authors of Locksmith share their experiences with static analysis for data races, describing the importance of identifying thread-local variables as a preprocessing step and for modelling fields of the structs field-sensitively and lazily\cite{pratikakis_locksmith_2011}.
@@ -32,7 +32,7 @@ For practically inclined, the authors of Locksmith share their experiences with 
 
 \toadd{\sout{Checkmate}}
 
-\subsection{Checkmate}
+\subsubsection{Checkmate}
 
 Checkmate\cite{ferrara_checkmate_2009} is a generic static analyser for Java bytecode. It offers support for analyzing different runtime properties of multi-threaded program running on JVM, among them whether the program contains data-races.
 
@@ -43,7 +43,7 @@ Checkmate stands out by making extensive use of happens-before relation and not 
 
 \toadd{\sout{Whoop}}
 
-\subsection{Whoop}
+\subsubsection{Whoop}
 
 Whoop\cite{deligiannis_fast_2015} is a static analysis tool for finding data races in Linux device drivers. 
 
@@ -62,7 +62,7 @@ As of now, Whoop supports classical mutexes and spin-locks, but does not cover r
 
 
 
-\subsection{SDV and SLAM}
+\subsubsection{SDV and SLAM}
 
 SDV is a static analyzer by Microsoft for Windows device drivers.
 
