@@ -112,50 +112,49 @@ and $main \in Proc$ is one of the procedures designated as the main function.
 
 
 \begin{figure}[H]
-  \begin{center}
-    \begin{tikzpicture}[node distance=2cm]
+  \centering
+  \begin{tikzpicture}[node distance=2cm]
 
-      \node (start) [end] {$s_{main}$};
-      \node (decl) [node, below of=start] {};
+    \node (start) [end] {$s_{main}$};
+    \node (decl) [node, below of=start] {};
 
-      \node (assign_x) [node,below of=decl] {};
-      \node (assign_y) [node,below of=assign_x] {};
-      \node (assign_z) [decision,below of=assign_y] {};
+    \node (assign_x) [node,below of=decl] {};
+    \node (assign_y) [node,below of=assign_x] {};
+    \node (assign_z) [decision,below of=assign_y] {};
 
-      \node (x_assign_1) [node, below right of = assign_z] {};
+    \node (x_assign_1) [node, below right of = assign_z] {};
 
-      \node (if_y_times_z_minus_y) [decision,below left of = x_assign_1] {};
-      \node (x_assign_2) [node, below right of = if_y_times_z_minus_y] {};
+    \node (if_y_times_z_minus_y) [decision,below left of = x_assign_1] {};
+    \node (x_assign_2) [node, below right of = if_y_times_z_minus_y] {};
 
-      \node (after_second_if) [node, below left of = x_assign_2] {};
+    \node (after_second_if) [node, below left of = x_assign_2] {};
 
-      \node (end) [end, below of  =  after_second_if] {$r_{main}$};
+    \node (end) [end, below of  =  after_second_if] {$r_{main}$};
 
-      \draw [arrow] (start) -- node [anchor=west] {\small{int x, y, z}} (decl);
+    \draw [arrow] (start) -- node [anchor=west] {\cfgcode{int x, y, z}} (decl);
 
-      \draw [arrow] (decl) -- node [anchor=west] {\small{x = 0}} (assign_x);
-      \draw [arrow] (assign_x) -- node [anchor=west] {\small{y = -81}} (assign_y); 
-      \draw [arrow] (assign_y) -- node [ anchor=west] {\small{z = -37}} (assign_z);
+    \draw [arrow] (decl) -- node [anchor=west] {\cfgcode{x = 0}} (assign_x);
+    \draw [arrow] (assign_x) -- node [anchor=west] {\cfgcode{y = -81}} (assign_y); 
+    \draw [arrow] (assign_y) -- node [ anchor=west] {\cfgcode{z = -37}} (assign_z);
       
-      \draw [arrow] (assign_z) --
-        node [ anchor=west] {\small{$Pos$(y $*$ z > 0)}} (x_assign_1);
-      \draw [arrow] (x_assign_1) -- node [ anchor=west] {\small{x = 1}} (if_y_times_z_minus_y);
+    \draw [arrow] (assign_z) --
+      node [ anchor=west] {\cfgcode{Pos(y * z > 0)}} (x_assign_1);
+    \draw [arrow] (x_assign_1) -- node [ anchor=west] {\cfgcode{x = 1}} (if_y_times_z_minus_y);
 
-      \draw [arrow] (assign_z) --
-        node [ anchor=east] {\small{$Neg$(y $*$ z > 0)}} (if_y_times_z_minus_y);
+    \draw [arrow] (assign_z) --
+      node [ anchor=east] {\cfgcode{Neg(y * z > 0)}} (if_y_times_z_minus_y);
    
         
-      \draw [arrow] (if_y_times_z_minus_y) --
-        node [ anchor=west] {\small{$Pos$(y $*$ z  - y > 0)} } (x_assign_2);
-      \draw [arrow] (x_assign_2) -- node [ anchor=west] {\small{x = 2}} (after_second_if);
+    \draw [arrow] (if_y_times_z_minus_y) --
+      node [ anchor=west] {\cfgcode{Pos(y * z  - y > 0)} } (x_assign_2);
+    \draw [arrow] (x_assign_2) -- node [ anchor=west] {\cfgcode{x = 2}} (after_second_if);
 
-      \draw [arrow] (if_y_times_z_minus_y) --
-        node [ anchor=east] {\small{$Neg$(y  $*$ z - y > 0)}} (after_second_if);
+    \draw [arrow] (if_y_times_z_minus_y) --
+      node [ anchor=east] {\cfgcode{Neg(y * z - y > 0)}} (after_second_if);
       
-      \draw [arrow] (after_second_if) -- node [ anchor=west] {\small{return x}} (end);
+    \draw [arrow] (after_second_if) -- node [ anchor=west] {\cfgcode{return x}} (end);
 
-    \end{tikzpicture}
-  \end{center}
+  \end{tikzpicture}
   \caption{CFG corresponding to the last code snippet}
 \end{figure}
 
@@ -477,17 +476,17 @@ One might still be wondering, why do we want to use lattices here, instead of si
 
       \node (end) [end, below of = after_if] {$r_{main}$};
 
-      \draw [arrow] (start) -- node [anchor=west] {\small{int x }} (decl);
+      \draw [arrow] (start) -- node [anchor=west] {\cfgcode{int x }} (decl);
 
       \draw [arrow] (decl) --
-        node [ anchor=west] {\small{$Pos$(rand() \% 2 == 0)}} (rand_pos);
-      \draw [arrow] (rand_pos) -- node [ anchor=west] {\small{x = 1}} (after_if);
+        node [ anchor=west] {\cfgcode{Pos(rand() \% 2 == 0)}} (rand_pos);
+      \draw [arrow] (rand_pos) -- node [ anchor=west] {\cfgcode{x = 1}} (after_if);
 
       \draw [arrow] (decl) --
-        node [ anchor=east] {\small{$Neg$(rand() \% 2 == 0)}} (rand_neg);
-      \draw [arrow] (rand_neg) -- node [ anchor=east] {\small{x = 0}} (after_if);   
+        node [ anchor=east] {\cfgcode{Neg(rand() \% 2 == 0)}} (rand_neg);
+      \draw [arrow] (rand_neg) -- node [ anchor=east] {\cfgcode{x = 0}} (after_if);   
       
-      \draw [arrow] (after_if) -- node [ anchor=west] {\small{return x}} (end);
+      \draw [arrow] (after_if) -- node [ anchor=west] {\cfgcode{return x}} (end);
 
     \end{tikzpicture}
   \end{center}
@@ -601,32 +600,31 @@ We can now define $\analyze$ to be a function that is the least solution to the 
 As an example, lets look at example program $B$: 
 
 \begin{figure}[H]
-  \begin{center}
-    \begin{tikzpicture}[node distance=2cm]
-      \node (start) [end] {$s_{main}$};
-      \node (decl) [decision, below of=start] {$1$};
+  \centering
+  \begin{tikzpicture}[node distance=2cm]
+    \node (start) [end] {$s_{main}$};
+    \node (decl) [decision, below of=start] {$1$};
 
-      \node (rand_pos) [node, right  = 4 cm of  decl] {$3$};
-      \node (rand_neg) [node, below of = decl] {$2$};
+    \node (rand_pos) [node, right  = 4 cm of  decl] {$3$};
+    \node (rand_neg) [node, below of = decl] {$2$};
 
-      \node (after_if) [node, below of = rand_neg] {$4$};
+    \node (after_if) [node, below of = rand_neg] {$4$};
 
-      \node (end) [end, below of = after_if] {$r_{main}$};
+    \node (end) [end, below of = after_if] {$r_{main}$};
 
-      \draw [arrow] (start) -- node [anchor=east] {\code{int x = 0 }} (decl);
+    \draw [arrow] (start) -- node [anchor=east] {\cfgcode{int x = 0 }} (decl);
 
-      \draw [arrow] (decl) edge [bend left]
-        node [ anchor=south] {\code{$Pos$(rand() \% 2 == 0)}} (rand_pos);
-      \draw [arrow, bend right] (rand_pos) edge [bend left] node [ anchor=north] {\code{x = x + 1}} (decl);
+    \draw [arrow] (decl) edge [bend left]
+      node [ anchor=south] {\cfgcode{Pos(rand() \% 2 == 0)}} (rand_pos);
+    \draw [arrow, bend right] (rand_pos) edge [bend left] node [ anchor=north] {\cfgcode{x = x + 1}} (decl);
 
-      \draw [arrow] (decl) --
-        node [ anchor=east] {\code{$Neg$(rand() \% 2 == 0)}} (rand_neg);
-      \draw [arrow] (rand_neg) -- node [ anchor=east] {\code{x = 0}} (after_if);   
+    \draw [arrow] (decl) --
+      node [ anchor=east] {\cfgcode{Neg(rand() \% 2 == 0)}} (rand_neg);
+    \draw [arrow] (rand_neg) -- node [ anchor=east] {\cfgcode{x = 0}} (after_if);   
       
-      \draw [arrow] (after_if) -- node [ anchor=east] {\code{return x}} (end);
+    \draw [arrow] (after_if) -- node [ anchor=east] {\cfgcode{return x}} (end);
 
-    \end{tikzpicture}
-  \end{center}
+  \end{tikzpicture}
   \caption{An example program B}
 \end{figure}
 

@@ -77,8 +77,8 @@
 % Packages for defining colourful text together with some colours
 \usepackage{color}
 \usepackage{xcolor} 
-%\definecolor{dkgreen}{rgb}{0,0.6,0}
-%\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
 
@@ -109,12 +109,13 @@
   stepnumber=1,                    % the step between two line-numbers. If it's 1, each line 
                                    % will be numbered
   numbersep=5pt,                   % how far the line-numbers are from the code
-  backgroundcolor=\color{white},   % choose the background color. You must add \usepackage{color}
+  backgroundcolor=\color{black!3},   % choose the background color. You must add \usepackage{color}
   showspaces=false,                % show spaces adding particular underscores
   showstringspaces=false,          % underline spaces within strings
   showtabs=false,                  % show tabs within strings adding particular underscores
-  frame = lines,
-  %frame=single,                   % adds a frame around the code
+  %frame = lines,
+  frame= single,  % adds a frame around the code
+  frameround=tttt,
   rulecolor=\color{black},		   % if not set, the frame-color may be changed on line-breaks within 
                                    % not-black text (e.g. commens (green here))
   tabsize=2,                       % sets default tabsize to 2 spaces
@@ -169,7 +170,7 @@
 
 
 %todo
-\usepackage{todonotes}
+\usepackage[disable]{todonotes}
 
 
 % for comment
