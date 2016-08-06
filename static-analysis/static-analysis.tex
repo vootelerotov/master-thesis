@@ -479,15 +479,17 @@ $D$ is ordered point-wise, that is $d_1 \sqsubseteq d_2 \iff \forall v \in Var_p
 
 It is worth noting that $D$ is also a lattice as for every subset $X$,
 \begin{equation*}
-  \bigcup X = \lb \lp v, b \rp | \forall v \in Var, b = \bigcup \lb d \lp v \rp | d \in X \rb \rb
+  \bigsqcup X = \lb \lp v, b \rp | \forall v \in Var, b = \bigsqcup \lb d \lp v \rp | d \in X \rb \rb
 \end{equation*}
 and $\bigcap X$ is defined dually.
 
 \toask{Is dually even a word and if so, does it get the point across?}
+\toans{Yes, it is the precise relation between these things, see ``Duality (order theory)'' on Wikipedia, but the question is if your intended audience gets it,  and maybe you could have introduced the concept earlier and avoided repetition. All extremely low-priority: things are correct as is.}
 
 \toguide{So, why bother with the lattice, what does it give us?}
 
 One might still be wondering, why do we want to use lattices here, instead of simple sets. Consider following program.
+\tosup{Important: It is not at all clear what you are trying to answer here. What are simple sets? You seem to be making two points here: the need for lattice operations, and then, that lattices allow a generic interface to specify many different analysis within the same framework. Both are important points. For specific analyses, we could talk about simple sets and their unions or intersection operations, but lattices provide a uniform treatment of many different analyses.}
 
 \begin{figure}[H]
   \begin{center}
@@ -553,6 +555,7 @@ d \lbk x : \lb -, 0, + \rb \rbk & d \lp x \rp \in \lb \lb -,0 \rb, \lb -, + \rb,
 \end{equation*}
 
 We demand that the functions $\lllb s \rrrb_{Stmt}^{\absint}$ are consistent to functions $\lllb s \rrrb_{Stmt}$, that is, for each $s \in S, d \in D$ if $s \descriptor d$ then $ \lllb s \rrrb_{Stmt} \descriptor \lllb d \rrrb_{Stmt}^{\absint}$.
+\tosup{We also demand that all figures are mentioned in the text!}
 
 \begin{figure}[H]
   \begin{centering}
@@ -608,6 +611,7 @@ This approach, knows as \textit{meet over all  paths (MOP)}, has downsides, the 
 We will be using another approach for defining $\analyze$.
 
 \toask{I would like to convince reader, that the constraint system is natural, but it somehow very difficult. Leave it out or try to approach from another angle?}
+\toans{Yes, many things could be included, but here I would probably just state that instead of considering all paths and joining at the very end, we will consider the data flow and join information as soon as different paths converge, thereby computing a single domain value for each location. Then say, that it can be shown and cite the Nielsen textbook that this system will over-approximate the MOP solution.}
 
 Lets consider a specific edge in our program, $\lp v, s, u \rp$. Now, let $d = \analyze \lp v \rp$. Then, presuming that $d$ is precise, $\analyze \lp u \rp $ should not be more precise than $\lllb s \rrrb_{Stmt} \lp d \rp$ as ...
 
@@ -787,6 +791,7 @@ With this we have given a brief overview of abstract interpretation and how to c
 
 \toadd{Good explanation on why not to extend this up to threads?} 
 \toask{Actually, I would not mind going to threads, at least at some level -- I have formalized program to support it so it would make sense, but this theoretical background part seems to be long enough? If there is time and there is not too much material, I would not mind expanding this. Opinions?}
+\toans{This seems at least fine for now. Whether threads are added depends on if it is actually needed for subsequent chapters.}
 
 Next we will look into two key ideas on what the static detection of data-races lies on.
 
