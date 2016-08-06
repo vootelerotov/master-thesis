@@ -193,7 +193,7 @@ In the implementation for mutex analyses, those transfer functions do not actual
 However, they do register accesses to variables, for example, an access in registered for both the left and right hand side of an assignment with further distinction
 that the access to the left hand side is a write access.
 
-The \textit{special} function handles functions for what the source code is not available for Goblint to analyze. In mutex analyses,
+The \textit{special} function handles functions for which the source code is not available for Goblint to analyze. In mutex analyses,
  this function modifies the abstract state -- functions calls to functions such as \textit{\_\_raw\_lock\_unlock} and \textit{\_lock\_kernel} 
 remove and add mutexes to the set of held locks.
 

@@ -5,28 +5,25 @@
 
 \begin{document}
 
-\toask{Think subsectioning is needed, also subsectioned the motivational section, guess it would be wise to keep the same style.}
-\toask{General style question, I use ``we'' everywhere, comes naturally. Better style available?}
-\toans{Yes, you can use `we'' to speak for the scientific community, as in ``we define''. When describing your own contribution, though, you should use ``I''. Many people here use ``the author'', but contemporary English academic writing prefers ``I''.}
-
 \toguide{What is static analysis?}
-
 
 Under \textit{program analysis} (or just \textit{analysis}) we mean a process of deciding whether some property holds for a program under analysis.
 Analysis of a program is \textit{static} if the program being analyzed does not get executed during the analysis, in contrast to \textit{dynamic} analysis,
 during what program is executed. Static analysis are often used by compilers, for example for finding uses of variables that are not declared beforehand
 in Java or C programs. In addition, modern IDEs constantly run wide selection of static analysis in the background, to enable things such as variable renaming,
-for what one would have to know about all the usages of a specific variable in the program, taking into account the relevant scopes. 
+for which one would have to know about all the usages of a specific variable in the program, taking into account the relevant scopes. 
 
 \toguide{Why limit ourselves?}
 
 
 There are good reasons for preferring static analyses over dynamic (or combined) analysis.
-To pick a few, it lets us say something about a program that does not compile (and as such, cannot be analyzed dynamically),
+To pick a few, it lets us say something about a program that does not compile (and as such, cannot be analyzed dynamically) and also about open programs,
+such as modules and device drivers, that cannot be run in isolation but can be analyzed statically,  
 it allows to perform our analyses faster compared to dynamic analysis what one cannot perform faster than the time it takes to execute the program
 and as static analyses do not depend use any information gathered from a specific run then it is possible to have an analysis that says something
-about all the possible runs of a program (and not only, say, for all the possible runs that the analysis has witnessed).
-\tosup{About programs that do not compile, a more important category are open programs, such as modules and device drivers, that do not compile alone, but can be analyzed without the rest of the system, so not just considering all runs, but under all possible behaviours of the environment.}
+about all the possible runs of a program under all possible behaivours of the environment (and not only, say, for all the possible runs that the analysis has witnessed).
+
+\tosup{\sout{About programs that do not compile, a more important category are open programs, such as modules and device drivers, that do not compile alone, but can be analyzed without the rest of the system, so not just considering all runs, but under all possible behaviors of the environment.}}
 The last reason is, as one can imagine, very helpful in case of data-races. This enables static analysis to output to find that there
  are no errors in the program instead of that it is not able to find any errors -- to verify a program instead of testing it.
  \tosup{Grammar is an issue. You should run a proper grammar check and then try to find someone to check it. One way is to detex -n file.tex > out.txt and feed the file to Grammarly.}
@@ -35,11 +32,13 @@ The last reason is, as one can imagine, very helpful in case of data-races. This
 \toguide{How is static analysis done?}
 
 
-As one might guess, there are a lot of techniques that fit the very wide definition given for static analysis. We will be focusing on one of them --- \textit{abstract interpretation}.
-\tosup{Add something like ``unlike most static checkers found in IDEs, abstract interpretation does not simply search for bug patterns; instead, it attempts to compute all possible behaviors of the system in a way that is mathematically reliable.'' I have no idea what mathematical reliability means, but it sounded believable.}
+As one might guess, there are a lot of techniques that fit the very wide definition given for static analysis. We will be focusing on one of them --- \textit{abstract interpretation}. Unlike most static checkers found in IDEs, abstract interpretation does not simply search for bug patterns; instead, it attempts to compute all possible behaviors of the system in a way that is mathematically reliable.
+\tosup{\sout{Add something like ``unlike most static checkers found in IDEs, abstract interpretation does not simply search for bug patterns; instead, it attempts to compute all possible behaviors of the system in a way that is mathematically reliable.'' I have no idea what mathematical reliability means, but it sounded believable.}}
+\todisc{It does :D}
 
 \toguide{Okay, what is abstract interpretation?}
 
+Abstract interpretation is quite a powerful technique -- it attemps to compute all possible behaviors of the system 
 
 To give an intuition on what is abstract interpretation, consider following program:
 
@@ -86,8 +85,9 @@ Here, using the interpretation what we successfully applied in previous example,
 When evaluating $y * z - y $, we can rule out any of the possible values. To be able to evaluate product in a similar way previously described,
 we could assigns variables set of \textit{possible} values instead. In this case, we would evaluate $y * z - y $ as $\left\lbrace - \right\rbrace * \left\lbrace
 - \right\rbrace - \left\lbrace - \right\rbrace = \left\lbrace -,0,+ \right\rbrace$. Although we cannot decide what the program will return,
-we can decide based on the analysis, that the first $if$ block can safely be ignored -- an optimization a compiler could perform.
-\tosup{You will need to check the typography at some point, $if$ is definitely not what you want here.}
+we can decide based on the analysis, that the first \inlinecode{if} block can safely be ignored -- an optimization a compiler could perform.
+\tosup{\sout{You will need to check the typography at some point, $if$ is definitely not what you want here.}}
+\todisc{Wrapped inline code with macro, defined as \\texttt  as of now, just like for code in CFG  and in equations. So code is either in listing or in \\texttt.}
 
 \subsection{Concrete semantics}
 
@@ -98,11 +98,11 @@ This is known as its \emph{concrete semantics}.
 
 \begin{defin}
 Procedure $p$ is a \textit{control flow graph} $\left( N_p,E_p,s_p,r_p \right)$, where $N_p$ is a finite set of nodes, $s_p \in N_p$
- is the \textit{entry} node with in-degree $0$ and  $r_p \in N_p$ is the \textit{return} node with out-degree $0$. Set of labels $L$ consists of
+is the \textit{entry} node with in-degree $0$ and  $r_p \in N_p$ is the \textit{return} node with out-degree $0$. Set of labels $L$ consists of
 \begin{itemize}
 \item statements $s \in Stmt$, other than procedure calls.
-\item procedure calls $p()$, where $p \in Exp$ is an expression, 
-\item positive and negative guards ( $Pos\left( e \right) in Guards$ and  $Neg \left( e \right) \in Guards$, $e \in Exp$),
+\item procedure calls $f()$, where $f \in Exp$ is an expression, 
+\item positive and negative guards ($Pos\left( e \right) in Guards$ and $Neg \left( e \right) \in Guards$, $e \in Exp$),
 \item and thread spawning function $spawn\left( e \right), e \in Exp$.  
 \end{itemize}
 The edge set  $E_p \subseteq N_p \times L \times N_p$. In addition, we require that out-degree of node $n \in N_p$ is no bigger than $2$ 
@@ -174,13 +174,11 @@ and $main \in Proc$ is one of the procedures designated as the main function.
 
 As it is not feasible to offer a formalization of all the statements and expressions available in any of common higher-level programming languages
 as a part of this thesis, we have elected to leave the sets $Stmt$ and $Exp$ formally undefined, instead relying on the reader's previous experience
-with statements and expressions in any of the C family languages.   For the interested, a formalization of a subset of C is done by Vojdani \toadd{Cite to doctoral thesis}.
+with statements and expressions in any of the C family languages. For the interested, a formalization of a subset of C is done by Vojdani \toadd{Cite to doctoral thesis}.
 
 \toask {very clumsy, but would like to bring this up and not just leave the sets undefined}
 
 \toguide{So, what can we do with this program?}
-
-\toask{Subsectioning?}
 
 Now that we have defined how program looks, we will continue with how such a program is evaluated -- the \textit{semantics} of the program.
 
@@ -196,13 +194,14 @@ f \left[ x : a \right] \left( y \right) =
 
 Lets first consider single threaded programs. Let $S$ be set of states of the program, that is $s : Var \to Val$, where $Var$ is set of
 variables in the program and $Val$ is set of possible values. Again, we will not formally define sets $Val$ and $Var$ here.
-For every statement $stmt \in Stmt$, let $ \lllb s \rrrb_{Stmt} : S \to S$ be a function that updates the state of the program. 
-\tosup{Whoa, $s$ is used for everything!}
+For every statement $stmt \in Stmt$, let $ \lllb stmt \rrrb_{Stmt} : S \to S$ be a function that updates the state of the program. 
+\tosup{\sout{Whoa, $s$ is used for everything!}}
+\todisc{Typo.}
 
 For example
 
 \begin{equation*}
- \lllb x = 3 \rrrb_{Stmt} (s) = s \left[ x : 3 \right] \text{.}
+ \lllb \mcode{x = 3} \rrrb_{Stmt} (s) = s \left[ x : 3 \right] \text{.}
 \end{equation*}
 
 Similarly, for every expression $e \in Exp$, let $\lllb e \rrrb_{Exp} : S \to Val$ that evaluates expression in context of the state. 
@@ -210,27 +209,27 @@ Similarly, for every expression $e \in Exp$, let $\lllb e \rrrb_{Exp} : S \to Va
 For example, let $s$ be a state after assigning $3$ to $x$, that is
 
 \begin{equation*}
-s = \lllb x = 3 \rrrb_{Stmt} (s_0) \text{,}
+s = \lllb \mcode{x = 3} \rrrb_{Stmt} (s_0) \text{,}
 \end{equation*},
 where $s_0$ is an arbitrary state. 
 
 Then 
 \begin{equation*}
-\lllb x + 8 \rrrb_{Exp} \left( s \right) = 11 \text{.}    
+\lllb \mcode{x + 8} \rrrb_{Exp} \left( s \right) = 11 \text{.}    
 \end{equation*}
 
 With this in mind, we can define a relation for intra-procedural evaluation of our programs as follows:
 
 \begin{defin}
-Intra-procedural evaluation relation of procedure $p$, $\intraproc_p \subseteq  \lp N_p  \times S \rp  \times \lp N_p \times S \rp$
-is a relation for what following rules hold:
+Intra-procedural evaluation relation of procedure $p$, $\intraproc_p$,
+is a relation between $N_p \times S$ and $N_p \times S$ for which following rules hold:
 \tosup{I'm not currently concerned with grammar, but globally ``for what'' $\to$ ``for which''!}
 
 \addtolength{\jot}{2em}
 \begin{gather*}
-  \inference[Stmt]{ \lp u, stmt, v \rp \in E_{p}  \separ  \lllb stmt \rrrb_{Stmt} \lp s \rp = s'}{\lp u, s \rp \intraproc \lp v, s' \rp} \\
-  \inference[Pos]{ \lp u, Pos \lp e \rp , v \rp \in E_{p} \separ \lllb e \rrrb_{Exp} \lp s \rp = true }{\lp u, s \rp \intraproc \lp v, s \rp} \\  
-  \inference[Neg]{ \lp u, Neg \lp e \rp , v \rp \in E_{p} \separ \lllb e \rrrb_{Exp} \lp s \rp \neq true }{\lp u, s \rp \intraproc \lp v, s \rp} 
+  \inference[Stmt]{ \lp u, stmt, v \rp \in E_{p}  \separ  \lllb stmt \rrrb_{Stmt} \lp s \rp = s'}{\lp u, s \rp \intraproc_p \lp v, s' \rp} \\
+  \inference[Pos]{ \lp u, Pos \lp e \rp , v \rp \in E_{p} \separ \lllb e \rrrb_{Exp} \lp s \rp = true }{\lp u, s \rp \intraproc_p \lp v, s \rp} \\  
+  \inference[Neg]{ \lp u, Neg \lp e \rp , v \rp \in E_{p} \separ \lllb e \rrrb_{Exp} \lp s \rp \neq true }{\lp u, s \rp \intraproc_p \lp v, s \rp} 
 \end{gather*}
 \addtolength{\jot}{-2em}
 
@@ -251,24 +250,23 @@ We will define inter-procedural evaluation relation for single-threaded program 
 
 \begin{defin}
 
-Inter-procedural evaluation relation of single-threaded program $P$, 
-$\interproc \subseteq \lp Stack \times S \rp \times \lp Stack \times S \rp$ 
-is a relation for what following rules hold:
+Inter-procedural evaluation relation of single-threaded program $P = \lp Proc,p_{ main} \rp $, 
+$\interproc$, is a relation between $Stack \times S$ and $Stack \times S$ for which following rules hold:
 
 \addtolength{\jot}{2em}
 \begin{gather*}
-  \inference[Stmt]{\lp u, stmt, v \rp \in E  \separ \exists p \in P  \lp u, s \rp \intraproc_p \lp v, s' \rp }{ \lp u :: xs, s \rp \interproc \lp v :: xs, s` \rp} \\
-  \inference[Pos]{ \lp u, Pos \lp e \rp, v \rp \in E \separ   \lllb e \rrrb_{Exp} \lp s \rp = true  }{\lp u :: xs , s \rp \interproc \lp v :: xs, s \rp} \\ 
-  \inference[Neg]{ \lp u, Neg \lp e \rp, v \rp  \in E \separ   \lllb e \rrrb_{Exp} \lp s \rp \neq true  }{\lp u :: xs , s \rp \interproc \lp v :: xs, s \rp} \\
-  \inference[Call]{ \lp u, p\lp\rp , v \rp  \in E \separ  \lllb p \rrrb_{Exp} \lp s \rp = proc \separ proc \in Proc }{\lp u :: xs , s \rp \interproc \lp s_{proc} :: v :: xs, enter_{proc} s \rp} \\
-  \inference[Return] { proc \in Proc} { \lp r_{proc}::xs , s \rp \interproc \lp xs, return_{proc} s \rp}
+  \inference[IntraProc]{\lp u, l, v \rp \in E  \separ \exists p \in Proc  \lp u, s \rp \intraproc_p \lp v, s' \rp }{ \lp u :: xs, s \rp \interproc \lp v :: xs, s` \rp} \\
+  \inference[Call]{ \lp u, f\lp\rp , v \rp  \in E \separ  \lllb f \rrrb_{Exp} \lp s \rp = p \separ p \in Proc }{\lp u :: xs , s \rp \interproc \lp s_{p} :: v :: xs, enter_{p} s \rp} \\
+  \inference[Return] { p \in Proc} { \lp r_{p}::xs , s \rp \interproc \lp xs, return_{p} s \rp}
 \end{gather*}
 \addtolength{\jot}{-2em}
 
 where $enter_{proc}$ and $return_{proc}$ are state transformers that initialize and destroy local variables.
 \end{defin}
-\tosup{Make sure you are consistent with $p$ versus $proc$; it seems entirely random above.}
-\tosup{Why are there separate Pos and Neg rules?? This defeats the purpose of having a separate intra-proc semantics. Can't you just make a transition whenever the intra one can do it?}
+\tosup{\sout{Make sure you are consistent with $p$ versus $proc$; it seems entirely random above.}}
+\todisc{Made $p$ to signify process everywhere and $f()$ a process call.}
+\tosup{\sout{Why are there separate Pos and Neg rules?? This defeats the purpose of having a separate intra-proc semantics. Can't you just make a transition whenever the intra one can do it?}}
+\todisc{Indeed.}
 
 \toguide{What about threads?}
 
@@ -277,42 +275,33 @@ To support multithreaded programs, we will first expand our inter-procedural eva
 
 \begin{defin}
 
-  Intra-thread evaluation relation of $P$,
-
-  \begin{equation*}
-    \intrathread \subseteq  \lp Stack \times S \rp \times \lp Stack \times S \times Proc^\ast \rp
-  \end{equation*}
-
-  is a relation for what following rules hold:
+  Intra-thread evaluation relation of $P$,$\intrathread$,
+  is a relation between $\lp Stack \times S \rp$ and $Stack \times S \times Proc^\ast$ for which following rules hold:
 
   \addtolength{\jot}{2em}
   \begin{gather*}
-    \inference[Spawn]{\lp u, spawn(p), v \rp \in E  \separ  \lllb p \rrrb_{Exp} = proc \separ proc \in Proc  }{ \lp u :: xs, s \rp \intrathread \lp v :: xs, s, (proc) \rp} \\
-    \inference[Pos,Neg,Call,Return] {\lp u, stmt, v \rp \in E \separ \lp xs , s \rp \interproc \lp ys, s' \rp }{ \lp xs , s \rp \intrathread \lp ys, s', \lp \rp \rp}
+    \inference[Spawn]{\lp u, spawn(f), v \rp \in E  \separ  \lllb f \rrrb_{Exp} = p \separ p \in Proc  }{ \lp u :: xs, s \rp \intrathread \lp v :: xs, s, \lbk p \rbk \rp} \\
+    \inference[IntraThread] {\lp u, l , v \rp \in E \separ \lp xs , s \rp \interproc \lp ys, s' \rp }{ \lp xs , s \rp \intrathread \lp ys, s', \lbk \rbk \rp}
   \end{gather*}
   \addtolength{\jot}{-2em}
 
 \end{defin}
 
-\toask{ Okay, but the process list is not used anywhere?}
+\toask{Okay, but the process list is not used anywhere?}
 
 The added information about spawned threads will be used by the following relation.
 
 \begin{defin}
 
-  The inter-thread evaluation relation of $P$, 
- 
-  \begin{equation*}
-    \interthread \subseteq \lp Stack^\ast \times S \rp \times \lp Stack^\ast \times S \rp
-  \end{equation*}
-
-  is a relation for what following rule holds:   
+  The inter-thread evaluation relation of $P$, $\interthread$,
+  is a relation between $Stack^\ast \times S$ and  $Stack^\ast \times S$  for which following rule holds:   
 
   \begin{equation*}
-    \inference{ 0 \leq i \leq n  \separ \lp t_i , s \rp \intrathread \lp t'_i, s', \lp p_1^\star, \ldots, p_k^{\star} \rp \rp}{ \lp \lp t_0, \ldots, t_n \rp, s \rp \interthread  \lp \lp t_0, \ldots, t_n, \lp s_{p_1^{\star}} \rp, \ldots, \lp s_{p_k^{\star}} \rp  \rp , s' \rp} \text{.}
+    \inference{ 0 \leq i \leq n  \separ \lp t_i , s \rp \intrathread \lp t'_i, s', \lbk p_1, \ldots, p_k \rbk \rp}{ \lp \lp t_0, \ldots,t_i, \ldots, t_n \rp, s \rp \interthread  \lp \lp t_0, \ldots,t'_i, \ldots, t_n, \lbk s_{p_1} \rbk, \ldots, \lbk s_{p_k} \rbk  \rp , s' \rp} \text{.}
   \end{equation*}
 
-  \tosup{I injected $t_i$ above, but you should inject it below as well. Question: why are the spawned threads $p$-s with a star. That would seem like they are a list or something? I'm also wondering if maybe square brackets would be better for lists to make clearer that you have singleton call stacks.}
+  \tosup{\sout{I injected $t_i$ above, but you should inject it below as well. Question: why are the spawned threads $p$-s with a star. That would seem like they are a list or something? I'm also wondering if maybe square brackets would be better for lists to make clearer that you have singleton call stacks.}}
+  \todisc{I think the idea behind the star was to draw attention to them, to make sure that one picks up that those are singleton lists. Stacks rewritten using square brackets.}
 \end{defin}
 
 In the $\lp \interthread \rp$ relation, the list of stacks corresponds to call stacks of all the threads currently running.
@@ -341,18 +330,19 @@ of the program and abstracting away too little leaves us with task that is too b
 \toask{So, how are we abstracting?}
 
 To have our abstraction on a sound footing, we need a formalization of the idea.
- The mathematical theory of \textit{complete lattices} offers a suitable framework.
- We will now give a short introduction to the lattice theory.
+The mathematical theory of \textit{complete lattices} offers a suitable framework.
+We will now give a short introduction to the lattice theory.
 
 \toask{Okay, lattice theory?}
 
 First of all, a quick reminder from set theory.
 
 \begin{defin}[Partial Order]
-A set $D$ with relation $\sqsubseteq \subseteq D \times D$ is called a \textbf{partially ordered set} if $\sqsubseteq$ 
+A set $D$ with relation $\sqsubseteq$ on $D$ is called a \textbf{partially ordered set} if $\sqsubseteq$ 
 is a \textbf{partial order}, that is reflexive, antisymmetric and transitive.
 \end{defin}
-\tosup{Try to avoid notation like $\sqsubseteq \subseteq D \times D$. I think you can just assume people know what a relation is, and if they don't, this is even harder for them to parse.}
+\tosup{\sout{Try to avoid notation like $\sqsubseteq \subseteq D \times D$. I think you can just assume people know what a relation is, and if they don't, this is even harder for them to parse.}}
+\todisc{Changed, also changed $\subseteq X \times Y$ to ``relation between $X$ and $Y$'' in previous definitions. Teached DME for too many years I guess :)}
 
 \begin{defin}[Upper bound]
 Let $\lp D, \sqsubseteq \rp$ be a partially ordered set. An \textbf{upper bound} of set $X \subseteq D$,  is an element $x \in D$, such that for every element in $y \in X$, $y \sqsubseteq x$. Element $x$ is the \textbf{least upper bound} of set $X$, denoted as $\bigsqcup X$ if for every other upper bound $z$ of $X$, $x \sqsubseteq z$.  
@@ -369,15 +359,14 @@ A tuple $\lp D, \sqsubseteq \rp$ is a complete lattice if $D$ is a partially ord
 \end{defin}
 
 
-We will use notation $x \sqcup \lp  \sqcap \rp y$ to denote $\bigsqcup \lp \bigsqcap \rp \lb x, y \rb$ and $\bot$ to denote the least element in $D$, that is $\bot = \bigsqcap D$ and $\top$ to denote the greatest element in D, $\top = \bigsqcup D$.
-\tosup{Do not use parenthetical conventions in mathematical definitions. This $\bigsqcup \lp \bigsqcap \rp \lb x, y \rb$ looks like some weird expression. Spell it out or say it's analogous.}
+We will use notation $x \sqcup  y$ to denote $\bigsqcup \lb x, y \rb$ and analogously, $x \sqcap y $ to denote $\bigsqcap \lb x, y \rb$. In addition, we will use $\bot$ to denote the least element in $D$, that is $\bot = \bigsqcap D$ and $\top$ to denote the greatest element in D, $\top = \bigsqcup D$.
 
 \toask{So many definitions, what is this (complete) lattice thing?}
 
 Lets now have a look at couple of examples. 
 
-First of all, let $D$ be $\lb true, false \rb$ and let $\sqsubseteq = \lb \lp false, true \rp \rb$. Then $true = \top = \bigsqcup D$ and $false = \bot = \bigsqcap D$. An usual way to describe lattices is the use of Hasse diagrams, graphs that have as nodes the elements of $D$ and there is an edge between $u, v \in D$ if $u \sqsubseteq v$. The edges that are implied by reflexivity or transitivity are usually omitted.
-\tosup{Again, this $\sqsubseteq = \lb \lp false, true \rp \rb$ looks weird just say ``with the ordering $\mathit{false} \sqsubseteq \mathit{true}$.}
+First of all, let $D$ be $\lb false, true \rb$ with the ordering $false \sqsubseteq true$. Then $true = \top = \bigsqcup D$ and $false = \bot = \bigsqcap D$. An usual way to describe lattices is the use of Hasse diagrams, graphs that have as nodes the elements of $D$ and there is an edge between $u, v \in D$ if $u \sqsubseteq v$. The edges that are implied by reflexivity or transitivity are usually omitted.
+\tosup{\sout{Again, this $\sqsubseteq = \lb \lp false, true \rp \rb$ looks weird just say ``with the ordering $\mathit{false} \sqsubseteq \mathit{true}$''.}}
 
 \begin{figure}[H]
   \begin{center}
@@ -467,9 +456,11 @@ The flat lattice is one way to create a complete lattice from any kind of set.
 
 \toask{Okay, but what it has anything to do with abstract interpretation?}
 
-Lattices will serve as \textit{abstract domains} for abstract interpretation. Intuitively, the elements of abstract domain will fulfill the same role as the states in concrete interpretation, offering context for interpreting the program. For abstract domain (that is, a complete lattice) $D,\sqsubseteq$, we will choose $D$ to be a (finite) set of elements that each describe some set of states of our concrete implementation. To analyze the program we would like to find the most precise element of $D$ -- that is, that describes the least amount of states in our concrete implementation, while describing that specific state for every state in our program. So, an \textit{analysis} of program $P$ is a function $\analyze : N \to D$.
-\tosup{Why does $D$ need to be finite?}
-\tosup{I don't understand what is meant with ``while describing that specific state for every state in our program''.}
+Lattices will serve as \textit{abstract domains} for abstract interpretation. Intuitively, the elements of abstract domain will fulfill the same role as the states in concrete interpretation, offering context for interpreting the program. For abstract domain (that is, a complete lattice) $D,\sqsubseteq$, we will choose $D$ to be a set of elements that each describe some set of states of our concrete implementation. To analyze the program we would like to find for every point $n \in N$ in our program the most precise element $d \in D$ that describes the program state at that point. To expand, we want $d$ to be such that it describes the least amount of states in our concrete implementation, while still describing all the states that our program could be at point $n$. So, an \textit{analysis} of program $P$ is a function $\analyze : N \to D$.
+\tosup{\sout{Why does $D$ need to be finite?}}
+\todisc{Good question.}
+\tosup{\sout{I don't understand what is meant with ``while describing that specific state for every state in our program''.}}
+\todisc{Rewrote}
 
 For our running example, as we care only about the signs of variable, a suitable $D$ would be a set of functions from set of all variables in program $P$ to power set of $\lb -, 0, + \rb$, that is $d \in D, d : Var_P \to 2^{\lb -, 0, + \rb}$. 
 $D$ is ordered point-wise, that is $d_1 \sqsubseteq d_2 \iff \forall v \in Var_p, d_1 v \subseteq d_2 v$. 
@@ -488,8 +479,9 @@ and $\bigcap X$ is defined dually.
 
 \toguide{So, why bother with the lattice, what does it give us?}
 
-One might still be wondering, why do we want to use lattices here, instead of simple sets. Consider following program.
-\tosup{Important: It is not at all clear what you are trying to answer here. What are simple sets? You seem to be making two points here: the need for lattice operations, and then, that lattices allow a generic interface to specify many different analysis within the same framework. Both are important points. For specific analyses, we could talk about simple sets and their unions or intersection operations, but lattices provide a uniform treatment of many different analyses.}
+One might still be wondering, why do we want to use lattices here, instead of simply using sets without the partial order or the lattice operations as abstract domains. Consider following program.
+\tosup{\sout{Important: It is not at all clear what you are trying to answer here. What are simple sets? You seem to be making two points here: the need for lattice operations, and then, that lattices allow a generic interface to specify many different analysis within the same framework. Both are important points. For specific analyses, we could talk about simple sets and their unions or intersection operations, but lattices provide a uniform treatment of many different analyses.}}
+\todisc{Reworded, stated the interface part explicitly. Indeed the points I wanted to make. Not 100\% sure that this in enough.}
 
 \begin{figure}[H]
   \begin{center}
@@ -527,11 +519,16 @@ When taking the $Pos$ edge in the example program then the most precise element 
 
 To be able to use the least upper bound when joining information from different possible incoming edges to state, the domain should be ordered in a way that if $d_1 \sqsubseteq d_2$ then if a property $P$ that we are interested in holds for $d_1$, it should always hold for $d_2$ as well. More concisely, $d_1 \sqsubseteq d_2 \implies\lp  P \lp d_1 \rp \implies P \lp d_2 \rp \rp$.
 
+If the domain is suitable ordered then the lattice operations provide us with a very convenient and elegant way to approximate the state of program as precisely as possible while also providing us with an interface that lets us abstract away the details of how the lattice operations are defined when reasoning about abstract domains in general. 
+
 In our example, the properties we were considering were whether a specific variables value \textit{may} be positive, negative or zero. If the value of a variable may be $0$, then it also may be $0$ or positive so we would want $\lb 0 \rb \sqsubseteq \lb 0, + \rb$. However, if we would wonder about whether a specific variable value would \textit{not} be positive, negative or zero then if we know that if the value is not 0 or positive then it also is not zero, meaning that we would want to have a lattice $\lp 2^{-,0,+}, \sqsubseteq_{must} \rp$ such that $\lb 0 , + \rb \sqsubseteq_{must} \lb 0 \rb$. We could define $\sqsubseteq_{must}$ to be
 
 \begin{equation*}
 d_1 \sqsubseteq_{must} d_2 \iff d_2 \sqsubseteq d_1 \text{.} 
 \end{equation*} 
+
+and the least upper bound to be intersection of two sets and greatest lower bound to be union of the sets.
+
 
 \toguide{Okay, I get the idea with the bounds, but how does this help us?}
 
