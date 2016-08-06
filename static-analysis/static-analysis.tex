@@ -270,8 +270,9 @@ where $enter_{proc}$ and $return_{proc}$ are state transformers that initialize 
 
 \toguide{What about threads?}
 
-To support multithreaded programs, we will first expand our inter-procedural evaluation relation to support the thread spawning function $spawn$.
-\tosup{Might want to anticipate future developments: ``we will first lift our inter-procedural evaluation relation to a semantics of executing individual threads, which supports the spawning of other threads. We will later use this to define a semantics that takes thread interleavings into account.''}
+To support multithreaded programs, we will first expand our inter-procedural evaluation relation to support spawning of other threads. We will later use this to define semantics that takes thread interleavings into account.
+\tosup{\sout{Might want to anticipate future developments: ``we will first lift our inter-procedural evaluation relation to a semantics of executing individual threads, which supports the spawning of other threads. We will later use this to define a semantics that takes thread interleavings into account.''}}
+\todisc{Introduction of a list that nothing is done with did not seem obvious, like this one very much.}
 
 \begin{defin}
 
