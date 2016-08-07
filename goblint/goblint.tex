@@ -25,7 +25,7 @@
 
 In this section, we give an overview  of \textit{Goblint}, a static analyzer for race detection in C programs with focus on Linux device drivers that has been developed for over 10 years in University of Tartu and in the Technical University of Munich \cite{_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
 
-\toadd{Cite the arctile written, \sout{doctorial thesis of Kalmer and Vesal, github repo}}
+\toadd{Cite the article written, \sout{doctoral thesis of Kalmer and Vesal, github repo}}
 
 \toask{Should cite something else?}
 
@@ -37,7 +37,7 @@ The original work presented in this thesis builds on top of what is done in Gobl
 \todisc{A lot of refactoring, this still relevant?}
 \toguide{Okay, got it. So, what is Goblint?}
 
-Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the theorectical ideas described in previous sections. Goblint is written in OCaml and is publicly available on Github.
+Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the theoretical ideas described in previous sections. Goblint is written in OCaml and is publicly available on Github.
 
 As an input, Goblint takes a C program and uses the CIL framework to process it into intermediate form that can then be converted into control flow graph (\textit{CGF}). 
 
@@ -198,10 +198,10 @@ remove and add mutexes to the set of held locks.
 As part of this thesis, the region analyses was extended to include the time dimension in addition.
 
 A new concurrency domain was added that improves the way Goblint handles detection of processes that are guaranteed to only run in one thread at a time.
-A way to append the time partition information to the left side of the access was added with a way to transform the time partition that can be used inside tranfer functions. 
+A way to append the time partition information to the left side of the access was added with a way to transform the time partition that can be used inside transfer functions. 
 
-The implementation makes vast use of the \inlinecode{part\_access} method. A remaining technical difficulty is that the concurency domain is ingrained in the base analysis,
-one of the oldest analysis in Goblint and Goblint does not have a preproccessing phase, then the complexity added to the already compelx base analysis is quite extensive.
+The implementation makes vast use of the \inlinecode{part\_access} method. A remaining technical difficulty is that the concurrency domain is ingrained in the base analysis,
+one of the oldest analysis in Goblint and Goblint does not have a preproccessing phase, then the complexity added to the already complex base analysis is quite extensive.
 
 I hope to solve this issue before requesting the changes to be merged into the mainline.
 Meanwhile, a fork of Goblint containing these changes is available here: \url{https://github.com/vootelerotov/goblint-fork}
@@ -210,13 +210,13 @@ Meanwhile, a fork of Goblint containing these changes is available here: \url{ht
 
 \toguide{Any effect?}
 
-Evaluating the effect of the enhanched region analysis on the set of character devices used as benchmark suit for Goblint gave following result.
+Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave following result.
 
 \toadd{Actual benchmark}
 \toadd{Table, comparision between fork and the mainline for each driver. Similar effect to Kalmers much more elegant implementation.}
 
 As seen by the results of the benchmark, the effect this partitioning has depends heavily on the driver and in some cases, the amount of false-positives removed is extensive. 
-In most of the drivers the effect can be attributed to the exclusion of races between init and exit functions. 
+In most of the drivers the effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
 
 \toask{Should mention this?} 
 
