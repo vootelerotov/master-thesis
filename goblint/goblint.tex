@@ -23,32 +23,31 @@
 
 \toguide{What is the point here?}
 
-In this section, we give an overview  of \textit{Goblint}, a static analyzer for race detection in C programs with focus on Linux device drivers that has been developed for over 10 years in University of Tartu and in the Technical University of Munich.
+In this section, we give an overview  of \textit{Goblint}, a static analyzer for race detection in C programs with focus on Linux device drivers that has been developed for over 10 years in University of Tartu and in the Technical University of Munich \cite{_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
 
-\toadd{Cite the arctile written, doctorial thesis of Kalmer and Vesal, github repo}
+\toadd{Cite the arctile written, \sout{doctorial thesis of Kalmer and Vesal, github repo}}
 
 \toask{Should cite something else?}
 
 \toguide{Why are we intrested in Goblint?}
 
-The original work presented in this thesis builds on top done on Goblint. The background information given in this section will hopefully enable one to put that into context.
+The original work presented in this thesis builds on top of what is done in Goblint. The background information given in this section will hopefully enable one to put that into context.
 
 \tosup{So keep in mind that this is the main objective! I will give some comments, but you should also go through each paragraph of this section and ask if it helps provide context to the next section or is just distracting details.}
+\todisc{A lot of refactoring, this still relevant?}
 \toguide{Okay, got it. So, what is Goblint?}
 
-Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the ideas described in previous section. Goblint is written in OCaml and is publicly available on Github.
+Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the theorectical ideas described in previous sections. Goblint is written in OCaml and is publicly available on Github.
 
-\toadd{check that it is previous section.}
-
-as an input, Goblint takes a $c$ program and uses the CIL framework to process it into intermediate form that can then be converted into control flow graph (\textit{cfg}). 
+As an input, Goblint takes a C program and uses the CIL framework to process it into intermediate form that can then be converted into control flow graph (\textit{CGF}). 
 
 \toadd{cite CIL}
 
-as a next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and \textit{cfg} of the program is produced.
+As a next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and CFG of the program is produced.
 
 the generated constraint system in then solved with a generic constraint system solver. 
 
-finally, the output is mapped to the original $c$ program and displayed to user in a suitable format.
+Finally, the output is mapped to the original C program and displayed to user in a suitable format.
 
 \begin{figure}[H]
   \centering
@@ -84,20 +83,20 @@ finally, the output is mapped to the original $c$ program and displayed to user 
 
 \toguide{Okay, do we need to understand all of it?}
 
-The most interesting components of Goblint are the provided solvers for the constraint systems and the wide array of analyses provided. We will be focusing on the structure of an analyses using as an example the mutex analyses that makes use of the previously discussed ideas of lockset analyses -- this will hopefully both introduce one of the key analyses for Goblint and give an high level idea of how an implementation of an analyses looks like. In addition, we will briefly touch the region analyses that we will use as a building block later on. 
+The most interesting components of Goblint are the provided solvers for the constraint systems and the wide array of analyses provided. We will be focusing on the structure of an analyses using as an example the mutex analyses that makes use of the previously discussed ideas of lockset analyses -- this will hopefully both introduce one of the key analyses for Goblint and give an high level idea of how an implementation of an analyses looks like. The signatures we introduce are simplified versions of the ones present in the Goblint implementation.
 
-\toadd{Thesis of Kalmer and Vesal, something else?}
-The solvers implemented in Goblint do not fall into scope of this thesis. An thorough overview can be found from ...
+\toadd{\sout{Thesis of Kalmer and Vesal} something else?}
+The solvers implemented in Goblint do not fall into scope of this thesis. An thorough overview can be found from \cite{apinis_frameworks_2014, vojdanivesal_static_2010}.
 
 \toguide{So, how does an analyses look like?}
 
-As previously described, for each analyses, we need an abstract domain to perform the abstract interpretation on. In Goblint, all the domains implement interface Lattice. The functions \textit{join} and \textit{meet} correspond to binary least upper bound and greatest lower bound operations.  
+As previously described, for each analyses, we need an abstract domain to perform the abstract interpretation on. In Goblint, all the domains implement interface Lattice. The functions \textit{join} and \textit{meet} correspond to binary least upper bound and greatest lower bound operations. 
 
 
 \begin{lstlisting}[language=Caml,style=caml]
 module type Lattice =
 sig
-  include Printable
+  type t
   val leq: t -> t -> bool
   val join: t -> t -> t
   val meet: t -> t -> t
@@ -109,25 +108,14 @@ sig
 end
 \end{lstlisting}
 
-The Lattice type includes module type Printable, that defines, in addition to the shown functions, a set of functions that enable conversion of type t to strings with different format. The type t in Ocaml module type leaves the type abstract. The types written in italic are built-in types in OCaml. 
+The type t in Ocaml module type leaves the type abstract. From here on, the types written in italic are built-in types in OCaml. 
 
-\tosup{I would not talk about Printable, so I suggest just inlining the type t into the Lattice. Maybe also remove is\_top \& is\_bot. Say somewhere on top that these are simplified/partial signatures.}
+\tosup{\sout{I would not talk about Printable, so I suggest just inlining the type t into the Lattice. Maybe also remove is\_top \& is\_bot. Say somewhere on top that these are simplified/partial signatures.}}
 
-
-\begin{lstlisting}[language=Caml,style=caml]
-module type Printable =
-sig
-  type t
-  val equal: t -> t -> bool
-  val hash: t -> int
-  val compare: t -> t -> int
-  ...
-end
-\end{lstlisting}
 
 In case of the lockset analyses, the domain is reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analyses and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are interested in the set off all the locks that must be held at a specific statement. In a situation where we have to take an upper bound of two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
 
-Analyses in Goblint must implement the module type Spec. Following is the simplified version of the
+Analyses in Goblint must implement the module type Spec. Following is the simplified version of it.
 
 \toask{Did I not cover something important? Or something left is maybe not important in context of thesis? Left out: sync, intrpt, }
 \toans{No, and I think you can remove more, such as exitstate \& otherstate, but this signature seems okay to me.}
@@ -176,18 +164,18 @@ a cleanup function (where deregistration happens in device drivers) or it is any
 The functions take as argument information about the function declaration, enabling Goblint to differentiate between different file operations.
 In case of mutex analyses, all the functions always return empty locksets.
 
-The \inlinecode{part\_access} function enables one partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race.
-In addition, it also associates a set of locks held with the partition. This function return empty sets in case of mutex analyses as it does not make use of partitioning,
-unlike, for example, the region analyses.
+The \inlinecode{part\_access} function enables one to partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race. In addition, it also associates a set of locks held with the partition. This function enables one to use the idea of dividing information about an access to left and right side.
+
+This function return empty sets in case of mutex analyses as it does not make use of partitioning but plays an important role in region analysis.
+
 \tosup{This function is important and maybe deserves more explanations, or you should at least highlight (forward-ref perhaps) that this function is what you had to interface with and plays an important role for this thesis.}
+\todisc{Can backwards ref now :), tied it with the left-hand right-hand side of the last section, anything else? }
 
 The \inlinecode{query} function enables communication between different analyses that have have been combined into one and are being performed at the same time -- 
 the analyses must be able to answer the query based on the current context. This allows analyses to avoid duplication and allows one to design more modular analyses consisting of sub-analyses. More regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
 
 The functions \inlinecode{assign}, \inlinecode{branch}, \inlinecode{body} and \inlinecode{return} are functions from abstract state to abstract state, for assignment statements,
-branching statments and for entering and exiting from function calls. They corresponding to the $\lllb s \rrrb^{*}$ family of functions introduced in previous section.
-
-\toadd{Confirm previous.} 
+branching statments and for entering and exiting from function calls. They corresponding to the $\lllb s \rrrb^{*}$ family of functions previously introduced.
 
 In the implementation for mutex analyses, those transfer functions do not actually change the abstract state as none of the statements do influence the set of locks held.
 However, they do register accesses to variables, for example, an access in registered for both the left and right hand side of an assignment with further distinction
@@ -197,109 +185,62 @@ The \inlinecode{special} function handles functions for which the source code is
 this function modifies the abstract state -- functions calls to functions such as \inlinecode{\_\_raw\_lock\_unlock} and \inlinecode{\_lock\_kernel} 
 remove and add mutexes to the set of held locks.
 
-\toadd{Enter and combine, makes sense if I had this to theoretical part as well}
+\toadd{Enter and combine, makes sense if I had this to theoretical part as well. Big if.}
 
-\toguide{Okay, pretty dense stuff. You mentioned region analyses?}
-\tosup{This is a pretty big shift in tone from internals to a conceptual description of the analysis. I think both are needed, but it's pretty bad structurally. I might even suggest merging region analysis with your conceptual description of your own contribution and put all implementation details after that chapter where you describe goblint as is and show what changes you made.}
+\toguide{Okay, pretty dense stuff.}
+\tosup{\sout{This is a pretty big shift in tone from internals to a conceptual description of the analysis. I think both are needed, but it's pretty bad structurally. I might even suggest merging region analysis with your conceptual description of your own contribution and put all implementation details after that chapter where you describe goblint as is and show what changes you made.}}
+\todisc{Refactored}
 
-Lastly, another analyses that the author would like to briefly introduce is the region analyses.
-
-\toguide{Okay, what is the point of it?}
-
-Consider a hash table using chaining to handle hash collisions that has a lock for each of the buckets.
-
-\toask{Just one figure with the hash keys shown in good enough?}
-
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}
-    \foreach \y in {0,...,5}
-      {
-        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$L_{\y}$};
-        \draw[->, thick] (1,5 - \y + 0.5) -- ++(0.5,0);
-        \foreach \x in {1,...,5}
-        {
-          \draw (1.5*\x, 5 -\y+0.2) rectangle ++(0.6,0.6);
-
-        }
-        \foreach \x in {1,...,4}
-        {
-          \draw[->] (1.5*\x + 0.3, 5 - \y + 0.8) to [bend left=45] ++(1.5,0);
-        }
-      }
-  \end{tikzpicture}
-  \caption{Separate chaining hash table} 
-\end{figure}
-An usual way to synchronize such an hash table is to protect each bucket with its own lock -- if the hashes of the keys $k_1$ and $k_2$ are different then accessing them in the hash table cannot cause a data race. On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real risk for data race.
+\subsection{Changes}
+\toask{Divide this section into two (what is Goblint? My changes and their effect.) or create one more section?}
 
 
-\begin{figure}[H]
-  \centering
-  \begin{tikzpicture}
-    \foreach \y in {0,...,5}
-      {
-        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$L_{\y}$};
-        \draw[->, thick] (1,5 - \y + 0.5) -- ++(0.5,0);
-        \foreach \x in {1,...,5}
-        {
-          \draw (1.5*\x, 5 -\y+0.2) rectangle ++(0.6,0.6);
+As part of this thesis, the region analyses was extended to include the time dimension in addition.
 
-        }
-        \foreach \x in {1,...,4}
-        {
-          \draw[->] (1.5*\x + 0.3, 5 - \y + 0.8) to [bend left=45] ++(1.5,0);
-        }
-      }
-    \draw[red, ->, shorten >= 5pt, thick] (-2,2.5) node [black, anchor =  east] {$H\lp k_3 \rp$} -- (0,3.5);
-    \draw[red, ->, shorten >= 5pt, thick] (-2,0.5) node [black, anchor =  east] {$H\lp k_2 \rp$} -- (0,0.5); 
-    \draw[red, ->, shorten >= 5pt, thick] (-2,4.5) node [black, anchor =  east] {$H\lp k_1 \rp$} -- (0,3.5);
-      
-  \end{tikzpicture}
-  \caption{Separate chaining hash table} 
-\end{figure}
+A new concurrency domain was added that improves the way Goblint handles detection of processes that are guaranteed to only run in one thread at a time.
+A way to append the time partition information to the left side of the access was added with a way to transform the time partition that can be used inside tranfer functions. 
 
+The implementation makes vast use of the \inlinecode{part\_access} method. A remaining technical difficulty is that the concurency domain is ingrained in the base analysis,
+one of the oldest analysis in Goblint and Goblint does not have a preproccessing phase, then the complexity added to the already compelx base analysis is quite extensive.
 
-The way region analyses is able to detect that cannot be a data race between additions of an element to hash table with for key $k_1$ and $k_3$ we need to be able to divide the memory that the program uses into disjoint \textit{regions} such that we can guarantee that memory accesses in different regions cannot race.
+I hope to solve this issue before requesting the changes to be merged into the mainline.
+Meanwhile, a fork of Goblint containing these changes is available here: \url{https://github.com/vootelerotov/goblint-fork}
 
-In case of the hash table, the most obvious partition for the regions would be to separate the buckets of the hash table.
+\toask{How does this seem? Would work on making a decent pull request after turning in the thesis, hopefully something to add to the presentation slides? Alternative would be to focus on the implementation until deadline, but paper still looks raw.}
 
+\toguide{Any effect?}
 
-\begin{figure}[H]
-  \centering
-    \begin{tikzpicture}
+Evaluating the effect of the enhanched region analysis on the set of character devices used as benchmark suit for Goblint gave following result.
 
-      
-      \tikzset{xzp/.style={canvas is xz plane at y=#1}}
+\toadd{Actual benchmark}
+\toadd{Table, comparision between fork and the mainline for each driver. Similar effect to Kalmers much more elegant implementation.}
 
-      \pgfmathsetmacro{\cubex}{10}
-      \pgfmathsetmacro{\cubey}{5}
-      \pgfmathsetmacro{\cubez}{5}
+As seen by the results of the benchmark, the effect this partitioning has depends heavily on the driver and in some cases, the amount of false-positives removed is extensive. 
+In most of the drivers the effect can be attributed to the exclusion of races between init and exit functions. 
 
+\toask{Should mention this?} 
 
-      \foreach \x in {1,...,5} 
-      {
-        \draw[thick,dashed] (\x*\cubex*0.2,0,0) -- ++(0,0,\cubez);
-      }
+It is worth noting that the motivation for introducing the partitioning by time  to Goblint did came from analyzing the common issues on a subset of those very same drivers.
+However, the fact that there were other drivers, outside the subset of the benchmark drivers that was manually analyzed,
+that greatly benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelihood
+that the benefits are not limited to this specific set of drivers.
 
-      \fill[opacity=0.8,red!30,draw=black,xzp=0] (0,0) rectangle (0.2*\cubex,\cubez);
-      \fill[opacity=0.8,blue!40,draw=black,xzp=0] (0.2*\cubex,0) rectangle (0.4*\cubex,\cubez);
-      \fill[opacity=0.8,green!40,draw=black,xzp=0] (0.4*\cubex,0) rectangle (0.6*\cubex,\cubez);
-      \fill[opacity=0.8,yellow!50!red,draw=black,xzp=0] (0.6*\cubex,0) rectangle (0.8*\cubex,\cubez);
-      \fill[opacity=0.8,cyan!40,draw=black,xzp=0] (0.8*\cubex,0) rectangle (\cubex,\cubez);
+\toguide{Okay, got it. Seems cool. Anything else we should know?}
 
-      \node at (0.275*\cubex,0,0.4*\cubez) (p) {$H \lp k_1 \rp$};
-      \node at (0.3*\cubex,0,0.75*\cubez) (q) {$H \lp k_3 \rp$};
+The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify. This is an hindarance,
+specially taking into account that the number of possible coventions that guarantee race freedom between two operations is very likely large.  
 
-      \node at (0.9*\cubex,0,0.35*\cubez) (q) {$H \lp k_2 \rp$};
+However, at the same time it is very hard to imagine a domain independent analysis that would be able to safely exclude the races that we have looked at in this section.
 
+Currently, the rules mentioned in this section are hard-coded into Goblint. This approach does not completely solve the issue of how to make Goblint take the domain specific happen-before
+guarantees into account -- sadly it is not possible for the team behind Goblint to cover all the possible domains nor even fully cover the domain of device drivers.
 
-      \draw[thick,-] (0,0,0)  -- ++(0,0,\cubez) --  node [anchor = north] {$R_1$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_2$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_3$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_4$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_5$} ++(0.2*\cubex,0,0)  --  ++(0,0,-\cubez) -- ++(-\cubex,0,0);
-    \end{tikzpicture}
-    \caption{Memory partition of the hash table}
-\end{figure}
+In the long term, offering either the user of a Goblint or an interested thirty party a way to specify those guarantees,
+for example through a DSL,  would help to solve this limitation. In addition, an approach that would try to deduce possible happens-before guarantees dynamically 
+could be something that would lessen the burden on the party specifying the guarantees.
 
-The partitioning of memory in a such way is done in Goblint by the region analyses. More information regarding the ideas used can be found ... \toadd{Cite Vesal}
-
-With that we have given a quick overview of Goblint and how an analyses is implemented in it. In addition, a quick overview of a region analyses was given, that we use as bases in the next section.
+\toadd{Some kind of ending}
+\tosup{It would be nice to have some words about how this is implemented in slightly more low-level terms.}
+\todisc{Added above}
 
 \end{document}

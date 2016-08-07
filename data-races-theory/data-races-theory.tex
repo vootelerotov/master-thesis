@@ -26,7 +26,7 @@ Lets note that although this analysis is sound (we will not verify a program tha
 
 \subsection{Happens-Before}
 
-\textit{Happens-Before} relation $R$ is a partial-ordering of the statements, such that if $a$ and $b$ are statements then  $a,b \in R$ if and only if $a$ is executed before $b$. The concept was first introduced by Leslie Lamport \cite{lamport_time_1978}
+\textit{Happens-Before} relation $R$ is a partial-ordering of the statements, such that if $a$ and $b$ are statements then  $a,b \in R$ if and only if $a$ is executed before $b$. The concept was first introduced by Leslie Lamport \cite{lamport_time_1978}, under the name happened-before.
 
 For $a$ to be executed before $b$, either $a$ has to be a statement before $b$ in the same thread template, there must be a statement $c$ such that $a$ is executed before $c$ and $c$ is executed before $b$ or there must be a synchronization event that is sufficient to say that $a$ was executed before $b$.
 
