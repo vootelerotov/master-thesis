@@ -154,7 +154,7 @@ As discussed in previous section, Goblint tries to track the memory regions of p
 
 \toadd{Region analyses covered in Goblint section.} 
 
-For example, let us have two procedures , $f$ and $g$ that can be ran simultaneously in different threads.
+For example, let us have two procedures , \inlinecode{f} and \inlinecode{g} that can be ran simultaneously in different threads.
 
 \begin{lstlisting}[language=c,style=def]
 
@@ -175,9 +175,9 @@ void g()
 
  
 
-If we can divide the memory used by the program to two regions, $A$ and $B$ that are disjoint and we can guarantee that the pointer $p$ points
-to integer variable stored in region $A$ and $q$ points to integer variable stored in region $B$ then we can safely assume that there
-can be no data-race between the increment and decrement operations in function $f$ and $g$.
+If we can divide the memory used by the program to two regions, $A$ and $B$ that are disjoint and we can guarantee that the pointer \inlinecode{p} points
+to integer variable stored in region $A$ and \inlinecode{q} points to integer variable stored in region $B$ then we can safely assume that there
+can be no data-race between the increment and decrement operations in function \inlinecode{f} and \inlinecode{g}.
 
 \begin{figure}[H]
   \centering
@@ -187,15 +187,15 @@ can be no data-race between the increment and decrement operations in function $
       \fill[opacity=\opacity,red!30,draw=black,xzp=0] (0,0) rectangle (2.5,5);
       \fill[opacity=\opacity,red!75,draw=black,xzp=0] (2.5,0) rectangle (5,5);
 
-      \node at (0.15*\cubex,0,0.6*\cubez) (p) {$\&p$};
-      \node at (0.8*\cubex,0,0.75*\cubez) (q) {$\&q$};
+      \node at (0.15*\cubex,0,0.6*\cubez) (p) {\figcode{\&p}};
+      \node at (0.8*\cubex,0,0.75*\cubez) (q) {\figcode{\&q}};
 
-      \node at (0.35*\cubex,0,0.35*\cubez) (q) {$i$};
+      \node at (0.35*\cubex,0,0.35*\cubez) (q) {\figcode{i}};
     \end{tikzpicture}
     \caption{Memory partition as done by region analyses}
 \end{figure}
 
-Going back to the example driver, this does allow to eliminate the data race between the assignments to $i$ in $init$ and $exit$ functions.
+Going back to the example driver, this does allow to eliminate the data race between the assignments to \inlinecode{i} in \inlinecode{init} and \inlinecode{exit} functions.
 However, if we would enhance the region analyses with one more dimension that would roughly correspond to time,
 we could divide the memory as seen on the following illustration. 
 
@@ -213,8 +213,8 @@ we could divide the memory as seen on the following illustration.
 
       \drawoutercube
 
-      \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {$i_{init}$};
-      \node at (0.285*\cubex,0.8*\cubey,0.65*\cubez) (i) {$i_{exit}$};
+      \node at (0.285*\cubex,0.15*\cubey,0.7*\cubez) (ip) {\figsubcode{i}{init}};
+      \node at (0.285*\cubex,0.8*\cubey,0.7*\cubez) (i) {\figsubcode{i}{exit}};
 
       \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$init$} ++(0,0.5*\cubey,0)  -- node[anchor= east] {$postInit$}  ++(0,0.5*\cubey,0);
     \end{tikzpicture}
@@ -326,8 +326,8 @@ Let this be the regions of the program, enhanced with the extra dimension, takin
       \drawoutercube
 
       
-      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {$j_{a}$};
-      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {$j_{b}$};
+      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {\figsubcode{j}{a}};
+      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {\figsubcode{j}{b}};
 
       \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$default$} (0,\defaultH*\cubey,\cubez) -- node[anchor= east] {$a$}  (0,\defaultH*\cubey,\cubez)  --
       node[anchor= east] {$b$}  (0,\bH*\cubey,\cubez) -- node[anchor= east] {$default$}  (0,\cubey,\cubez);
@@ -364,11 +364,11 @@ If we want to combine this time division with the one we could find the Cartesia
       \drawcubeoverz{0.5*\cubex}{\bH*\cubey}{\cubex}{\cubey}{\defaultPRColor}
 
       
-      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {$j_{a}$};
-      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {$j_{b}$};
+      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {\figsubcode{j}{a}};
+      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {\figsubcode{j}{b}};
 
-      \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {$i_{init}$};
-      \node at (0.285*\cubex,0.8*\cubey,0.65*\cubez) (i) {$i_{exit}$};
+      \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {\figsubcode{i}{init}};
+      \node at (0.285*\cubex,0.8*\cubey,0.65*\cubez) (i) {\figsubcode{i}{exit}};
 
       \drawoutercube
 
@@ -401,7 +401,7 @@ It is easy to see that this approach does not scale too well -- in the worst cas
 
 However, lets notice that when we evaluate the left sides of two operations, the time dimension only has an effect if memory regions of the operations match. 
 
-Indeed, let $Mem$ be the set of all memory regions, let $i_{a}$ and $i_{b}$ be two operations with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region,
+Indeed, let $Mem$ be the set of all memory regions, let \inlinesubcode{i}{a} and \inlinesubcode{i}{b} be two operations with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region,
 that is
 
 \begin{equation*}
@@ -432,11 +432,11 @@ For our running example, the partition would look as follows:
 
       \drawcubeoverz{0.5*\cubex}{\bH*\cubey}{\cubex}{\cubey}{\defaultPRColor}
       
-      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {$j_{a}$};
-      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {$j_{b}$};
+      \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {\figsubcode{j}{a}};
+      \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {\figsubcode{j}{b}};
 
-      \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {$i_{init}$};
-      \node at (0.285*\cubex,0.8*\cubey,0.65*\cubez) (i) {$i_{exit}$};
+      \node at (0.285*\cubex,0.2*\cubey,0.65*\cubez) (ip) {\figsubcode{i}{init}};
+      \node at (0.285*\cubex,0.8*\cubey,0.65*\cubez) (i) {\figsubcode{i}{exit}};
 
       \drawoutercube
 
@@ -491,8 +491,8 @@ static int file_close(file* f, ...)
 }
 \end{lstlisting}
 
-It is guaranteed that file $f$ can only be closed one time after it has been opened. This means that the operations on $file -> private\_data$
-cannot race in functions $file\_open$ and $file\_closed$. At same time, it is very possible that there is a race between the operations on $j$ in $file\_open$ and $file\_close$
+It is guaranteed that file $f$ can only be closed one time after it has been opened. This means that the operations on \inlinecode{file -> private\_data}
+cannot race in functions \inlinecode{file\_open} and \inlinecode{file\_closed}. At same time, it is very possible that there is a race between the operations on \inlinecode{j} in \inlinecode{file\_open} and \inlinecode{file\_close}
 -- it is possible that file $f_1$ is being opened at same time as $f_2$ is being closed. 
 
 If we are able to separate the memory region only containing $file$ then we can partition this further by dividing the time dimension to $default, file\_open$ and $file\_closed$,

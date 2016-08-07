@@ -93,8 +93,10 @@ we can decide based on the analysis, that the first \inlinecode{if} block can sa
 
 To build a mathematically sturdy foundation for abstract interpretation we first need to give a more formal definition for executing a program.
 This is known as its \emph{concrete semantics}.
- For that, lets give a formal definition of a program.
-\tosup{I'd rather say that we work on a common intermediate representation (IR), the control flow graph, or programs are represented as flow graphs, rather than this being the definition of a program.}
+To be able to formalize concrete semantics, we first must define what we mean under program. In this section we will presume that programs are represented as flow graphs.
+The flow graphs serve as common intermediate representation that is powerful enough that we can express all programs written in higher level languages and at same time,
+considerable easier to mathematically reason about.
+\tosup{\sout{I'd rather say that we work on a common intermediate representation (IR), the control flow graph, or programs are represented as flow graphs, rather than this being the definition of a program.}}
 
 \begin{defin}
 Procedure $p$ is a \textit{control flow graph} $\left( N_p,E_p,s_p,r_p \right)$, where $N_p$ is a finite set of nodes, $s_p \in N_p$
@@ -109,6 +111,7 @@ The edge set  $E_p \subseteq N_p \times L \times N_p$. In addition, we require t
 and if $e_1$ and $e_2$ are outgoing edges of $n$ and $e_1 \neq e_2$, then one of $e_1$ and $e_2$ is a positive guard and other a negative guard. 
 \end{defin}
 \tosup{These restrictions on the outgoing edges is probably not needed for correctness of our framework.}
+\todisc{Do we lose anything with it? The limitations seem quite natural to me.}
 
 It is worth mentioning that although we have constrained ourselves with procedure calls without any arguments and only one return node,
  those issues can be easily solved with use of global variables. 
@@ -223,7 +226,6 @@ With this in mind, we can define a relation for intra-procedural evaluation of o
 \begin{defin}
 Intra-procedural evaluation relation of procedure $p$, $\intraproc_p$,
 is a relation between $N_p \times S$ and $N_p \times S$ for which following rules hold:
-\tosup{I'm not currently concerned with grammar, but globally ``for what'' $\to$ ``for which''!}
 
 \addtolength{\jot}{2em}
 \begin{gather*}
@@ -236,6 +238,7 @@ is a relation between $N_p \times S$ and $N_p \times S$ for which following rule
 \end{defin}
 
 \tosup{So I would probably get rid of this index $p$ on the $\intraproc_p$, but if you keep it, note that it is currently missing in the rules. Why do you need a relation per procedure? It also clutters the next rules.}
+\todisc{Added index, also removed 2 of 3 of the next rules that were cluttered. I like the idea to make it explicit that the relation is over $N_p \times S$. Left it in at the moment, but I can be convinced to give up on the index if it adds too much complexity.}
 
 This relation gives a formal definition for one atomic step during evaluation of a procedure, when evaluating a procedure step with the relation $\intraproc$,
 the rule applied depends on the type of the edge under evaluation. 
@@ -466,6 +469,7 @@ Lattices will serve as \textit{abstract domains} for abstract interpretation. In
 For our running example, as we care only about the signs of variable, a suitable $D$ would be a set of functions from set of all variables in program $P$ to power set of $\lb -, 0, + \rb$, that is $d \in D, d : Var_P \to 2^{\lb -, 0, + \rb}$. 
 $D$ is ordered point-wise, that is $d_1 \sqsubseteq d_2 \iff \forall v \in Var_p, d_1 v \subseteq d_2 v$. 
 \tosup{You need a global sweep to \\mathitify variables, but this $Var$ is particularly bad.}
+\toadd{Wrap words in math mode with a macro}
 
 \toguide{Is that even a lattice?}
 
@@ -540,10 +544,10 @@ More formally, let $P$ be a program, $\allstates$ be set of all the possible sta
 s \descriptor d_1 \land d_1 \sqsubseteq d_2 \implies s \descriptor d_2 \text{.}
 \end{equation*}
 
-In concrete interpretation, to evaluate a program statement $\lp v, s, u \rp$ we used function $\lllb s \rrrb_{Stmt} : S \to S$. To evaluate the same program statement in abstract interpretation over domain $D$, we need to define functions $\lllb s \rrrb_{Stmt}^{\absint} : D \to D$, that we can use to evaluate the program in context of domain element $d$. For example, in case of our running example, we could define $\lllb x =  x + 2 \rrrb_{Stmt}^{\absint}$ as
+In concrete interpretation, to evaluate a program statement $\lp v, s, u \rp$ we used function $\lllb s \rrrb_{Stmt} : S \to S$. To evaluate the same program statement in abstract interpretation over domain $D$, we need to define functions $\lllb s \rrrb_{Stmt}^{\absint} : D \to D$, that we can use to evaluate the program in context of domain element $d$. For example, in case of our running example, we could define $\lllb \mcode{x =  x + 2} \rrrb_{Stmt}^{\absint}$ as
 
 \begin{equation*}
-\lllb x = x + 1 \rrrb_{Stmt}^{\absint} \left( d \right) =
+\lllb \mcode{x = x + 1} \rrrb_{Stmt}^{\absint} \left( d \right) =
 \begin{cases}
 d \lbk x : \lb + \rb \rbk & d \lp x \rp  \in \lb  \lb 0  \rb, \lb + \rb, \lb 0, + \rb \rb  \\
 d \lbk x : \lb -, 0 \rb \rbk & d \lp x \rp =  \lb - \rb \\
@@ -552,10 +556,12 @@ d \lbk x : \lb -, 0, + \rb \rbk & d \lp x \rp \in \lb \lb -,0 \rb, \lb -, + \rb,
 \text{.}      
 \end{equation*}
 
-We demand that the functions $\lllb s \rrrb_{Stmt}^{\absint}$ are consistent to functions $\lllb s \rrrb_{Stmt}$, that is, for each $s \in S, d \in D$ if $s \descriptor d$ then $ \lllb s \rrrb_{Stmt} \descriptor \lllb d \rrrb_{Stmt}^{\absint}$.
+We demand that the functions $\lllb s \rrrb_{Stmt}^{\absint}$ are consistent to functions $\lllb s \rrrb_{Stmt}$, that is, for each $s \in S, d \in D$ if $s \descriptor d$ then $ \lllb s \rrrb_{Stmt} \descriptor \lllb d \rrrb_{Stmt}^{\absint}$. This relation is illustrated in the following figure.
 \tosup{We also demand that all figures are mentioned in the text!}
+\todisc{Fair demand, I am guessing that this does not mean that it has to be mentioned by name, ``following figrue'' is suitable?}
 
 \begin{figure}[H]
+  \label{fig:transfer-consistent}
   \begin{centering}
     \begin{tikzpicture}
       \node (start) at (0,5) {$s = \lb \lp x, 0 \rp \rb$};
@@ -563,14 +569,14 @@ We demand that the functions $\lllb s \rrrb_{Stmt}^{\absint}$ are consistent to 
       \node (end) at (0,0) {$s' = \lb \lp x, 1 \rp \rb$};
       \node (end_a) at (5,0) {$d' = \lb \lp x , \lb + \rb \rp \rb$};
       
-      \draw [arrow] (start) -- node[anchor = east] {$s'=\lllb x = x +1  \rrrb_{Stmt} \lp s \rp$}  (end);
-      \draw [arrow] (start_a) -- node[anchor = west] {$d'=\lllb x = x + 1 \rrrb_{Stmt}^{\absint} \lp d \rp$} (end_a);
+      \draw [arrow] (start) -- node[anchor = east] {$s'=\lllb \mcode{x = x +1}  \rrrb_{Stmt} \lp s \rp$}  (end);
+      \draw [arrow] (start_a) -- node[anchor = west] {$d'=\lllb \mcode{x = x + 1} \rrrb_{Stmt}^{\absint} \lp d \rp$} (end_a);
       
       \draw [dashed] (start) -- node[anchor = south] {$s \descriptor d$} (start_a);
       \draw [dashed] (end) -- node[anchor = south] {$s' \descriptor d'$} (end_a);
     \end{tikzpicture}
   \end{centering}
-  \caption{The connections between $\allstates$, $D$, $\lllb x = x +1  \rrrb_{Stmt}$ and $\lllb x = x + 1 \rrrb_{Stmt}^{\absint}$.}
+  \caption{The connections between $\allstates$, $D$, $\lllb \mcode{x = x +1}  \rrrb_{Stmt}$ and $\lllb \mcode{x = x + 1} \rrrb_{Stmt}^{\absint}$.}
 \end{figure}
 
 Also, we will want all the functions $\lllb s \rrrb_{Stmt}^{\absint}$ to be \textit{monotonic}.
@@ -610,6 +616,7 @@ We will be using another approach for defining $\analyze$.
 
 \toask{I would like to convince reader, that the constraint system is natural, but it somehow very difficult. Leave it out or try to approach from another angle?}
 \toans{Yes, many things could be included, but here I would probably just state that instead of considering all paths and joining at the very end, we will consider the data flow and join information as soon as different paths converge, thereby computing a single domain value for each location. Then say, that it can be shown and cite the Nielsen textbook that this system will over-approximate the MOP solution.}
+\toadd{Do the above}
 
 Lets consider a specific edge in our program, $\lp v, s, u \rp$. Now, let $d = \analyze \lp v \rp$. Then, presuming that $d$ is precise, $\analyze \lp u \rp $ should not be more precise than $\lllb s \rrrb_{Stmt} \lp d \rp$ as ...
 
@@ -666,8 +673,8 @@ Let $d_s = \lb \lp x, \lb \rb \rp \rb $ be the abstract starting state. Then $\a
     \analyze_B \lp s_{main} \rp & \sqsupseteq d_s \\
     \analyze_B \lp 1 \rp & \sqsupseteq \lllb \mcode{int x = 0} \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp s_{main} \rp \rp \\
     \analyze_B \lp 1 \rp & \sqsupseteq \lllb \mcode{x = x +1}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 3 \rp \rp \\
-    \analyze_B \lp 2 \rp & \sqsupseteq \lllb  \mcode{$Neg$(rand() \% 2 == 0)}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
-    \analyze_B \lp 3 \rp & \sqsupseteq \lllb  \mcode{$Pos$(rand() \% 2 == 0)}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
+    \analyze_B \lp 2 \rp & \sqsupseteq \lllb  \mcode{Neg(rand() \% 2 == 0)}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
+    \analyze_B \lp 3 \rp & \sqsupseteq \lllb  \mcode{Pos(rand() \% 2 == 0)}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
     \analyze_B \lp 4 \rp & \sqsupseteq \lllb \mcode{ x = 0 } \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 2 \rp \rp \\
     \analyze_B \lp r_{main} \rp  & \sqsupseteq \lllb  \mcode{return x}  \rrrb_{Stmt}^{\absint} \lp \analyze_B \lp 4 \rp \rp
   \end{split} 

@@ -167,24 +167,24 @@ Here the underscored types are the ones defined in the CIL library.
 
 Each analyses includes two lattices, lattice $D$ will contain the abstract states and lattice $G$ will contain abstract values for global variables.
 
-The type \textit{ctx} with type parameters $\lp D.t, G.t \rp$ encapsulates the both the local and global state, offering access to helper functions on them. 
+The type \inlinecode{ctx} with type parameters $\lp D.t, G.t \rp$ encapsulates the both the local and global state, offering access to helper functions on them. 
 
-The functions \textit{startstate},\textit{exitstate} and \textit{otherstate} provide an initial abstract state for a thread depending on whether the thread starts an
+The functions \inlinecode{startstate},\inlinecode{exitstate} and \inlinecode{otherstate} provide an initial abstract state for a thread depending on whether the thread starts an
 initialization function (in context of device drivers, the function that registers the driver and exposes the callback functions),
 a cleanup function (where deregistration happens in device drivers) or it is any other function that can be used to spawn a new thread (all the file operations).
 
 The functions take as argument information about the function declaration, enabling Goblint to differentiate between different file operations.
 In case of mutex analyses, all the functions always return empty locksets.
 
-The \textit{part\_access} function enables one partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race.
+The \inlinecode{part\_access} function enables one partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race.
 In addition, it also associates a set of locks held with the partition. This function return empty sets in case of mutex analyses as it does not make use of partitioning,
 unlike, for example, the region analyses.
 \tosup{This function is important and maybe deserves more explanations, or you should at least highlight (forward-ref perhaps) that this function is what you had to interface with and plays an important role for this thesis.}
 
-The \textit{query} function enables communication between different analyses that have have been combined into one and are being performed at the same time -- 
+The \inlinecode{query} function enables communication between different analyses that have have been combined into one and are being performed at the same time -- 
 the analyses must be able to answer the query based on the current context. This allows analyses to avoid duplication and allows one to design more modular analyses consisting of sub-analyses. More regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
 
-The functions \textit{assign}, \textit{branch}, \textit{body} and \textit{return} are functions from abstract state to abstract state, for assignment statements,
+The functions \inlinecode{assign}, \inlinecode{branch}, \inlinecode{body} and \inlinecode{return} are functions from abstract state to abstract state, for assignment statements,
 branching statments and for entering and exiting from function calls. They corresponding to the $\lllb s \rrrb^{*}$ family of functions introduced in previous section.
 
 \toadd{Confirm previous.} 
@@ -193,8 +193,8 @@ In the implementation for mutex analyses, those transfer functions do not actual
 However, they do register accesses to variables, for example, an access in registered for both the left and right hand side of an assignment with further distinction
 that the access to the left hand side is a write access.
 
-The \textit{special} function handles functions for which the source code is not available for Goblint to analyze. In mutex analyses,
- this function modifies the abstract state -- functions calls to functions such as \textit{\_\_raw\_lock\_unlock} and \textit{\_lock\_kernel} 
+The \inlinecode{special} function handles functions for which the source code is not available for Goblint to analyze. In mutex analyses,
+this function modifies the abstract state -- functions calls to functions such as \inlinecode{\_\_raw\_lock\_unlock} and \inlinecode{\_lock\_kernel} 
 remove and add mutexes to the set of held locks.
 
 \toadd{Enter and combine, makes sense if I had this to theoretical part as well}
