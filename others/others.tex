@@ -9,7 +9,7 @@ We will now give an overview of notable tools other than Goblint that detect dat
 
 \subsubsection{KernelStrider}
 
-KernelStrider\cite{shatokhin_kernel} is a dynamic analyser front-end for kernel space programs. It collects information about execution of device driver and forwards it to user-space. This makes it possible for one to use programs developed to detect data races in any C program to be used with device drivers. KernelStrider aims to make use of ThreadSanitizer\cite{serebryany_threadsanitizer_2009}, a dynamic data-race analyzer by Google for user-space, that makes use of both lockset analysis and happens-before. Another user-space dynamic analyser that KernelStrider output could be used with would be Helgrind ,\cite{_helgrind,nethercote_valgrind_2007} that makes use of happen-before.
+KernelStrider\cite{shatokhin_kernel} is a dynamic analyser front-end for kernel space programs. It collects information about the execution of a device driver and forwards it to user-space. This makes it possible to use programs developed to detect data races in any C program to be used with device drivers. KernelStrider aims to make use of ThreadSanitizer\cite{serebryany_threadsanitizer_2009}, a dynamic data-race analyzer by Google for user-space, that uses both lockset analysis and happens-before. Another user-space dynamic analyser that KernelStrider output could be used with is Helgrind,\cite{_helgrind,nethercote_valgrind_2007} that utilizes happen-before.
 
 \toadd{\sout{Race Hound,\cite{komarov_implementation_2013})}}
 
