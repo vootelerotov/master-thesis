@@ -19,6 +19,7 @@
 
 
 
+
 \begin{document}
 
 \toguide{What is the point here?}
@@ -212,11 +213,47 @@ Meanwhile, a fork of Goblint containing these changes is available here: \url{ht
 
 \toguide{Any effect?}
 
+\subsubsection{Evaluation}
+
+
 Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave following result.
 
 \toadd{Actual benchmark}
 \toadd{Table, comparision between fork and the mainline for each driver. Similar effect to Kalmers much more elegant implementation.}
 
+\begin{figure}[H]
+ \centering
+ \begin{tabular}{|c|c|c|c|c| }
+   \hline
+   \multicolumn{5}{ |c| }{Benchmark suite} \\
+   \hline
+   Driver & Indirect before & Indirect after & Direct before & Direct after \\ 
+   \hline
+   apm-emulation.c & 29 & 29 & 12 & 10 \\
+   applicom.c & 14 & 13 & 8 & 7 \\
+   dtlk.c & 29 & 22 & 19 & 19 \\
+   efirtc.c & 0 & 0 & 0 & 0 \\
+   genrtc.c & 0 & 0 & 2 & 2 \\
+   hangcheck-timer.c & 12 & 12 & 0 & 0 \\
+   hpet.c & 292 & 133 & 22 & 22 \\
+   ipmi\_devintf.c & 197 & 117 & 8 & 8 \\
+   ipmi\_msghandler.c & 449 & 449 & 114 & 114 \\
+   ipmi\_poweroff.c & 142 & 50 & 11 & 11 \\
+   ipmi\_watchdog.c & 245 & 224 & 13 & 13 \\
+   mem.c & 0 & 0 & 5 & 5 \\
+   misc.c & 6 & 6 & 10 & 9 \\
+   nvram.c & 0 & 0 & 1 & 1 \\
+   ppdev.c & 129 & 122 & 14 & 14 \\
+   random.c & 65 & 65 & 37 & 37 \\
+   raw.c & 264 & 0 & 3 & 2 \\
+   rtc.c & 20 & 1 & 4 & 3 \\
+   tlclk.c & 88 & 20 & 6 & 5 \\
+   toshiba.c & 0 & 0 & 0 & 0 \\
+   ttyprintk.c & 193 & 193 & 3 & 3 \\
+   \hline
+   \hline
+\end{tabular}
+\end{figure}
 As seen by the results of the benchmark, the effect this partitioning has depends heavily on the driver and in some cases, the amount of false-positives removed is extensive. 
 In most of the drivers the effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
 
