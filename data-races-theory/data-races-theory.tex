@@ -30,6 +30,8 @@ Lets note that although this analysis is sound (we will not verify a program tha
 
 For $a$ to be executed before $b$, either $a$ has to be a statement before $b$ in the same thread template, there must be a statement $c$ such that $a$ is executed before $c$ and $c$ is executed before $b$ or there must be a synchronization event that is sufficient to say that $a$ was executed before $b$.
 
+\kalmer{see pole hea näide --- klassikaline näide on enne spawn-i ja peale spawn-i}
+
 \tocomment{code here maybe?}
 As an example of a synchronization event, lets consider two thread templates, in $t_1$ one acquires lock $m$, reads a variable $x$ and releases lock $m$ and in $t_2$ one acquires $m$, writes to $x$ and releases $m$. Here acquiring and releasing the lock works as a synchronization event -- either reading variable $x$ in $t_1$ happens before writing to $x$ in $t_2$ or the other way around.
 

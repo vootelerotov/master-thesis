@@ -1,3 +1,4 @@
+%!TEX root = ../thesis.tex
 \documentclass[..thesis.tex]{subfiles}
 
 \newtheorem{defin}{Definition}[section]
@@ -51,6 +52,8 @@ int main(void) {
   return x;
 }
 \end{lstlisting}
+
+\kalmer{see näide pole hea, kuna siin saaks ka konstantidega kõik arvutatud ... ma ei tea, kas sul on kiiresti võtta parem näide ... pane vähemalt üks random sinna sisse}
 
 One can easily deduce that the program will always exit with error code $1$, without having to calculate the exact value of  $y*z$.
 Instead, we can interpret all the values the variables have as negative ($-$), $0$ or positive ($+$) and evaluate $y * z$ as $-*- = +$.
@@ -191,6 +194,8 @@ f \left[ x : a \right] \left( y \right) =
   \end{cases}
 \end{equation*}.
 
+\kalmer{peaks olema ``if $y=x$''}
+
 Let's first consider single-threaded programs. Let $S$ be a set of states of the program, that is $s : Var \to Val$, where $Var$ is a set of
 variables in the program and $Val$ is a set of possible values. Again, we will not formally define sets $Val$ and $Var$ here.
 For every statement $stmt \in Stmt$, let $ \lllb stmt \rrrb_{Stmt} : S \to S$ be a function that updates the state of the program. 
@@ -242,6 +247,7 @@ the rule applied depends on the type of the edge under evaluation.
 \toguide{ What about procedure calls?}
 
 To support inter-procedural evaluation of our program, we need to keep track of the caller of the process. For that we will use, as is usually done, a \textit{call stack}.
+\kalmer{see seletus on kehv --- funktsioonikutsel pannakse pinusse kutsuja serv ja funktsioonist naasmisel see eemaldatakse; sellega saab pidada järge, kuhu naasta}
 Call stack is a tuple of CFG nodes, the first node is the current CFG node (the one being evaluated) and the rest of the nodes are call sites, points from where program evaluation
  should continue after reaching the return node. Let $Stack$ be a set of all call stacks of the program $P$. 
 

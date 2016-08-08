@@ -1,7 +1,10 @@
+%!TEX root = ../thesis.tex
 \documentclass[..thesis.tex]{subfiles}
 
 \begin{document}
 \subsection{Overview}
+
+\kalmer{See ülevaade ei anna lugejale mitte midagi --- selle võid lihtsalt ära jätta.}
 
 
 To explain the role of device drivers, let's introduce two common devices that are usable on computers running a Linux operating system.
@@ -24,6 +27,8 @@ This is done by enabling access to the devices via a small set of well-defined i
 In this paper, we will focus on a subset of device drivers called \textit{character (char) device drivers}. Character device drivers allow unbuffered access to the underlying ``hardware''. Both of the drivers for the example devices above are char drivers.
 
 \subsection{Interface of a character device driver}
+
+\kalmer{See on väga hea. }
 
 Devices are exposed to the end user as entries in the file system and therefore it is natural to use the same terminology for talking about device drivers' operations as about normal file operations. Device drivers expose endpoints for \textit{reading}, \textit{writing to}, \textit{opening} and \textit{releasing} devices. This list is not exhaustive\cite[include/linux/fs.h]{torvalds_linux}, but it is not necessary for a driver to expose them all.
 
@@ -109,6 +114,8 @@ Device drivers also expose \textit{init} and \textit{exit}, which the kernel can
 
 \subsection{Data races in device drivers}
 
+\kalmer{sa pead andmejooksu definitsiooni paremini defineerima. See peatükk on hea, aga sa võiksid siit mitterelevantse info kustutada}
+
 \toadd{\sout{lifecycle}}
 
 When registering our driver, we exposed multiple endpoints to the kernel. From that moment onwards, kernel can invoke any of the registered methods, at any time, until the driver is de-registered. 
@@ -167,8 +174,9 @@ After adding the same locking pattern to write operations, data race will no lon
 
 \tocomment{ I like examples, but I think going over write AND read would be overkill. Some doubts on whether this example is helpful, comments welcome.}
 
-
 \toguide{Are there any other ways?}
+
+\kalmer{sa põhjendad siin liialt --- seda pole vaja ... kui sa ütled, et on probleem ja sa suudad selle lahendamiseks midagi pakkuda siis sa ei pea pikalt seletama, et me ei lahenda kõiki maailma muresid}
 
 There are also alternatives to straightforward locking that one can use when writing Linux device drivers to eliminate data races, such as \textit{seqlocks} and \textit{read-copy-update}. These fall outside the scope of this paper, as they are rarely used compared to traditional locking and as of now, static analysis tools do not offer much support for them. 
 
@@ -182,6 +190,8 @@ We have seen that data races are a real possibility in device drivers and also t
 As previously discussed, Linux device drivers usually have multiple entry points and no control over when they are entered. Also, the device drivers are written in C, a low level language, that makes reasoning about them quite challenging. Furthermore, quite often the person writing a driver is an expert on the device that the driver is for, and not so much an expert on Linux device drivers themselves. This makes correct usage of constructs that help to avoid data races difficult and error-prone.
 
 \toguide{ How common are the data races?}
+
+\kalmer{selle võiksid tõsta sissejuhatusse --- muu agiteerimise ja reklaami sisse}
 
 \toadd{ \sout{Studies showing that this is indeed an issue -- drivers are buggy and have concurrency bugs. Hard to discover, get shipped quite often.}}
 

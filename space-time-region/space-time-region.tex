@@ -1,3 +1,4 @@
+%!TEX root = ../thesis.tex
 \documentclass[..thesis.tex]{subfiles}
 \tikzset{xyp/.style={canvas is xy plane at z=#1}}
 \tikzset{xzp/.style={canvas is xz plane at y=#1}}
@@ -69,9 +70,11 @@
 \begin{document}
 
 The key challenge for static analyzers based on abstract interpretation is to minimize the loss of precision that inevitably accompanies the over-approximation.
-In case of analyses trying to detect data-races, the loss of precision casuse static analysers to emit false-positives and it is clear
+In case of analyses trying to detect data-races, the loss of precision causes static analyzers to emit false-positives and it is clear
 that even if one can guarantee the soundness of the underlying analysis,
 then there is a threshold of incorrect warnings above what the results of the analysis contain too much noise to be of help for the end user.
+
+\kalmer{"inevitable loss of precision is inevitable" --> peaksid ütlema midagi sellist, et tuleb valida sobiv abstraktne domeen või jälgida sobivaid omadusi. Muidu see on ok.}
 
 We will now introduce two analyses that, when combined with other analyses, help to increase the precision of a static analyzer that detects data-races. Both of these analyses are implemented in static analyzer \textit{Goblint}, that we will discuss further in the next section.
 
@@ -83,7 +86,11 @@ We will now introduce two analyses that, when combined with other analyses, help
 
 First of those is the \textit{region analysis}. The key idea behind this analyses is to try to partition the memory used by the program under analyses into disjoint regions -- based on this information we can deduce that memory accesses to different regions cannot data-race.
 
+\kalmer{"kui meil õnnestub eraldada mälu erinevateks regioonideks, siis võib iga regioooni kaitsta eri lukustus-mehhanismiga", näiteks räsitabelid}
+
 Consider a hash table using chaining to handle hash collisions that has a lock for each of the buckets.
+
+\kalmer{joonista lukud ka pildile}
 
 \begin{figure}[H]
   \centering
@@ -106,9 +113,12 @@ Consider a hash table using chaining to handle hash collisions that has a lock f
   \caption{Separate chaining hash table} 
 \end{figure}
 
+
 An usual way to synchronize such an hash table is to protect each bucket with its own lock --
 if the hashes of the keys $k_1$ and $k_2$ are different then accessing them in the hash table cannot cause a data race.
 On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real risk for data race.
+
+\kalmer{see on õige, aga lukk võetakse räsi järgi. õige negatiivne näide on siis, kui räsitabelis on salvestatud viit jagatud muutujale (mis on siis mitmes regioonis korraga)}
 
 
 \begin{figure}[H]
@@ -139,8 +149,11 @@ On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real
 
 If we can guarantee that when adding an element for key $k_1$ and for key $k_3$, we are accessing different regions of the memory, then we can deduce that these additions cannot cause a data race.
 
+\kalmer{jälle, sa ei tohi unustada lukke --- ilma lukuta race-b sama lõim iseendaag}
+
 In case of the hash table, the most obvious partition for the regions would be to separate the buckets of the hash table.
 
+\kalmer{jah aga seda sa ei saa vabalt valida: kui jagatud viit salvestatakse räsitabelisse siis ei saa jagada niimoodi eraldi regioonideks}
 
 \begin{figure}[H]
   \centering
@@ -182,8 +195,8 @@ In addition to device drivers containing disjoint regions of memory, there are a
 \toguide{How can you use happen-before here?}
 
 Consider following simplified device driver:
-
-\begin{lstlisting}[language=c,style=def]
+\kalmer{mina soovitan alati kasutada ``columns=fullflexible''}
+\begin{lstlisting}[language=c,style=def,columns=fullflexible]
 
 static int i = 0;
 static int j = 0;
@@ -236,7 +249,9 @@ int exit(...)
 
 \end{lstlisting}
 
-As mentioned previously, \inlinecode{init} and \inlinecode{exit} functions are used by kernel register and deregister a device.
+\kalmer{palun kasuta siin mingit näidise-environment-i ... väga raske on jälgida kuna näide ära lõppeb ja kuna uus algab.}
+
+As mentioned previously, \inlinecode{init} and \inlinecode{exit} functions are used by kernel to register and deregister a device.
 As after publishing the file operations, we cannot any longer assume that the functions of the driver are called by one thread and
 a possible data-race should be detected between the operations on variable $i$ in functions \inlinecode{init} and \inlinecode{exit} by a static analyzer that detects data races.
 At same time, the Linux Kernel does not allow a call to the \inlinecode{exit} function until the call to the \inlinecode{init} function is called and all the opened files are released.
@@ -251,6 +266,8 @@ To do so, inspired by the happens-before relation,  we extend the region analysi
 \tosup{I am now even more convinced that you should have a chapter on ``Region Analysis for Space and Time'' where you first describe the current region analysis and extend it with timed partitions. Then, you have a section with just implementation. The only question is where to put any experimental results.}
 
 For example, let us have two procedures , \inlinecode{f} and \inlinecode{g} that can be ran simultaneously in different threads.
+
+\kalmer{sa mõtled siin ikka \texttt{*p} ja \texttt{*q} ---  deklareerides alati kirjuta * muutuja külge, ehk \texttt{*p} tüüp on \texttt{int} siis jääb see lihtsalt meelde}
 
 \begin{lstlisting}[language=c,style=def]
 
@@ -269,7 +286,20 @@ void g()
 
 \end{lstlisting}
 
- 
+\kalmer{Siin on kõik segamini nagu puder ja kapsad. Tee eraldi näited ja ära unusta lukke. mina soovitaks isegi teha nagu siin .tex kommentaaris
+% void close()
+% {
+%   lock(\&close\_lock);
+%   *p = *q - 1;
+%   unlock(\&release\_lock);
+% }
+% void open()
+% {
+%   lock(\&open\_lock);
+%   *q = *q + 1;
+%   unlock(\&open\_lock);
+% }
+}
 
 If we can divide the memory used by the program to two regions, $A$ and $B$ that are disjoint and we can guarantee that the pointer \inlinecode{p} points
 to integer variable stored in region $A$ and \inlinecode{q} points to integer variable stored in region $B$ then we can safely assume that there
@@ -333,6 +363,8 @@ On the left side, information regarding the memory region of the variable is sto
 
 In our example driver, the $C$ for the increment operation on $i$ in the $init$ function would be 
 
+\kalmer{Sa pead nendele hulkadele mingi interpretatsiooni andma. $\{\{\alpha,\beta\},\{\gamma\}\}$ on $(\alpha\land{}\beta)\lor{}\gamma$ kus $A \implies \neg{}B$ ja $B\implies\neg{A}$.}
+
 \begin{equation*}
 \lb \lb A, init \rb \rb \text{.}
 \end{equation*} 
@@ -341,6 +373,8 @@ On the right side, information regarding possible reasons why data race cannot t
 For an example, $M$ could contain the set of locks held at the specific operation or whether or not the thread running the procedure containing the operation is guaranteed to be unique.
 
 When deciding if there is a possibility of a data race between operations $a$ and $b$, we use two predicates, $L$ and $R$ to evaluate left and right sides of these operations. 
+
+\kalmer{see L ja R on ikka jube segane}
 
 The first of those predicates is defined as follows
 
