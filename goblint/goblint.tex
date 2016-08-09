@@ -19,6 +19,7 @@
 
 
 
+
 \begin{document}
 
 \toguide{What is the point here?}
@@ -212,19 +213,60 @@ Meanwhile, a fork of Goblint containing these changes is available here: \url{ht
 
 \toguide{Any effect?}
 
-Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave following result.
+\subsubsection{Evaluation}
 
-\toadd{Actual benchmark}
-\toadd{Table, comparision between fork and the mainline for each driver. Similar effect to Kalmers much more elegant implementation.}
 
-As seen by the results of the benchmark, the effect this partitioning has depends heavily on the driver and in some cases, the amount of false-positives removed is extensive. 
-In most of the drivers the effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
+Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave following results.
 
-\toask{Should mention this?} 
 
-It is worth noting that the motivation for introducing the partitioning by time  to Goblint did came from analyzing the common issues on a subset of those very same drivers.
+\begin{figure}[H]
+ \label{evaluation}
+ \centering
+ \begin{tabular}{|c|c c | c c| }
+   \hline
+   \multicolumn{5}{ |c| }{Benchmark suite} \\
+   \hline
+   &  \multicolumn{2}{c}{Indirect races} & \multicolumn{2}{|c |}{Direct races} \\
+   Driver & Region  & Enhanched Region  & Region  & Enhanched Region \\ 
+   \hline
+   apm-emulation.c & 29 & 29 & 12 & 10 \\
+   applicom.c & 14 & 13 & 8 & 7 \\
+   dtlk.c & 29 & 22 & 19 & 19 \\
+   efirtc.c & 0 & 0 & 0 & 0 \\
+   genrtc.c & 0 & 0 & 2 & 2 \\
+   hangcheck-timer.c & 12 & 12 & 0 & 0 \\
+   hpet.c & 292 & 133 & 22 & 22 \\
+   ipmi\_devintf.c & 197 & 117 & 8 & 8 \\
+   ipmi\_msghandler.c & 449 & 449 & 114 & 114 \\
+   ipmi\_poweroff.c & 142 & 50 & 11 & 11 \\
+   ipmi\_watchdog.c & 245 & 224 & 13 & 13 \\
+   mem.c & 0 & 0 & 5 & 5 \\
+   misc.c & 6 & 6 & 10 & 9 \\
+   nvram.c & 0 & 0 & 1 & 1 \\
+   ppdev.c & 129 & 122 & 14 & 14 \\
+   random.c & 65 & 65 & 37 & 37 \\
+   rtc.c & 20 & 1 & 4 & 3 \\
+   tlclk.c & 88 & 20 & 6 & 5 \\
+   toshiba.c & 0 & 0 & 0 & 0 \\
+   ttyprintk.c & 193 & 193 & 3 & 3 \\
+   \hline
+\end{tabular}
+\caption{Results benchmarking region analysis with and without time partition}
+\end{figure}
+
+We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deemes it unsafe based on direct access present in the source code
+Goblint is analysing. For an example, the direct acces could be a variable assignment.
+An \textit{indirect race} in reported when there is a possibilty of an race at a location when one considers functions for what Goblint does not have source code for.
+This can happen if driver exposes some of its state to using a function defined in Linux kernel.   
+
+In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of analysis of the benchmark suite performeb by Goblint with the space based region analysis active while the column denoted as \textit{Enhanched Region} are results of achived by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
+
+As seen by the results of the benchmark, the effect of time partition added to the region analyses has depends heavily on the driver.
+In most of the drivers the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
+
+It is worth noting that the motivation for introducing the partitioning by time to Goblint did came from analyzing the common issues on a subset of those very same drivers.
 However, the fact that there were other drivers, outside the subset of the benchmark drivers that was manually analyzed,
-that greatly benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelihood
+that benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelihood
 that the benefits are not limited to this specific set of drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
