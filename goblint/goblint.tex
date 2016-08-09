@@ -167,7 +167,7 @@ In case of mutex analysis, all the functions always return empty locksets.
 
 The \inlinecode{part\_access} function enables one to partition accesses into disjoint groups -- if two accesses to the variable $x$ are in different partitions, then they cannot race. In addition, it also associates a set of locks held with the partition. This function makes it possible to use the idea of dividing access information to the left and right side.
 
-In case of a mutex analysis, this function returns empty sets, as it does not make use of partitioning, but plays an important role in region analysis.
+In case of the mutex analysis, this function returns empty sets, as it does not make use of partitioning, but plays an important role in region analysis.
 
 \tosup{This function is important and maybe deserves more explanations, or you should at least highlight (forward-ref perhaps) that this function is what you had to interface with and plays an important role for this thesis.}
 \todisc{Can backwards ref now :), tied it with the left-hand right-hand side of the last section, anything else? }
@@ -182,7 +182,7 @@ In the implementation of mutex analysis, those transfer functions do not actuall
 However, they do register accesses to variables, for example, an access is registered for both the left and right hand side of an assignment with further distinction
 that the access to the left hand side is a write access.
 
-The \inlinecode{special} function handles functions for which the source code is not available for Goblint to analyze. In the mutex analysis,
+The \inlinecode{special} function handles functions for which the source code is not available for Goblint to analyse. In the mutex analysis,
 this function modifies the abstract state -- function calls to functions such as \inlinecode{\_\_raw\_lock\_unlock} and \inlinecode{\_lock\_kernel} 
 remove and add mutexes to the set of held locks.
 
@@ -216,7 +216,7 @@ Meanwhile, a fork of Goblint containing these changes is available here: \url{ht
 \subsubsection{Evaluation}
 
 
-Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave following results.
+Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave the following results.
 
 
 \begin{figure}[H]
@@ -254,19 +254,19 @@ Evaluating the effect of the enhanced region analysis on the set of character de
 \caption{Results benchmarking region analysis with and without time partition}
 \end{figure}
 
-We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deemes it unsafe based on direct access present in the source code
-Goblint is analysing. For an example, the direct acces could be a variable assignment.
-An \textit{indirect race} in reported when there is a possibilty of an race at a location when one considers functions for what Goblint does not have source code for.
-This can happen if driver exposes some of its state to using a function defined in Linux kernel.   
+We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deems it unsafe based on the direct access present in the source code
+Goblint is analysing. For example, the direct access could be a variable assignment.
+An \textit{indirect race} is reported when there is a possibility of a race at a location, when one considers functions for what Goblint does not have the source code for.
+This can happen if driver exposes some of its states using a function defined in the Linux kernel.   
 
-In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of analysis of the benchmark suite performeb by Goblint with the space based region analysis active while the column denoted as \textit{Enhanched Region} are results of achived by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
+In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of the analysis of the benchmark suite performed by Goblint with the space based region analysis active, while the column denoted as \textit{Enhanched Region} are results that were achieved by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
 
-As seen by the results of the benchmark, the effect of time partition added to the region analyses has depends heavily on the driver.
-In most of the drivers the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
+As seen by the results of the benchmark, the effect the time partition added to the region analysis depends heavily on the driver.
+In most of the drivers, the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
 
-It is worth noting that the motivation for introducing the partitioning by time to Goblint did came from analyzing the common issues on a subset of those very same drivers.
-However, the fact that there were other drivers, outside the subset of the benchmark drivers that was manually analyzed,
-that benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelihood
+It is worth noting that the motivation for introducing the partitioning by time to Goblint came from analysing the common issues on a subset of those very same drivers.
+However, the fact that there were other drivers, outside the subset of the benchmark drivers that were manually analysed
+that benefited from the addition of the extra dimension, leads the author to believe that there is a reasonable likelihood
 that the benefits are not limited to this specific set of drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
