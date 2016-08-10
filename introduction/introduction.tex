@@ -21,11 +21,12 @@ The aim of this thesis is to increase the precision of Goblint by eliminating on
 \toguide{Why should anyone care?}
 
 Device drivers are open programs that work in difficult environment. One of the key difficulties is the fact that device drivers have no control over when the callbacks they provide to kernel
-are called. This, combined with that device drivers are written in subset of C, a low level language with very few built in concurency abstractions,
-means that debugging the concurrency issues in device drivers is notoriously difficult.
-In addition to that, the bugs in device drivers have a big impact and can be attributed for a large share of system crashes. 
+are called. This, combined with that device drivers are written in subset of C, a low level language with very few built in concurrency abstractions,
+means that debugging the concurrency issues in device drivers is notoriously difficult. Empirical research confirms that concurrency bugs are common in
+device drivers \cite{chou_empirical_2001,palix_faults_2011}.  
+In addition to that, the bugs in device drivers have a big impact and can be attributed for a large share of system crashes \cite{swift_improving_2003}. 
 
-Goblint finds the possible locations of subtype of concurency issues, data races -- situations where more than one thread simultaneously tries to access a shared memory location.
+Goblint finds the possible locations of subtype of concurrency issues, data races -- situations where more than one thread simultaneously tries to access a shared memory location.
 Goblint is sound and as a result, if no possible data races are found then it can verify the driver under analysis for being data race free.
 However, Goblint is not precise and there is a possibility of it finding false-positives. The degree of precision is paramount,
 as it is the difference between Goblint being able to either outright verify the driver or provide the user valuable feedback and the an result containing too much noise to be useful.
