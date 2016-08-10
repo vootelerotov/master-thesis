@@ -63,22 +63,13 @@ Computer Science Curriculum\\[2mm]
 
 % END TITLE PAGE
 
-% If the thesis is printed on both sides of the page then 
-% the second page must be must be empty. Comment this out
-% if you print only to one side of the page comment this out
-%\newpage
-%\thispagestyle{empty}    
-%\phantom{Text to fill the page}
-% END OF EXTRA PAGE WITHOUT NUMBER
-
-
 % Remember to remove this from the final thesis version
-\newpage
-\listoftodos[Oh crap so much to do]
+%\pagebreak
+%\listoftodos[Oh crap so much to do]
 % END OF TODO PAGE 
 
 % COMPULSORY INFO PAGE
-\newpage
+\pagebreak
 
 \selectlanguage{english}
 \noindent\textbf{\large \articleName}
@@ -91,7 +82,9 @@ We show that the doing so increases the precision of Goblint when analysing char
 }
 
 \vspace*{3ex}
-{\flushleft{\textbf{Keywords:} Concurrency, race condition, abstract interpretation, happens-before, device drivers, Goblint}
+\begin{flushleft}
+  \textbf{Keywords:} Concurrency, race condition, abstract interpretation, happens-before, device drivers, Goblint
+\end{flushleft}
 \vspace*{3ex}
 
 \noindent\textbf{CERCS:} P170, Computer science, numerical analysis, systems, control
@@ -108,7 +101,9 @@ We show that the doing so increases the precision of Goblint when analysing char
 \vspace*{3ex}
 
 \toadd{List of keywords, eesti keeles??}
-{\flushleft{\textbf{Võtmesõnad:} Goblint}
+\begin{flushleft}
+  \textbf{Võtmesõnad:} Goblint
+\end{flushleft}
 \vspace*{3ex}
 
 \noindent\textbf{CERCS:} P170, Arvutiteadus, arvutusmeetodid, süsteemid, juhtimine (automaatjuhtimisteooria)
