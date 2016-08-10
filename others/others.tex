@@ -9,22 +9,22 @@ We will now give an overview of notable tools other than Goblint that detect dat
 
 \subsubsection{KernelStrider}
 
-KernelStrider\cite{shatokhin_kernel} is a dynamic analyser front-end for kernel space programs. It collects information about the execution of a device driver and forwards it to user-space. This makes it possible to use programs developed to detect data races in any C program to be used with device drivers. KernelStrider aims to make use of ThreadSanitizer\cite{serebryany_threadsanitizer_2009}, a dynamic data-race analyzer by Google for user-space, that uses both lockset analysis and happens-before. Another user-space dynamic analyser that KernelStrider output could be used with is Helgrind,\cite{_helgrind,nethercote_valgrind_2007} that utilizes happen-before.
+KernelStrider\cite{shatokhin_kernel} is a dynamic analyser front-end for kernel space programs. It collects information about the execution of a device driver and forwards it to user-space. This makes it possible to use programs developed to detect data races in any C program to be used with device drivers. KernelStrider aims to make use of ThreadSanitizer\cite{serebryany_threadsanitizer_2009}, a dynamic data race analyser by Google for user-space, that uses both lockset analysis and happens-before. Another user-space dynamic analyser that KernelStrider output could be used with is Helgrind,\cite{_helgrind,nethercote_valgrind_2007} which utilizes happen-before.
 
 \toadd{\sout{Race Hound,\cite{komarov_implementation_2013})}}
 
 \subsubsection{RaceHound}
 
-RaceHound\cite{komarov_implementation_2013} is a dynamic analyser for Linux device drivers. It borrows heavily from DataCollider \cite{erickson_effective_2010}, an analyser for Microsoft drivers. RaceHound places random software breakpoints to the driver under testing, then finds out which memory address was accessed and attaches a hardware breakpoint to that memory address and stops the thread for a while. When the hardware breakpoint is triggered by another thread, a data race has taken place.
+RaceHound\cite{komarov_implementation_2013} is a dynamic analyser for Linux device drivers. It borrows heavily from DataCollider \cite{erickson_effective_2010}, an analyser for Microsoft drivers. RaceHound places random software breakpoints to the driver under test, then finds out which memory address was accessed and attaches a hardware breakpoint to that memory address and stops the thread for a while. When the hardware breakpoint is triggered by another thread, a data race has taken place.
 
-The main benefit of this approach is the relatively low overhead of around 5\% to the running time of the program under testing. This approach is precise, but not sound.
+The main benefit of this approach is the relatively low overhead of around 5\% to the running time of the program under test. This approach is precise, but not sound.
 
 \toadd{\sout{Locksmith}, \cite{pratikakis_locksmith_2006}, \cite{pratikakis_locksmith_2011}}
 
 \subsubsection{Locksmith}
-Locksmith\cite{pratikakis_locksmith_2006} is a static analyser for data races in C programs, including device drivers. Locksmith was one of the earliest static analysers available for Linux device drivers and it validated the lockset based approach for static analyses. 
+Locksmith\cite{pratikakis_locksmith_2006} is a static analyser of data races in C programs, including device drivers. Locksmith was one of the earliest static analysers available for Linux device drivers and it validated the lockset based approach for static analyses. 
 
-For practically inclined, the authors of Locksmith share their experiences with static analysis for data races, describing the importance of identifying thread-local variables as a preprocessing step and for modelling fields of the structs field-sensitively and lazily\cite{pratikakis_locksmith_2011}.
+For practically inclined, the authors of Locksmith share their experience with static analysis of data races, describing the importance of identifying thread-local variables as a preprocessing step and of modelling fields of the structs field-sensitively and lazily\cite{pratikakis_locksmith_2011}.
 
 \toadd{\sout{Warlock}}
 
@@ -34,9 +34,9 @@ For practically inclined, the authors of Locksmith share their experiences with 
 
 \subsubsection{Checkmate}
 
-Checkmate\cite{ferrara_checkmate_2009} is a generic static analyser for Java bytecode. It offers support for analyzing different runtime properties of multi-threaded program running on JVM, among them whether the program contains data-races.
+Checkmate\cite{ferrara_checkmate_2009} is a generic static analyser of Java bytecode. It offers support for analysing different runtime properties of a multi-threaded program running on JVM, among them data race detection.
 
-Checkmate stands out by making extensive use of happens-before relation and not relying on lockset analysis for detecting data-races. The happen-before used by Checkmate over-approximates Java Memory Model.
+Checkmate stands out by making extensive use of happens-before relation and not relying on lockset analysis for detecting data races. The happens-before used by Checkmate over-approximates Java Memory Model.
 
 
 
@@ -47,7 +47,7 @@ Checkmate stands out by making extensive use of happens-before relation and not 
 
 Whoop\cite{deligiannis_fast_2015} is a static analysis tool for finding data races in Linux device drivers. 
 
-Whoop is a sound tool, making use of the lockset analysis. Whoop makes use of the observation that data-races happen between two specific threads and as such, it is enough to verify that there is no possibility of data-race between any pair of threads, instead of considering all the threads at the same time.
+Whoop is a sound tool, making use of the lockset analysis. Whoop is based on the observation that data races happen between two specific threads and as such, it is enough to verify that there is no possibility of data race between any pair of threads, instead of considering all the threads at the same time.
 
 Whoop is meant to be used as part of a bigger tool-chain, where it functions as a preprocessing step to Corral, a bug-finder by Microsoft. During the preprocessing step, Whoop produces a sound model of the driver that can then be processed further by Corral.
 
@@ -64,17 +64,17 @@ As of now, Whoop supports classical mutexes and spin-locks, but does not cover r
 
 \subsubsection{SDV and SLAM}
 
-SDV is a static analyzer by Microsoft for Windows device drivers.
+SDV is a static analyser by Microsoft for Windows device drivers.
 
 As mentioned before, majority of the failures in Windows XP were caused by issues connected to device drivers. To solve this issue, Microsoft Research team started working on a way to verify the correctness of device drivers in early 2000s. The result of their work is Static Driver Verifier (SDV) that tries to verify a device driver during compile time. 
 
-A key part of SDV is SLAM \cite{ball_decade_2011}, a tool that allows one to specify rules that must hold for device drivers and then statically check if they do for a driver during compile time. 
+The key part of SDV is SLAM \cite{ball_decade_2011}, a tool that allows one to specify rules that must hold for device drivers and then statically check if they do for a driver during compile time. 
 
 The main use case for SLAM in SDV is to confirm that drivers use the Windows driver API correctly.
  
 SDV has been widely successful, with under 10\%  of reported issues being false reports \cite[74]{ball_decade_2011} and 97\% of the runs resulting in either verification of the driver or finding a bug.
 
-Although SDV does not focus on detecting data races, its success has shown that static analysis can be a viable approach for driver verification and it has had big influence in the field of static analysis of device drivers.
+Although SDV does not focus on detecting data races, its success has shown that static analysis can be a viable approach for driver verification and it has had a big influence on the field of static analysis of device drivers.
 
 \toadd{\sout{Poirot}}
 \tocomment{The only paper available is 1 page abstract, it seems that corresponding Microsoft research paper has been taken down.}

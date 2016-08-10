@@ -24,7 +24,7 @@
 
 \toguide{What is the point here?}
 
-In this section, we give an overview  of \textit{Goblint}, a static analyzer for race detection in C programs with focus on Linux device drivers that has been developed for over 10 years in University of Tartu and in the Technical University of Munich \cite{_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
+In this section, we give an overview  of \textit{Goblint}, a static analyser for detecting data races in C programs with the focus on Linux device drivers that has been developed in the University of Tartu and in the Technical University of Munich for over 10 years \cite{_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
 
 \toadd{Cite the article written, \sout{doctoral thesis of Kalmer and Vesal, github repo}}
 
@@ -32,23 +32,23 @@ In this section, we give an overview  of \textit{Goblint}, a static analyzer for
 
 \toguide{Why are we intrested in Goblint?}
 
-The original work presented in this thesis builds on top of what is done in Goblint. The background information given in this section will hopefully enable one to put that into context.
+The original work presented in this thesis builds on top of what is done in Goblint. The background information given in this section will hopefully enable the reader to put that in context.
 
 \tosup{So keep in mind that this is the main objective! I will give some comments, but you should also go through each paragraph of this section and ask if it helps provide context to the next section or is just distracting details.}
 \todisc{A lot of refactoring, this still relevant?}
 \toguide{Okay, got it. So, what is Goblint?}
 
-Goblint is a constraint system based analysis tool, that performs abstract interpretation, building on top of the theoretical ideas described in previous sections. Goblint is written in OCaml and is publicly available on Github.
+Goblint is a constraint system based analysis tool that performs abstract interpretation, building on top of the theoretical ideas described in the previous sections. Goblint is written in OCaml and is publicly available on Github.
 
-As an input, Goblint takes a C program and uses the CIL framework to process it into intermediate form that can then be converted into control flow graph (\textit{CGF}). 
+Goblint takes a C program as an input and uses the CIL framework to process it into an intermediate form that can then be converted into a control flow graph (\textit{CFG}). 
 
 \toadd{cite CIL}
 
-As a next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and CFG of the program is produced.
+As the next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and CFG of the program is produced.
 
-the generated constraint system in then solved with a generic constraint system solver. 
+The generated constraint system is then solved with a generic constraint system solver. 
 
-Finally, the output is mapped to the original C program and displayed to user in a suitable format.
+Finally, the output is mapped to the original C program and displayed to the user in a suitable format.
 
 \begin{figure}[H]
   \centering
@@ -84,14 +84,14 @@ Finally, the output is mapped to the original C program and displayed to user in
 
 \toguide{Okay, do we need to understand all of it?}
 
-The most interesting components of Goblint are the provided solvers for the constraint systems and the wide array of analyses provided. We will be focusing on the structure of an analyses using as an example the mutex analyses that makes use of the previously discussed ideas of lockset analyses -- this will hopefully both introduce one of the key analyses for Goblint and give an high level idea of how an implementation of an analyses looks like. The signatures we introduce are simplified versions of the ones present in the Goblint implementation.
+The most interesting components of Goblint are the provided solvers for the constraint systems and the wide array of analyses. We will be focusing on the structure of an analysis, using the example of the mutex analysis, which makes use of the previously discussed ideas about lockset analysis. This will hopefully both introduce one of the key analysis for Goblint and give a high-level idea of how an implementation of an analysis looks like. The signatures we introduce are simplified versions of the ones present in the Goblint implementation.
 
 \toadd{\sout{Thesis of Kalmer and Vesal} something else?}
-The solvers implemented in Goblint do not fall into scope of this thesis. An thorough overview can be found from \cite{apinis_frameworks_2014, vojdanivesal_static_2010}.
+The solvers implemented in Goblint do not fall with the scope of this thesis. A thorough overview can be found from \cite{apinis_frameworks_2014, vojdanivesal_static_2010}.
 
 \toguide{So, how does an analyses look like?}
 
-As previously described, for each analyses, we need an abstract domain to perform the abstract interpretation on. In Goblint, all the domains implement interface Lattice. The functions \textit{join} and \textit{meet} correspond to binary least upper bound and greatest lower bound operations. 
+As previously described, for each analysis, we need an abstract domain to perform the abstract interpretation on. In Goblint, all the domains implement interface \inlinecode{Lattice}. The functions \textit{join} and \textit{meet} correspond to the binary least upper bound and greatest lower bound operations. 
 
 
 \begin{lstlisting}[language=Caml,style=caml]
@@ -109,14 +109,14 @@ sig
 end
 \end{lstlisting}
 
-The type t in Ocaml module type leaves the type abstract. From here on, the types written in italic are built-in types in OCaml. 
+The type \inlinecode{t} in OCaml module type leaves the type abstract. From here on, the types written in italics are built-in types in OCaml. 
 
 \tosup{\sout{I would not talk about Printable, so I suggest just inlining the type t into the Lattice. Maybe also remove is\_top \& is\_bot. Say somewhere on top that these are simplified/partial signatures.}}
 
 
-In case of the lockset analyses, the domain is reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analyses and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are interested in the set off all the locks that must be held at a specific statement. In a situation where we have to take an upper bound of two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
+In case of the lockset analysis, the domain is a reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analysis and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are interested in the set of all the locks that must be held at a specific statement. In the situation where we have to take an upper bound of the two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
 
-Analyses in Goblint must implement the module type Spec. Following is the simplified version of it.
+Analysis in Goblint must implement the module type \inlinecode{Spec}. Following is the simplified version of it.
 
 \toask{Did I not cover something important? Or something left is maybe not important in context of thesis? Left out: sync, intrpt, }
 \toans{No, and I think you can remove more, such as exitstate \& otherstate, but this signature seems okay to me.}
@@ -154,36 +154,36 @@ end
 
 Here the underscored types are the ones defined in the CIL library.
 
-Each analyses includes two lattices, lattice $D$ will contain the abstract states and lattice $G$ will contain abstract values for global variables.
+Each analysis includes two lattices, lattice $D$ will contain the abstract states and lattice $G$ the abstract values for global variables.
 
-The type \inlinecode{ctx} with type parameters $\lp D.t, G.t \rp$ encapsulates the both the local and global state, offering access to helper functions on them. 
+The type \inlinecode{ctx} with type parameters $\lp D.t, G.t \rp$ encapsulates both the local and the global state, offering access to helper functions on them. 
 
 The functions \inlinecode{startstate},\inlinecode{exitstate} and \inlinecode{otherstate} provide an initial abstract state for a thread depending on whether the thread starts an
-initialization function (in context of device drivers, the function that registers the driver and exposes the callback functions),
-a cleanup function (where deregistration happens in device drivers) or it is any other function that can be used to spawn a new thread (all the file operations).
+initialization function (in the context of device drivers, the function that registers the driver and exposes the callback functions),
+a cleanup function (where deregistration happens in device drivers) or is any other function that can be used to spawn a new thread (all the file operations).
 
 The functions take as argument information about the function declaration, enabling Goblint to differentiate between different file operations.
-In case of mutex analyses, all the functions always return empty locksets.
+In case of mutex analysis, all the functions always return empty locksets.
 
-The \inlinecode{part\_access} function enables one to partition accesses into disjoint groups -- if two accesses to variable $x$ are in different partition then they cannot race. In addition, it also associates a set of locks held with the partition. This function enables one to use the idea of dividing information about an access to left and right side.
+The \inlinecode{part\_access} function enables one to partition accesses into disjoint groups -- if two accesses to the variable $x$ are in different partitions, then they cannot race. In addition, it also associates a set of locks held with the partition. This function makes it possible to use the idea of dividing access information to the left and right side.
 
-This function return empty sets in case of mutex analyses as it does not make use of partitioning but plays an important role in region analysis.
+In case of the mutex analysis, this function returns empty sets, as it does not make use of partitioning, but plays an important role in region analysis.
 
 \tosup{This function is important and maybe deserves more explanations, or you should at least highlight (forward-ref perhaps) that this function is what you had to interface with and plays an important role for this thesis.}
 \todisc{Can backwards ref now :), tied it with the left-hand right-hand side of the last section, anything else? }
 
-The \inlinecode{query} function enables communication between different analyses that have have been combined into one and are being performed at the same time -- 
-the analyses must be able to answer the query based on the current context. This allows analyses to avoid duplication and allows one to design more modular analyses consisting of sub-analyses. More regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
+The \inlinecode{query} function enables the communication between different analyses that have been combined into one and are being performed at the same time -- 
+an analysis must be able to answer the query based on the current context. This allows an analysis to avoid duplication and allows one to design more modular analyses consisting of sub-analyses. More information regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
 
 The functions \inlinecode{assign}, \inlinecode{branch}, \inlinecode{body} and \inlinecode{return} are functions from abstract state to abstract state, for assignment statements,
-branching statments and for entering and exiting from function calls. They corresponding to the $\lllb s \rrrb^{*}$ family of functions previously introduced.
+branching statements and for entering and exiting from function calls. They correspond to the $\lllb s \rrrb^{*}$ family of functions previously introduced.
 
-In the implementation for mutex analyses, those transfer functions do not actually change the abstract state as none of the statements do influence the set of locks held.
-However, they do register accesses to variables, for example, an access in registered for both the left and right hand side of an assignment with further distinction
+In the implementation of mutex analysis, those transfer functions do not actually change the abstract state, as none of the statements influence the set of held locks.
+However, they do register accesses to variables, for example, an access is registered for both the left and right hand side of an assignment with further distinction
 that the access to the left hand side is a write access.
 
-The \inlinecode{special} function handles functions for which the source code is not available for Goblint to analyze. In mutex analyses,
-this function modifies the abstract state -- functions calls to functions such as \inlinecode{\_\_raw\_lock\_unlock} and \inlinecode{\_lock\_kernel} 
+The \inlinecode{special} function handles functions for which the source code is not available for Goblint to analyse. In the mutex analysis,
+this function modifies the abstract state -- function calls to functions such as \inlinecode{\_\_raw\_lock\_unlock} and \inlinecode{\_lock\_kernel} 
 remove and add mutexes to the set of held locks.
 
 \toadd{Enter and combine, makes sense if I had this to theoretical part as well. Big if.}
@@ -198,13 +198,13 @@ remove and add mutexes to the set of held locks.
 \toask{Divide this section into two (what is Goblint? My changes and their effect.) or create one more section?}
 
 
-As part of this thesis, the region analyses was extended to include the time dimension in addition.
+As part of this thesis, the region analysis was extended to include the time dimension in addition.
 
-A new concurrency domain was added that improves the way Goblint handles detection of processes that are guaranteed to only run in one thread at a time.
-A way to append the time partition information to the left side of the access was added with a way to transform the time partition that can be used inside transfer functions. 
+A new concurrency domain was added that improves the way Goblint handles detection of processes that are guaranteed to run only in one thread at a time.
+A way to append the time partition information to the left side of the access was added with a method to transform the time partition that can be used inside transfer functions. 
 
 The implementation makes vast use of the \inlinecode{part\_access} method. A remaining technical difficulty is that the concurrency domain is ingrained in the base analysis,
-one of the oldest analysis in Goblint and Goblint does not have a preproccessing phase, then the complexity added to the already complex base analysis is quite extensive.
+one of the oldest analysis in Goblint, and Goblint does not have a preproccessing phase. Therefore, the complexity added to the already complex base analysis is quite extensive.
 
 I hope to solve this issue before requesting the changes to be merged into the mainline.
 Meanwhile, a fork of Goblint containing these changes is available here: \url{https://github.com/vootelerotov/goblint-fork}
@@ -252,7 +252,7 @@ Thanks to this Goblint is able to rule out a possible data race and deem the loc
 \subsubsection{Evaluation}
 
 
-Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave following results.
+Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave the following results.
 
 
 \begin{figure}[H]
@@ -295,20 +295,20 @@ Evaluating the effect of the enhanced region analysis on the set of character de
 \caption{Results of benchmarking region analysis with and without time partitioning}
 \end{figure}
 
-We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deems it unsafe based on direct access present in the source code
-Goblint is analysing. For an example, the direct access could be a variable assignment.
-An \textit{indirect race} in reported when there is a possibility of an race at a location when one considers functions for what Goblint does not have source code for.
-This can happen if driver exposes some of its state to using a function defined in Linux kernel.   
+We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deems it unsafe based on the direct access present in the source code
+Goblint is analysing. For example, the direct access could be a variable assignment.
+An \textit{indirect race} is reported when there is a possibility of a race at a location, when one considers functions for what Goblint does not have the source code for.
+This can happen if driver exposes some of its states using a function defined in the Linux kernel.   
 
-In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of analysis of the benchmark suite performed by Goblint with the space based region analysis active while the column denoted as \textit{Enhanched Region} are results of achieved by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
+In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of the analysis of the benchmark suite performed by Goblint with the space based region analysis active, while the column denoted as \textit{Enhanched Region} are results that were achieved by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
 
-As seen by the results of the benchmark, the effect of time partition added to the region analyses has depends heavily on the driver. In some drivers it enables Goblint to deem quite a lot of previously unsafe locations to be safe, lessening the amount of false-positives.
+As seen by the results of the benchmark, the effect the time partition added to the region analysis depends heavily on the driver.In some drivers it enables Goblint to deem quite a lot of previously unsafe locations to be safe, lessening the amount of false-positives.
 
-In most of the drivers the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
+In most of the drivers, the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
 
-It is worth noting that the motivation for introducing the partitioning by time to Goblint did came from analyzing the common issues on a subset of those very same drivers.
-However, the fact that there were other drivers, outside the subset of the benchmark drivers that was manually analyzed,
-that benefited from the addition of the extra dimension leads the author to believe that there is a reasonable likelihood
+It is worth noting that the motivation for introducing the partitioning by time to Goblint came from analysing the common issues on a subset of those very same drivers.
+However, the fact that there were other drivers, outside the subset of the benchmark drivers that were manually analysed
+that benefited from the addition of the extra dimension, leads the author to believe that there is a reasonable likelihood
 that the benefits are not limited to this specific set of drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
