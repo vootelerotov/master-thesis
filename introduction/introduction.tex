@@ -14,21 +14,39 @@
 \toguide{What is it in simple terms (title)?}
 Goblint is a sound static analyser for data race detection in Linux device drivers, developed in University of Tartu and Technical University of Munich.
 The key challenge for Goblint is that the results of analysis are not only sound but also contain as few false-positives as possible.
-The aim of this thesis is to increase the precision of Goblint by eliminating one type of false-positives found while manually reviewing the results as part of benchmarking done in \toadd{Article}.
+The aim of this thesis is to increase the precision of Goblint by eliminating one type of false-positives found while manually reviewing the results as part of benchmarking done in ...
+
+\toadd{Cite article}.
+
 \toguide{Why should anyone care?}
 
 Device drivers are open programs that work in difficult environment. One of the key difficulties is the fact that device drivers have no control over when the callbacks they provide to kernel
-are called. This, combined with that device drivers are written in subset of C, a low level language with very few built in concurency abstractions, means that debugging the concurrency issues in device drivers is notoriously difficult. In addition to that, the bugs in device drivers have a big impact and can be attributed for a large share of system crashes. 
+are called. This, combined with that device drivers are written in subset of C, a low level language with very few built in concurency abstractions,
+means that debugging the concurrency issues in device drivers is notoriously difficult.
+In addition to that, the bugs in device drivers have a big impact and can be attributed for a large share of system crashes. 
 
-Goblint finds the possible locations of subtype of concurency issues, data races. Goblint is sound and as a result, if no possible data races are found then it can verify the driver under analysis for being data race free. However, Goblint is not precise and there is a possibility of it finding false-positives. The degree of precision is paramount, as it is the difference between Goblint being able to either outright verify the driver or provide the user valuable feedback and the an result containing too much noise to be useful.
+Goblint finds the possible locations of subtype of concurency issues, data races -- situations where more than one thread simultaneously tries to access a shared memory location.
+Goblint is sound and as a result, if no possible data races are found then it can verify the driver under analysis for being data race free.
+However, Goblint is not precise and there is a possibility of it finding false-positives. The degree of precision is paramount,
+as it is the difference between Goblint being able to either outright verify the driver or provide the user valuable feedback and the an result containing too much noise to be useful.
   
 \toguide{What was my contribution?} 
 
-As part of this thesis, the region analysis of Goblint was enhanced with time dimension. Inspired by the happens-before relation and motivated by the results of benchmarks done, the extra dimension enables Goblint to take into account guarantees provided by Linux Kernel of the way the callbacks exposed are invoked. As a result, the analysis of most device drivers in benchmark suite are more precise. Notable, in case of 6 out of 25 drivers in the benchmark suite, the results have improved notably.
+As part of this thesis, an analysis performed by Goblint was enhanced with time dimension. Inspired by the happens-before relation and motivated by the results of benchmarks done,
+the extra dimension enables Goblint to take into account guarantees provided by Linux Kernel of the way the callbacks exposed are invoked.
+For an example, let there be a an assignment to memory location \inlinecode{i} in both functions \inlinecode{init} an \inlincecode{exit}. 
+If we know that both functions are called only once and that call to \inlinecode{init} must complete before \inline{exit} can be called thet we can safely rule out a data race on \inlincecode{i}.
+As a result of the added dimension, the analysis of most device drivers in benchmark suite are more precise. In case of 6 out of 25 drivers in the benchmark suite,
+the results have improved notably.
 
 
 \toguide{What you are doing in each section (a sentence or two per section)}
-The thesis continues with Section \ref{sec:device-drivers}, where we give an overview of Linux device drivers and also show the extend of impact of bugs in them. Next, in Section \ref{sec:static-analysis} we introduce reader to basics of abstract interpretation, a static analysis technique Goblint builds on. Section \ref{sec:data-races} introduces two key concepts for statically detection of data races. In addition, an overview is given of other notable tools for data race detection in device drivers. An overview of region analysis and theoretical background for adding time based partitioning is given in Section \ref{sec:region}. Lastly, in Section \ref{sec:goblint} an overview is given of Goblint, the implementation details of the enhancement done to the region analysis and also the evaluation of effect that the changes had.  
+The thesis continues with Section \ref{sec:device-drivers}, where we give an overview of Linux device drivers and also show the extend of impact of bugs in them.
+Next, in Section \ref{sec:static-analysis} we introduce reader to basics of abstract interpretation, a static analysis technique Goblint builds on.
+Section \ref{sec:data-races} introduces two key concepts for statically detection of data races.
+In addition, an overview is given of other notable tools for data race detection in device drivers. An overview of region analysis and theoretical background for my contribution,
+time based partitioning, is given in Section \ref{sec:region}. Lastly, in Section \ref{sec:goblint} an overview is given of Goblint,
+the implementation details of the enhancement done  and also the evaluation of effect that the changes had.  
 
 
 \end{document}
