@@ -242,7 +242,7 @@ static int file_release(struct inode *inode, struct file *file)
 
 Previously, Goblint would have seen \inlinecode{private\_data} of \inlinecode{file} as unsafe. At the same time, Linux kernel guarantees that a file cannot be released until it has been opened and it can be opened again only after it has been released. This guarantee has been incorporated into Goblint by partitioning the time for file argument into partitions \textit{fileOpen},\textit{fileClose} and \textit{default}. 
 
-Thanks to this Goblint is able to rule out a possible data race and deem the location to be safe as can been seen from the Goblint output on Figure \ref{Goblint-example}
+As a result of accesses to the \inlinecode{private\_data} being in different regions,  Goblint is able to rule out a possible data race and deem the location to be safe as can been seen from the Goblint output on Figure \ref{Goblint-example}
 
 \begin{figure}[H]
 \includegraphics[width=0.9\textwidth]{goblint-out}
@@ -300,16 +300,22 @@ Goblint is analysing. For example, the direct access could be a variable assignm
 An \textit{indirect race} is reported when there is a possibility of a race at a location, when one considers functions for what Goblint does not have the source code for.
 This can happen if driver exposes some of its states using a function defined in the Linux kernel.   
 
-In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of the analysis of the benchmark suite performed by Goblint with the space based region analysis active, while the column denoted as \textit{Enhanched Region} are results that were achieved by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
+In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of the analysis of the benchmark suite performed by Goblint with the space based region analysis active,
+while the column denoted as \textit{Enhanched Region} are results that were achieved by additionally adding the time partitioning.
+The numbers indicate real data races or false-positives found by Goblint.
 
-As seen by the results of the benchmark, the effect the time partition added to the region analysis depends heavily on the driver.In some drivers it enables Goblint to deem quite a lot of previously unsafe locations to be safe, lessening the amount of false-positives.
+As seen by the results of the benchmark, the effect the time partition added to the region analysis depends heavily on the driver.
+In some drivers it enables Goblint to deem quite a lot of previously unsafe locations to be safe, lessening the amount of false-positives.
+Notable examples are \inlinecode{impi\_poweroff}, \inlinecode{raw.c}, \inlinecode{scx200\_gpio.c}, \inlinecode{tlclk.c},
+where over half of the potential indirect races were eliminated. The driver \inlinecode{bsr.c} stood out for noticeable improvement in precision for both indirect and direct races.
 
 In most of the drivers, the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
 
 It is worth noting that the motivation for introducing the partitioning by time to Goblint came from analysing the common issues on a subset of those very same drivers.
 However, the fact that there were other drivers, outside the subset of the benchmark drivers that were manually analysed
-that benefited from the addition of the extra dimension, leads the author to believe that there is a reasonable likelihood
-that the benefits are not limited to this specific set of drivers.
+that benefited from the addition of the extra dimension, leads me to believe that there is a reasonable likelihood
+that the benefits are not limited to this specific set of drivers. Out of the 6 drivers that were mentioned as notable examples, only one,
+\inlinecode{bsr.c} was part of the manually reviewed drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
 
@@ -320,14 +326,6 @@ specially taking into account that the number of possible conventions that guara
 
 However, at the same time it is very hard to imagine a domain independent analysis that would be able to safely exclude the races that we have looked at in this section.
 
-Currently, the rules mentioned in this section are hard-coded into Goblint. This approach does not completely solve the issue of how to make Goblint take the domain specific happen-before
-guarantees into account -- sadly it is not possible for the team behind Goblint to cover all the possible domains nor even fully cover the domain of device drivers.
-
-In the long term, offering either the user of a Goblint or an interested thirty party a way to specify those guarantees,
-for example through a DSL,  would help to solve this limitation. In addition, an approach that would try to deduce possible happens-before guarantees dynamically 
-could be something that would lessen the burden on the party specifying the guarantees.
-
-\toadd{Some kind of ending}
 \tosup{It would be nice to have some words about how this is implemented in slightly more low-level terms.}
 \todisc{Added above}
 
