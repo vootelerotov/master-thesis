@@ -66,9 +66,9 @@ Computer Science Curriculum\\[2mm]
 % If the thesis is printed on both sides of the page then 
 % the second page must be must be empty. Comment this out
 % if you print only to one side of the page comment this out
-\newpage
-\thispagestyle{empty}    
-\phantom{Text to fill the page}
+%\newpage
+%\thispagestyle{empty}    
+%\phantom{Text to fill the page}
 % END OF EXTRA PAGE WITHOUT NUMBER
 
 
@@ -79,53 +79,46 @@ Computer Science Curriculum\\[2mm]
 
 % COMPULSORY INFO PAGE
 \newpage
-\selectlanguage{estonian}
-\noindent\textbf{Goblint on parim!}
-\vspace*{3ex}
-
-\noindent\textbf{Lühikokkuvõte:} 
-\toadd{One or two sentences providing a basic introduction to the field, comprehensible to a scientist in
-any discipline.}
-\toadd{Two to three sentences of
-more detailed background, comprehensible to scientists in related disciplines.}
-\toadd{One sentence clearly stating the general problem being addressed by this particular
-study.}
-\toadd{One sentence summarising the main result (with the words here we show or their equivalent).}
-\toadd{Two or three sentences explaining what
-the main result reveals in direct
-comparison to what was thought to be the case previously, or how the main result adds to previous knowledge.}
-\toadd{One or two sentences to put the results into a more general context.}
-\toadd{Two or three sentences to provide a
-broader perspective, readily
-comprehensible to a scientist in any
-discipline, may be included in the first paragraph
-if the editor considers that the accessibility of
-the paper is significantly enhanced by their inclusion.}
-\vspace*{3ex}
-
-\noindent\textbf{Võtmesõnad:}\toadd{List of keywords}
-\vspace*{3ex}
-
-\noindent\textbf{CERCS:}\toadd{CERCS kood ja nimetus:~\url{https://www.etis.ee/Portal/Classifiers/Details/d3717f7b-bec8-4cd9-8ea4-c89cd56ca46e}}
-\vspace*{6ex}
 
 \selectlanguage{english}
 \noindent\textbf{\large \articleName}
 \vspace*{3ex}
-{\flushleft{\textbf{Abstract:}} }
+{\flushleft{\textbf{Abstract:}} The concurrent nature of device drivers makes them notoriously difficult to manually debug.
+Goblint, a static analysis framework tries to automate the verification of data race freedom. The key challenge doing that is precision of the analyses.
+This paper proposes a enhancement to the region analysis of Goblint to incorporate domain specific happens-before guarantees. 
+The proposed addition is implemented and evaluated on the Goblint benchmark suite.
+We show that the doing so increases the precision of Goblint when analysing character drivers.
+}
 
 \vspace*{3ex}
-{\flushleft{\textbf{Keywords:}\toadd{List of keywords}}}
+{\flushleft{\textbf{Keywords:} Concurrency, race condition, abstract interpretation, happens-before, device drivers, Goblint}
 \vspace*{3ex}
 
-\noindent\textbf{CERCS:}\toadd{CERCS code and name:~\url{https://www.etis.ee/Portal/Classifiers/Details/d3717f7b-bec8-4cd9-8ea4-c89cd56ca46e}}
+\noindent\textbf{CERCS:} P170, Computer science, numerical analysis, systems, control
+\selectlanguage{estonian}
+
+\vspace*{6ex}
+\toadd{PEALKIRI!}
+\noindent\textbf{Goblint on parim!}
+\vspace*{3ex}
 
 
+\toadd{Eesti keelde}
+\noindent\textbf{Lühikokkuvõte:} 
+\vspace*{3ex}
+
+\toadd{List of keywords, eesti keeles??}
+{\flushleft{\textbf{Võtmesõnad:} Goblint}
+\vspace*{3ex}
+
+\noindent\textbf{CERCS:} P170, Arvutiteadus, arvutusmeetodid, süsteemid, juhtimine (automaatjuhtimisteooria)
+
+\newpage
 
 \selectlanguage{english}
 
 
-\newpage
+
 \tableofcontents
 
 
@@ -185,20 +178,6 @@ the paper is significantly enhanced by their inclusion.}
 
 \newpage
 
-\selectlanguage{estonian}
-
-\section{Eestikeelne pealkiri}
-Magistriöö(30 EAP) \\
-Vootele Rõtov \\
-Resümee \\
-
-
-\toadd{Use introduction and conclusion to give a brief overview of what this thesis is about}
-
-\selectlanguage{english}
-
-\newpage
-
 \bibliography{thesis}{}
 \bibliographystyle{plain}
 
@@ -243,10 +222,6 @@ I certify that granting the non-exclusive licence does not infringe the intellec
 
 \noindent
 Tartu, \today
-
-\newpage
-
-
 
 
 \end{document}
