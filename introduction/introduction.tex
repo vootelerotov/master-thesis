@@ -35,8 +35,8 @@ as it is the difference between Goblint being able to either outright verify the
 
 As part of this thesis, an analysis performed by Goblint was enhanced with time dimension. Inspired by the happens-before relation and motivated by the results of benchmarks done,
 the extra dimension enables Goblint to take into account guarantees provided by Linux Kernel of the way the callbacks exposed are invoked.
-For an example, let there be a an assignment to memory location \inlinecode{i} in both functions \inlinecode{init} an \inlincecode{exit}. 
-If we know that both functions are called only once and that call to \inlinecode{init} must complete before \inline{exit} can be called thet we can safely rule out a data race on \inlincecode{i}.
+For an example, let there be a an assignment to memory location \inlinecode{i} in both functions \inlinecode{init} an \inlinecode{exit}. 
+If we know that both functions are called only once and that call to \inlinecode{init} must complete before \inlinecode{exit} can be called thet we can safely rule out a data race on \inlinecode{i}.
 As a result of the added dimension, the analysis of most device drivers in benchmark suite are more precise. In case of 6 out of 25 drivers in the benchmark suite,
 the results have improved notably.
 
