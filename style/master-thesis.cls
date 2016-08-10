@@ -188,5 +188,5 @@
 \usetikzlibrary{3d}
 \usetikzlibrary{patterns}
 
-% plot
+% table
 \usepackage{multirow}

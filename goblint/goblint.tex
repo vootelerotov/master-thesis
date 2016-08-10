@@ -213,6 +213,42 @@ Meanwhile, a fork of Goblint containing these changes is available here: \url{ht
 
 \toguide{Any effect?}
 
+\subsubsection{Concrete example}
+
+For a concrete example, lets consider following device driver:
+
+\begin{lstlisting}[language=c,style=def,columns=fullflexible]
+pthread_mutex_t open = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t close = PTHREAD_MUTEX_INITIALIZER;
+
+static int file_open(struct inode *inode, struct file *file)
+{
+  pthread_mutex_lock(&open);
+  file->private_data=1; 
+  pthread_mutex_lock(&open);
+  return 0;
+}
+
+static int file_release(struct inode *inode, struct file *file)
+{
+  pthread_mutex_lock(&close);
+  file->private_data=NULL; 
+  pthread_mutex_lock(&close);
+  return 0;
+}
+
+...
+\end{lstlisting}
+
+Previously, Goblint would have seen \inlinecode{private\_data} of \inlinecode{file} as unsafe. At the same time, Linux kernel guarantees that a file cannot be released until it has been opened and it can be opened again only after it has been released. This guarantee has been incorporated into Goblint by partitioning the time for file argument into partitions \textit{fileOpen},\textit{fileClose} and \textit{default}. 
+
+Thanks to this Goblint is able to rule out a possible data race and deem the location to be safe as can been seen from the Goblint output on Figure \ref{Goblint-example}
+
+\begin{figure}[H]
+\includegraphics[width=0.9\textwidth]{goblint-out}
+\caption{Snippet from Goblint output}
+\label{Goblint-example}
+\end{figure}
 \subsubsection{Evaluation}
 
 
@@ -229,39 +265,45 @@ Evaluating the effect of the enhanced region analysis on the set of character de
    &  \multicolumn{2}{c}{Indirect races} & \multicolumn{2}{|c |}{Direct races} \\
    Driver & Region  & Enhanched Region  & Region  & Enhanched Region \\ 
    \hline
-   apm-emulation.c & 29 & 29 & 12 & 10 \\
-   applicom.c & 14 & 13 & 8 & 7 \\
-   dtlk.c & 29 & 22 & 19 & 19 \\
-   efirtc.c & 0 & 0 & 0 & 0 \\
-   genrtc.c & 0 & 0 & 2 & 2 \\
-   hangcheck-timer.c & 12 & 12 & 0 & 0 \\
-   hpet.c & 292 & 133 & 22 & 22 \\
-   ipmi\_devintf.c & 197 & 117 & 8 & 8 \\
-   ipmi\_msghandler.c & 449 & 449 & 114 & 114 \\
-   ipmi\_poweroff.c & 142 & 50 & 11 & 11 \\
-   ipmi\_watchdog.c & 245 & 224 & 13 & 13 \\
-   mem.c & 0 & 0 & 5 & 5 \\
-   misc.c & 6 & 6 & 10 & 9 \\
-   nvram.c & 0 & 0 & 1 & 1 \\
-   ppdev.c & 129 & 122 & 14 & 14 \\
-   random.c & 65 & 65 & 37 & 37 \\
-   rtc.c & 20 & 1 & 4 & 3 \\
-   tlclk.c & 88 & 20 & 6 & 5 \\
-   toshiba.c & 0 & 0 & 0 & 0 \\
-   ttyprintk.c & 193 & 193 & 3 & 3 \\
+    apm-emulation.c & 27 & 27 & 24 & 19 \\
+    applicom.c & 16 & 15 & 8 & 7 \\
+    bsr.c & 19 & 0 & 10 & 2 \\
+    dtlk.c & 30 & 23 & 19 & 19 \\
+    efirtc.c & 0 & 0 & 0 & 0 \\
+    genrtc.c & 0 & 0 & 2 & 2 \\
+    hangcheck-timer.c & 12 & 12 & 0 & 0 \\
+    hpet.c & 292 & 133 & 27 & 25 \\
+    ipmi\_devintf.c & 197 & 117 & 8 & 8 \\
+    ipmi\_msghandler.c & 481 & 481 & 273 & 273 \\
+    ipmi\_poweroff.c & 142 & 50 & 11 & 11 \\
+    ipmi\_watchdog.c & 245 & 224 & 13 & 13 \\
+    lp.c & 85 & 85 & 8 & 8 \\
+    mem.c & 0 & 0 & 5 & 5 \\
+    misc.c & 6 & 6 & 10 & 9 \\
+    nvram.c & 0 & 0 & 1 & 1 \\
+    pc8736x\_gpio.c & 195 & 0 & 2 & 2 \\
+    ppdev.c & 129 & 122 & 14 & 14 \\
+    random.c & 65 & 65 & 40 & 40 \\
+    raw.c & 264 & 0 & 3 & 2 \\
+    rtc.c & 20 & 1 & 4 & 3 \\
+    scx200\_gpio.c & 188 & 0 & 1 & 1 \\
+    tlclk.c & 86 & 18 & 8 & 7 \\
+    toshiba.c & 0 & 0 & 0 & 0 \\
+    ttyprintk.c & 193 & 193 & 3 & 3 \\
    \hline
 \end{tabular}
-\caption{Results benchmarking region analysis with and without time partition}
+\caption{Results of benchmarking region analysis with and without time partitioning}
 \end{figure}
 
-We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deemes it unsafe based on direct access present in the source code
-Goblint is analysing. For an example, the direct acces could be a variable assignment.
-An \textit{indirect race} in reported when there is a possibilty of an race at a location when one considers functions for what Goblint does not have source code for.
+We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deems it unsafe based on direct access present in the source code
+Goblint is analysing. For an example, the direct access could be a variable assignment.
+An \textit{indirect race} in reported when there is a possibility of an race at a location when one considers functions for what Goblint does not have source code for.
 This can happen if driver exposes some of its state to using a function defined in Linux kernel.   
 
-In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of analysis of the benchmark suite performeb by Goblint with the space based region analysis active while the column denoted as \textit{Enhanched Region} are results of achived by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
+In the Figure \ref{evaluation} the columns denoted as \textit{Region} contain results of analysis of the benchmark suite performed by Goblint with the space based region analysis active while the column denoted as \textit{Enhanched Region} are results of achieved by additionally adding the time partitioning. The numbers indicate real data races or false-positives found by Goblint.
 
-As seen by the results of the benchmark, the effect of time partition added to the region analyses has depends heavily on the driver.
+As seen by the results of the benchmark, the effect of time partition added to the region analyses has depends heavily on the driver. In some drivers it enables Goblint to deem quite a lot of previously unsafe locations to be safe, lessening the amount of false-positives.
+
 In most of the drivers the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
 
 It is worth noting that the motivation for introducing the partitioning by time to Goblint did came from analyzing the common issues on a subset of those very same drivers.
@@ -271,8 +313,10 @@ that the benefits are not limited to this specific set of drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
 
-The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify. This is an hindarance,
-specially taking into account that the number of possible coventions that guarantee race freedom between two operations is very likely large.  
+\toask{Leave out?}
+
+The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify. This is an hindrance,
+specially taking into account that the number of possible conventions that guarantee race freedom between two operations is very likely large.  
 
 However, at the same time it is very hard to imagine a domain independent analysis that would be able to safely exclude the races that we have looked at in this section.
 
