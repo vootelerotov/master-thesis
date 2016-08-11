@@ -217,7 +217,7 @@ is a relation between $N_p \times S$ and $N_p \times S$ for which following rule
 \begin{gather*}
   \inference[Stmt]{ \lp u, \mathword{stmt}, v \rp \in E_{p}  \separ  \lllb \mathword{stmt} \rrrb_{\mathword{Stmt}} \lp s \rp = s'}{\lp u, s \rp \intraproc_p \lp v, s' \rp} \\
   \inference[Pos]{ \lp u, \mathword{Pos} \lp e \rp , v \rp \in E_{p} \separ \lllb e \rrrb_{Exp} \lp s \rp = \mathword{true} }{\lp u, s \rp \intraproc_p \lp v, s \rp} \\  
-  \inference[Neg]{ \lp u, \mathword{Neg} \lp e \rp , v \rp \in E_{p} \separ \lllb e \rrrb_{Exp} \lp s \rp \neq \mathword{true} }{\lp u, s \rp \intraproc_p \lp v, s \rp} 
+  \inference[Neg]{ \lp u, \mathword{Neg} \lp e \rp , v \rp \in E_{p} \separ \lllb e \rrrb_{Exp} \lp s \rp \neq \mathword{true} }{\lp u, s \rp \intraproc_p \lp v, s \rp}  \text{.}
 \end{gather*}
 \addtolength{\jot}{-2em}
 
@@ -267,7 +267,7 @@ We will later use this to define semantics that takes thread interleavings into 
   \addtolength{\jot}{2em}
   \begin{gather*}
     \inference[Spawn]{\lp u, \mathword{spawn}(f), v \rp \in E  \separ  \lllb f \rrrb_{Exp} = p \separ p \in \mathword{Proc}}{ \lp u :: xs, s \rp \intrathread \lp v :: xs, s, \lbk p \rbk \rp} \\
-    \inference[IntraThread] {\lp u, l , v \rp \in E \separ \lp xs , s \rp \interproc \lp ys, s' \rp }{ \lp xs , s \rp \intrathread \lp ys, s', \lbk \rbk \rp}
+    \inference[IntraThread] {\lp u, l , v \rp \in E \separ \lp xs , s \rp \interproc \lp ys, s' \rp }{ \lp xs , s \rp \intrathread \lp ys, s', \lbk \rbk \rp} \text{.}
   \end{gather*}
   \addtolength{\jot}{-2em}
 
