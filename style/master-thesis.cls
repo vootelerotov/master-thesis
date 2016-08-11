@@ -106,7 +106,7 @@
   %numbers=left,                   % where to put the line-numbers
   %numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
   numberstyle=\tiny\color{gray}, 
-  stepnumber=1,                    % the step between two line-numbers. If it's 1, each line 
+  stepnumber=1, % the step between two line-numbers. If it's 1, each line 
                                    % will be numbered
   numbersep=5pt,                   % how far the line-numbers are from the code
   backgroundcolor=\color{black!3},   % choose the background color. You must add \usepackage{color}
@@ -129,7 +129,8 @@
   commentstyle=\color{dkgreen},    % comment style
   stringstyle=\color{mauve},       % string literal style
   escapeinside={\%*}{*)},          % if you want to add a comment within your code
-  morekeywords={*,game, fun}       % if you want to add more keywords to the set
+  morekeywords={*,game, fun},       % if you want to add more keywords to the set
+  columns=fullflexible
 }
 \lstdefinestyle{def}{
 	showstringspaces=false,
@@ -170,7 +171,7 @@
 
 
 %todo
-\usepackage{todonotes}
+\usepackage[disable]{todonotes}
 
 
 % for comment
