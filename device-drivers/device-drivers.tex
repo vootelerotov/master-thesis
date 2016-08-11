@@ -2,15 +2,11 @@
 \documentclass[..thesis.tex]{subfiles}
 \hyphenation{re-gis-tering}
 \begin{document}
-\subsection{Overview}
 
-\kalmer{See ülevaade ei anna lugejale mitte midagi --- selle võid lihtsalt ära jätta.}
-\todisc{Mulle tundub liiga karm otse liidesest alustada, jätaks selle osa ikkagi sisse. Ei ole päris põhimõtteline,  kui Vesal arvab ka, et võiks maha võtta, siis võtame maha.}
-
+%Vesal: Let's just make this into a general section intro.
 
 To explain the role of device drivers, let's introduce two common devices that are usable on computers running a Linux operating system.
-
-First of them is \inlinecode{/dev/tty}, a device that represents the terminal controlling the current process \cite{torvalds_linux}.
+The first is \inlinecode{/dev/tty}, a device that represents the terminal controlling the current process \cite{torvalds_linux}.
 Opening a terminal in Linux and writing to the device results in the text being displayed in the terminal. One can try this with the following command: 
 
 \inlinecode{echo "Hello" > /dev/tty}.
@@ -24,11 +20,13 @@ Although the two devices act differently, they can be both used in the same way 
 This allows us to group the two devices together when reasoning about how to use them. The benefits of this are far greater when the number of devices that can be grouped together grows.
 
 The role of Linux device drivers is to enable such groupings that can contain an arbitrary amount of devices.
-
 This is done by enabling access to the devices via a small set of well-defined interfaces that other parts of the Linux kernel can make use of. 
 
 In this paper, we will focus on a subset of device drivers called \textit{character (char) device drivers}.
-Character device drivers allow unbuffered access to the underlying ``hardware''. Both of the drivers for the example devices above are char drivers.
+Character device drivers allow unbuffered access to the underlying ``hardware''.
+Both of the drivers for the example devices above are char drivers. We will
+first consider the common interface used to access the operations of the device
+drivers and then discuss what can go wrong when these drivers execute in a concurrent setting.
 
 \subsection{Interface of a character device driver}
 
@@ -159,7 +157,7 @@ static ssize_t file_read(...){
 }
 \end{lstlisting}
 
-where \inlinecode{my\_mutex} is a static mutex.
+Here, \inlinecode{my\_mutex} is a static mutex.
 
 After adding the same locking pattern to write operations, data race will no longer plague the example driver.
 
