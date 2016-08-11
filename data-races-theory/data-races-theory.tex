@@ -43,10 +43,10 @@ For $a$ to be executed before $b$, either $a$ has to be a statement before $b$ i
 there must be a statement $c$ such that $a$ is executed before $c$ and $c$ is executed before $b$ or
 there must be a synchronization event that is sufficient to say that $a$ was executed before $b$.
 
-As an example of a synchronization event, lets consider spawing a thread. Let $t_1$ and $t_2$ be two thread templates.
+As an example of a synchronization event, let's consider spawing a thread. Let $t_1$ and $t_2$ be two thread templates.
 Let $t_1$ be a thread template where a variable $x$ is read and then a thread from template $t_2$ is spawned.
-Let $t_2$ bu such a thread template where a value is assigned to $x$. The thread spawning is functions here as a synchronization event -- 
-if thread $T_1$ run template $t_1$ and spawns thread $T_2$, then the read of $x$ in $t_1$ happens before the assignmnet in $t_2$.
+Let $t_2$ be such a thread template where a value is assigned to $x$. The thread spawning functions here as a synchronization event -- 
+if the thread $T_1$ runs the template $t_1$ and spawns the thread $T_2$, then the read of $x$ in $t_1$ happens before the assignment in $t_2$.
 
 The key insight concerning data races is that if we can establish happens-before relationship between statements $a$ and $b$, then they cannot race against each other. 
 
