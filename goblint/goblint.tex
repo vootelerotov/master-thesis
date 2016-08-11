@@ -208,7 +208,7 @@ Meanwhile, a fork of Goblint containing these changes is available here: \url{ht
 
 \subsubsection{Concrete example}
 
-For a concrete example, lets consider following device driver:
+For a concrete example, let's consider the following device driver:
 
 \begin{lstlisting}[language=c,style=def,columns=fullflexible]
 pthread_mutex_t open = PTHREAD_MUTEX_INITIALIZER;
@@ -233,9 +233,9 @@ static int file_release(struct inode *inode, struct file *file)
 ...
 \end{lstlisting}
 
-Previously, Goblint would have seen \inlinecode{private\_data} of \inlinecode{file} as unsafe. At the same time, Linux kernel guarantees that a file cannot be released until it has been opened and it can be opened again only after it has been released. This guarantee has been incorporated into Goblint by partitioning the time for file argument into partitions \textit{fileOpen},\textit{fileClose} and \textit{default}. 
+Previously, Goblint would have seen \inlinecode{private\_data} of \inlinecode{file} as unsafe. At the same time, Linux kernel guarantees that a file cannot be released until it has been opened and it can be opened again only after it has been released. This guarantee has been incorporated into Goblint by partitioning the time for \inlinecode{file} argument into partitions \textit{fileOpen},\textit{fileClose} and \textit{default}. 
 
-As a result of accesses to the \inlinecode{private\_data} being in different regions, Goblint is able to rule out a possible data race and deem the location to be safe as can been seen from the Goblint output on Figure \ref{Goblint-example}
+Since accesses to the \inlinecode{private\_data} are in different regions, Goblint is able to rule out a possible data race and deem the location safe, as can been seen from the Goblint's output in Figure \ref{Goblint-example}
 
 \begin{figure}[H]
 \includegraphics[width=0.9\textwidth]{goblint-out}
@@ -283,7 +283,7 @@ Evaluating the effect of the enhanced region analysis on the set of character de
     ttyprintk.c & 193 & 193 & 3 & 3 \\
    \hline
 \end{tabular}
-\caption{Results of benchmarking region analysis with and without time partitioning.}
+\caption{Results of benchmarking region analysis with and without time partitioning}
 \end{figure}
 
 We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deems it unsafe based on the direct access present in the source code
@@ -296,9 +296,9 @@ while the column denoted as \textit{Enhanched Region} are results that were achi
 The numbers indicate real data races or false-positives found by Goblint.
 
 As seen by the results of the benchmark, the effect the time partition added to the region analysis depends heavily on the driver.
-In some drivers it enables Goblint to deem quite a lot of previously unsafe locations to be safe, lessening the amount of false-positives.
+In some drivers, it enables Goblint to deem quite a lot of previously unsafe locations to be safe, reducing the amount of false-positives.
 Notable examples are \inlinecode{impi\_poweroff}, \inlinecode{raw.c}, \inlinecode{scx200\_gpio.c}, \inlinecode{tlclk.c},
-where over half of the potential indirect races were eliminated. The driver \inlinecode{bsr.c} stood out for noticeable improvement in precision for both indirect and direct races.
+where over half of the potential indirect races were eliminated. The results for the driver \inlinecode{bsr.c} stood out for noticeable improvement in precision for both indirect and direct races.
 
 In most of the drivers, the positive effect can be attributed to the exclusion of races between \inlinecode{init} and \inlinecode{exit} functions. 
 
