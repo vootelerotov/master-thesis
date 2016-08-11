@@ -680,7 +680,13 @@ As an example, let's look at the example program $B$:
 \end{figure}
 
 Let $d_s = \lb \lp x, \lb \rb \rp \rb $ be the abstract starting state.
-Then $\analyze_B : N_B \to \lp \mathword{Var} \to 2^{ \lb -, 0, + \rb } \rp $ must satisfiy the following constraint system
+Then 
+
+\begin{equation*}
+\analyze_B : N_B \to \lp \mathword{Var} \to 2^{ \lb -, 0, + \rb } \rp
+\end{equation*}
+
+ must satisfiy the following constraint system
 
 \begin{equation*}
   \begin{split}
@@ -690,7 +696,7 @@ Then $\analyze_B : N_B \to \lp \mathword{Var} \to 2^{ \lb -, 0, + \rb } \rp $ mu
     \analyze_B \lp 2 \rp & \sqsupseteq \lllb  \mcode{Neg(rand() \% 2 == 0)}  \rrrb_{\mathword{Stmt}}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
     \analyze_B \lp 3 \rp & \sqsupseteq \lllb  \mcode{Pos(rand() \% 2 == 0)}  \rrrb_{\mathword{Stmt}}^{\absint} \lp \analyze_B \lp 1 \rp \rp \\
     \analyze_B \lp 4 \rp & \sqsupseteq \lllb \mcode{ x = 0 } \rrrb_{\mathword{Stmt}}^{\absint} \lp \analyze_B \lp 2 \rp \rp \\
-    \analyze_B \lp r_{\mathword{main}} \rp  & \sqsupseteq \lllb  \mcode{return x}  \rrrb_{\mathword{Stmt}}^{\absint} \lp \analyze_B \lp 4 \rp \rp
+    \analyze_B \lp r_{\mathword{main}} \rp  & \sqsupseteq \lllb  \mcode{return x}  \rrrb_{\mathword{Stmt}}^{\absint} \lp \analyze_B \lp 4 \rp \rp \text{.}
   \end{split} 
 \end{equation*}
 

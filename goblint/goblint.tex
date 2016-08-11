@@ -18,30 +18,31 @@
 
 
 
-
-
 \begin{document}
 
 \toguide{What is the point here?}
 
-In this section, we give an overview  of \textit{Goblint}, a static analyser for detecting data races in C programs with the focus on Linux device drivers that has been developed in the University of Tartu and in the Technical University of Munich for over 10 years \cite{vojdani_static_2016,_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
+In this section, we give an overview of \textit{Goblint}, a static analyser for detecting data races in C programs with the focus on Linux device drivers
+that has been developed in the University of Tartu and in the Technical University of Munich for over 10 years
+\cite{vojdani_static_2016,_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
 
 \toask{Should cite something else?}
 
 \toguide{Why are we intrested in Goblint?}
 
-The original work presented in this thesis builds on top of what is done in Goblint. The background information given in this section will hopefully enable the reader to put that in context.
+The original work presented in this thesis builds on top of what is done in Goblint.
+The background information given in this section will hopefully enable the reader to put that in context.
 
 \tosup{So keep in mind that this is the main objective! I will give some comments, but you should also go through each paragraph of this section and ask if it helps provide context to the next section or is just distracting details.}
 \todisc{A lot of refactoring, this still relevant?}
 
 \toguide{Okay, got it. So, what is Goblint?}
 
-Goblint is a constraint system based analysis tool that performs abstract interpretation, building on top of the theoretical ideas described in the previous sections. Goblint is written in OCaml and is publicly available on Github.
+Goblint is a constraint system based analysis tool that performs abstract interpretation,
+building on top of the theoretical ideas described in the previous sections. Goblint is written in OCaml and is publicly available on Github.
 
-Goblint takes a C program as an input and uses the CIL framework to process it into an intermediate form that can then be converted into a control flow graph (\textit{CFG}). 
+Goblint takes a C program as an input and uses the CIL framework \cite{necula_cil:_2002} to process it into an intermediate form that can then be converted into a control flow graph (\textit{CFG}). 
 
-\toadd{cite CIL}
 
 As the next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and CFG of the program is produced.
 
@@ -83,14 +84,18 @@ Finally, the output is mapped to the original C program and displayed to the use
 
 \toguide{Okay, do we need to understand all of it?}
 
-The most interesting components of Goblint are the provided solvers for the constraint systems and the wide array of analyses. We will be focusing on the structure of an analysis, using the example of the mutex analysis, which makes use of the previously discussed ideas about lockset analysis. This will hopefully both introduce one of the key analysis for Goblint and give a high-level idea of how an implementation of an analysis looks like. The signatures we introduce are simplified versions of the ones present in the Goblint implementation.
+The most interesting components of Goblint are the provided solvers for the constraint systems and the wide array of analyses.
+We will be focusing on the structure of an analysis, using the example of the mutex analysis, which makes use of the previously discussed ideas about lockset analysis.
+This will hopefully both introduce one of the key analysis for Goblint and give a high-level idea of how an implementation of an analysis looks like.
+The signatures we introduce are simplified versions of the ones present in the Goblint implementation.
 
-\toadd{\sout{Thesis of Kalmer and Vesal} something else?}
 The solvers implemented in Goblint do not fall with the scope of this thesis. A thorough overview can be found from \cite{apinis_frameworks_2014, vojdanivesal_static_2010}.
 
 \toguide{So, how does an analyses look like?}
 
-As previously described, for each analysis, we need an abstract domain to perform the abstract interpretation on. In Goblint, all the domains implement interface \inlinecode{Lattice}. The functions \textit{join} and \textit{meet} correspond to the binary least upper bound and greatest lower bound operations. 
+As previously described, for each analysis, we need an abstract domain to perform the abstract interpretation on. 
+In Goblint, all the domains implement interface \inlinecode{Lattice}.
+The functions \textit{join} and \textit{meet} correspond to the binary least upper bound and greatest lower bound operations. 
 
 
 \begin{lstlisting}[language=Caml,style=caml]
@@ -110,15 +115,13 @@ end
 
 The type \inlinecode{t} in OCaml module type leaves the type abstract. From here on, the types written in italics are built-in types in OCaml. 
 
-\tosup{\sout{I would not talk about Printable, so I suggest just inlining the type t into the Lattice. Maybe also remove is\_top \& is\_bot. Say somewhere on top that these are simplified/partial signatures.}}
-
-
-In case of the lockset analysis, the domain is a reversed set domain of all the possible locks. That is, the elements in the domain are sets of locks in the program under analysis and join operation is defined as the intersection of two sets and meet as union of two sets. The reasoning behind the set domain being reversed is that we are interested in the set of all the locks that must be held at a specific statement. In the situation where we have to take an upper bound of the two locksets (say, after two branches of an if-else statement merge), we hence want it to only consist of locks that were in both of the locksets.
+In case of the lockset analysis, the domain is a reversed set domain of all the possible locks.
+That is, the elements in the domain are sets of locks in the program under analysis and join operation is defined as the intersection of two sets and meet as union of two sets.
+The reasoning behind the set domain being reversed is that we are interested in the set of all the locks that must be held at a specific statement.
+In the situation where we have to take an upper bound of the two locksets (say, after two branches of an if-else statement merge),
+we hence want it to only consist of locks that were in both of the locksets.
 
 Analysis in Goblint must implement the module type \inlinecode{Spec}. Following is the simplified version of it.
-
-\toask{Did I not cover something important? Or something left is maybe not important in context of thesis? Left out: sync, intrpt, }
-\toans{No, and I think you can remove more, such as exitstate \& otherstate, but this signature seems okay to me.}
 
 \begin{lstlisting}[language=Caml,style=caml]
 module type Spec =
@@ -154,14 +157,16 @@ Each analysis includes two lattices, lattice $D$ will contain the abstract state
 
 The type \inlinecode{ctx} with type parameters $\lp D.t, G.t \rp$ encapsulates both the local and the global state, offering access to helper functions on them. 
 
-The functions \inlinecode{startstate},\inlinecode{exitstate} and \inlinecode{otherstate} provide an initial abstract state for a thread depending on whether the thread starts an
+The functions \inlinecode{startstate}, \inlinecode{exitstate} and \inlinecode{otherstate} provide an initial abstract state for a thread depending on whether the thread starts an
 initialization function (in the context of device drivers, the function that registers the driver and exposes the callback functions),
 a cleanup function (where deregistration happens in device drivers) or is any other function that can be used to spawn a new thread (all the file operations).
 
 The functions take as argument information about the function declaration, enabling Goblint to differentiate between different file operations.
 In case of mutex analysis, all the functions always return empty locksets.
 
-The \inlinecode{part\_access} function enables one to partition accesses into disjoint groups -- if two accesses to the variable $x$ are in different partitions, then they cannot race. In addition, it also associates a set of locks held with the partition. This function makes it possible to use the idea of dividing access information to the left and right side.
+The \inlinecode{part\_access} function enables one to partition accesses into disjoint groups -- if two accesses to the variable $x$ are in different partitions,
+then they cannot race. In addition, it also associates a set of locks held with the partition.
+This function makes it possible to use the idea of dividing access information to the left and right side.
 
 In case of the mutex analysis, this function returns empty sets, as it does not make use of partitioning, but plays an important role in region analysis.
 
@@ -169,7 +174,8 @@ In case of the mutex analysis, this function returns empty sets, as it does not 
 \todisc{Can backwards ref now :), tied it with the left-hand right-hand side of the last section, anything else? }
 
 The \inlinecode{query} function enables the communication between different analyses that have been combined into one and are being performed at the same time -- 
-an analysis must be able to answer the query based on the current context. This allows an analysis to avoid duplication and allows one to design more modular analyses consisting of sub-analyses. More information regarding the query system of Goblint can be found here \toadd{Cite Kalmer}.
+an analysis must be able to answer the query based on the current context. This allows an analysis to avoid duplication and allows one to design more modular analyses consisting of sub-analyses.
+More information regarding the query system of Goblint can be found in \cite[113]{apinis_frameworks_2014}.
 
 The functions \inlinecode{assign}, \inlinecode{branch}, \inlinecode{body} and \inlinecode{return} are functions from abstract state to abstract state, for assignment statements,
 branching statements and for entering and exiting from function calls. They correspond to the $\lllb s \rrrb^{*}$ family of functions previously introduced.
@@ -183,14 +189,9 @@ this function modifies the abstract state -- function calls to functions such as
 remove and add mutexes to the set of held locks.
 
 \toguide{Okay, pretty dense stuff.}
-\tosup{\sout{This is a pretty big shift in tone from internals to a conceptual description of the analysis. I think both are needed, but it's pretty bad structurally. I might even suggest merging region analysis with your conceptual description of your own contribution and put all implementation details after that chapter where you describe goblint as is and show what changes you made.}}
-\todisc{Refactored}
-
-\kalmer{See super-tehniline värk ei huvita kedagi --- siit võib julgelt veel kustutada. Aga suurim probleem on see, et see ei vii kuhugi (peale kokkuvõtte). Siin võiks olla ühe päris näite läbi-mängimine. }
 
 \subsection{Changes}
 \toask{Divide this section into two (what is Goblint? My changes and their effect.) or create one more section?}
-
 
 As part of this thesis, the region analysis was extended to include the time dimension in addition.
 
@@ -202,8 +203,6 @@ one of the oldest analysis in Goblint, and Goblint does not have a preproccessin
 
 I hope to solve this issue before requesting the changes to be merged into the mainline.
 Meanwhile, a fork of Goblint containing these changes is available here: \url{https://github.com/vootelerotov/goblint-fork}
-
-\toask{How does this seem? Would work on making a decent pull request after turning in the thesis, hopefully something to add to the presentation slides? Alternative would be to focus on the implementation until deadline, but paper still looks raw.}
 
 \toguide{Any effect?}
 
@@ -236,7 +235,7 @@ static int file_release(struct inode *inode, struct file *file)
 
 Previously, Goblint would have seen \inlinecode{private\_data} of \inlinecode{file} as unsafe. At the same time, Linux kernel guarantees that a file cannot be released until it has been opened and it can be opened again only after it has been released. This guarantee has been incorporated into Goblint by partitioning the time for file argument into partitions \textit{fileOpen},\textit{fileClose} and \textit{default}. 
 
-As a result of accesses to the \inlinecode{private\_data} being in different regions,  Goblint is able to rule out a possible data race and deem the location to be safe as can been seen from the Goblint output on Figure \ref{Goblint-example}
+As a result of accesses to the \inlinecode{private\_data} being in different regions, Goblint is able to rule out a possible data race and deem the location to be safe as can been seen from the Goblint output on Figure \ref{Goblint-example}
 
 \begin{figure}[H]
 \includegraphics[width=0.9\textwidth]{goblint-out}
@@ -245,9 +244,7 @@ As a result of accesses to the \inlinecode{private\_data} being in different reg
 \end{figure}
 \subsubsection{Evaluation}
 
-
 Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave the following results.
-
 
 \begin{figure}[H]
  \label{evaluation}
@@ -312,15 +309,5 @@ that the benefits are not limited to this specific set of drivers. Out of the 6 
 \inlinecode{bsr.c} was part of the manually reviewed drivers.
 
 \toguide{Okay, got it. Seems cool. Anything else we should know?}
-
-\toask{Leave out?}
-
-The examples given for guarantees were all specific to Linux device drivers and as such, required domain knowledge to specify. This is an hindrance,
-specially taking into account that the number of possible conventions that guarantee race freedom between two operations is very likely large.  
-
-However, at the same time it is very hard to imagine a domain independent analysis that would be able to safely exclude the races that we have looked at in this section.
-
-\tosup{It would be nice to have some words about how this is implemented in slightly more low-level terms.}
-\todisc{Added above}
 
 \end{document}

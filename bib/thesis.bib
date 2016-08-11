@@ -1,96 +1,81 @@
 
-@article{ball_decade_2011,
-  title = {A {{Decade}} of {{Software Model Checking}} with {{SLAM}}},
-  volume = {54},
-  issn = {0001-0782},
-  doi = {10.1145/1965724.1965743},
-  abstract = {SLAM is a program-analysis engine used to check if clients of an API follow the API's stateful usage rules.},
-  timestamp = {2016-01-26T13:15:34Z},
-  number = {7},
-  urldate = {2016-01-26},
-  journal = {Commun. ACM},
-  author = {{Ball}, Thomas and {Levin}, Vladimir and {Rajamani}, Sriram K.},
-  month = jul,
+@inproceedings{qadeer_poirot:_2011,
+  address = {Berlin, Heidelberg},
+  series = {ICFEM'11},
+  title = {Poirot: {{A Concurrency Sleuth}}},
+  isbn = {978-3-642-24558-9},
+  shorttitle = {Poirot},
+  abstract = {Concurrent programming is difficult. The challenges are foundational: unlike sequential control flow, asynchronous control flow is difficult to understand and reason about. Not surprisingly, even expert programmers find it difficult to write concurrent software. We desperately need software engineering techniques and tools to move concurrent programming from black art to a rigorous engineering discipline. I believe that automated tools that reduce the cognitive burden of reasoning about concurrency can help tremendously in improving the productivity of concurrent programmers. In collaboration with my colleagues at Microsoft Research, I have developed Poirot (http://research.microsoft.com/ en-us/projects/poirot/), a tool for answering semantic queries about a concurrent program by statically searching over its executions. Poirot exploits sequential encodings of concurrent semantics, structural underand over-approximations for sequential control flow, and advances in automated theorem proving to search concurrent program executions efficiently. Poirot is being used in many different applications--bug detection, program understanding, and symbolic debugging. This lecture will present both a demonstration and an explanation of the techniques underlying the search engine inside Poirot. Poirot is joint work with Akash Lal and Shuvendu Lahiri.},
+  timestamp = {2016-01-31T20:13:30Z},
+  urldate = {2016-01-31},
+  booktitle = {Proceedings of the 13th {{International Conference}} on {{Formal Methods}} and {{Software Engineering}}},
+  publisher = {{Springer-Verlag}},
+  author = {Qadeer, Shaz},
   year = {2011},
-  pages = {68--76},
-  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/H34KTX5U/Ball et al. - 2011 - A Decade of Software Model Checking with SLAM.pdf:application/pdf}
+  pages = {15--15},
+  file = {chp%3A10.1007%2F978-3-642-24559-6_3.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/8V42UXAU/chp%3A10.1007%2F978-3-642-24559-6_3.pdf:application/pdf}
 }
 
-@article{mutilin_analysis_2012,
-  title = {Analysis of typical faults in {{Linux}} operating system drivers},
-  volume = {22},
-  issn = {20798156, 22206426},
-  doi = {10.15514/ISPRAS-2012-22-19},
-  timestamp = {2016-01-26T13:30:28Z},
-  urldate = {2016-01-26},
-  journal = {Proceedings of the Institute for System Programming of RAS},
-  author = {{Mutilin}, V.S. and {Novikov}, E.M. and {Khoroshilov}, A.V.},
-  year = {2012},
-  pages = {349--374},
-  file = {isp_22_2012_349.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/45UI4R8J/isp_22_2012_349.pdf:application/pdf}
-}
-
-@inproceedings{chou_empirical_2001,
-  address = {New York, NY, USA},
-  series = {SOSP '01},
-  title = {An {{Empirical Study}} of {{Operating Systems Errors}}},
-  isbn = {1-58113-389-8},
-  doi = {10.1145/502034.502042},
-  abstract = {We present a study of operating system errors found by automatic, static, compiler analysis applied to the Linux and OpenBSD kernels. Our approach differs from previous studies that consider errors found by manual inspection of logs, testing, and surveys because static analysis is applied uniformly to the entire kernel source, though our approach necessarily considers a less comprehensive variety of errors than previous studies. In addition, automation allows us to track errors over multiple versions of the kernel source to estimate how long errors remain in the system before they are fixed.We found that device drivers have error rates up to three to seven times higher than the rest of the kernel. We found that the largest quartile of functions have error rates two to six times higher than the smallest quartile. We found that the newest quartile of files have error rates up to twice that of the oldest quartile, which provides evidence that code "hardens" over time. Finally, we found that bugs remain in the Linux kernel an average of 1.8 years before being fixed.},
-  timestamp = {2016-01-26T13:33:01Z},
-  urldate = {2016-01-26},
-  booktitle = {Proceedings of the {{Eighteenth ACM Symposium}} on {{Operating Systems Principles}}},
-  publisher = {{ACM}},
-  author = {{Chou}, Andy and {Yang}, Junfeng and {Chelf}, Benjamin and {Hallem}, Seth and {Engler}, Dawson},
-  year = {2001},
-  pages = {73--88},
-  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/DQQH3S8F/Chou et al. - 2001 - An Empirical Study of Operating Systems Errors.pdf:application/pdf}
-}
-
-@misc{torvalds_availability_2000,
-  title = {Availability of kdb},
-  abstract = {Opinion of Linus on kernel debuggers.},
-  timestamp = {2016-01-26T13:08:18Z},
-  urldate = {2016-01-26},
-  howpublished = {\url{http://lwn.net/2000/0914/a/lt-debugger.php3}},
-  author = {{Torvalds}, Linus},
-  month = sep,
-  year = {2000},
-  file = {a/lt-debugger:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/7ZT494JZ/lt-debugger.html:}
-}
-
-@inproceedings{ferrara_checkmate_2009,
+@inproceedings{ferrara_checkmate:_2009,
   title = {Checkmate: {{A Generic Static Analyzer}} of {{Java Multithreaded Programs}}},
   shorttitle = {Checkmate},
   doi = {10.1109/SEFM.2009.20},
   abstract = {In this paper we present Checkmate, a generic static analyzer of Java multithreaded programs based on the abstract interpretation theory. It supports all the most relevant features of Java multithreading, as dynamic unbounded thread creation, runtime creation of monitors, and dynamic allocation of shared memory. We implement a wide set of properties, from the ones interesting also for sequential programs, e.g. division by zero, to the ones typical of multithtreaded programs, e.g. data races. We analyze several external case studies and benchmarks with Checkmate, and we study the experimental results both in term of precision and efficiency. It turns out that the analysis is particularly accurate and we are in position to analyze programs composed by some thousands of statements and a potentially infinite number of threads. As far as we know, Checkmate is the first generic static analyzer of Java multithreaded programs.},
   timestamp = {2016-01-25T17:06:57Z},
   booktitle = {2009 {{Seventh IEEE International Conference}} on {{Software Engineering}} and {{Formal Methods}}},
-  author = {{Ferrara}, P.},
+  author = {Ferrara, P.},
   month = nov,
   year = {2009},
   keywords = {Abstract Interpretation,abstract interpretation theory,Checkmate,distributed shared memory systems,dynamic allocation,dynamic unbounded thread creation,generic static analyzer,Java,Java multithreaded programs,Java multithreading,Multithreaded Programs,multi-threading,program diagnostics,resource allocation,runtime creation,sequential programs,shared memory,Static Analysis},
   pages = {169--178},
-  file = {IEEE Xplore Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/3PV5R4DA/Ferrara - 2009 - Checkmate A Generic Static Analyzer of Java Multi.pdf:application/pdf;IEEE Xplore Abstract Record:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/CRA4UMF9/login.html:}
+  file = {IEEE Xplore Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/3PV5R4DA/Ferrara - 2009 - Checkmate A Generic Static Analyzer of Java Multi.pdf:application/pdf;IEEE Xplore Abstract Record:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/CRA4UMF9/login.html:text/html}
 }
 
-@inproceedings{ryzhyk_dingo_2009,
+@phdthesis{vojdanivesal_static_2010,
+  address = {Tartu},
+  title = {Static {{Data Race Analysis}} of {{Heap-Manipulating C Programs}}},
+  timestamp = {2016-08-07T18:44:23Z},
+  school = {University of Tartu},
+  author = {{Vojdani,Vesal}},
+  year = {2010}
+}
+
+@inproceedings{pratikakis_locksmith:_2006,
   address = {New York, NY, USA},
-  series = {EuroSys '09},
-  title = {Dingo: {{Taming Device Drivers}}},
-  isbn = {978-1-60558-482-9},
-  shorttitle = {Dingo},
-  doi = {10.1145/1519065.1519095},
-  abstract = {Device drivers are notorious for being a major source of failure in operating systems. In analysing a sample of real defects in Linux drivers, we found that a large proportion (39\%) of bugs are due to two key shortcomings in the device-driver architecture enforced by current operating systems: poorly-defined communication protocols between drivers and the OS, which confuse developers and lead to protocol violations, and a multithreaded model of computation that leads to numerous race conditions and deadlocks. We claim that a better device driver architecture can help reduce the occurrence of these faults, and present our Dingo framework as constructive proof. Dingo provides a formal, state-machine based, language for describing driver protocols, which avoids confusion and ambiguity, and helps driver writers implement correct behaviour. It also enforces an event-driven model of computation, which eliminates most concurrency-related faults. Our implementation of the Dingo architecture in Linux offers these improvements, while introducing negligible performance overhead. It allows Dingo and native Linux drivers to coexist, providing a gradual migration path to more reliable device drivers.},
-  timestamp = {2016-01-26T13:33:27Z},
-  urldate = {2016-01-26},
-  booktitle = {Proceedings of the 4th {{ACM European Conference}} on {{Computer Systems}}},
+  series = {PLDI '06},
+  title = {{{LOCKSMITH}}: {{Context}}-sensitive {{Correlation Analysis}} for {{Race Detection}}},
+  isbn = {1-59593-320-4},
+  shorttitle = {{{LOCKSMITH}}},
+  doi = {10.1145/1133981.1134019},
+  abstract = {One common technique for preventing data races in multi-threaded programs is to ensure that all accesses to shared locations are consistently protected by a lock. We present a tool called LOCKSMITH for detecting data races in C programs by looking for violations of this pattern. We call the relationship between locks and the locations they protect consistent correlation, and the core of our technique is a novel constraint-based analysis that infers consistent correlation context-sensitively, using the results to check that locations are properly guarded by locks. We present the core of our algorithm for a simple formal language \ensuremath{\lambda{}>} which we have proven sound, and discuss how we scale it up to an algorithm that aims to be sound for all of C. We develop several techniques to improve the precision and performance of the analysis, including a sharing analysis for inferring thread locality; existential quantification for modeling locks in data structures; and heuristics for modeling unsafe features of C such as type casts. When applied to several benchmarks, including multi-threaded servers and Linux device drivers, LOCKSMITH found several races while producing a modest number of false alarm.},
+  timestamp = {2016-01-25T17:08:59Z},
+  urldate = {2016-01-25},
+  booktitle = {Proceedings of the 27th {{ACM SIGPLAN Conference}} on {{Programming Language Design}} and {{Implementation}}},
   publisher = {{ACM}},
-  author = {{Ryzhyk}, Leonid and {Chubb}, Peter and {Kuz}, Ihor and {Heiser}, Gernot},
-  year = {2009},
-  keywords = {concurrent programming,device drivers,domain-specific languages,fault avoidance,reliability},
-  pages = {275--288},
-  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/7ZFMRRJP/Ryzhyk et al. - 2009 - Dingo Taming Device Drivers.pdf:application/pdf}
+  author = {Pratikakis, Polyvios and Foster, Jeffrey S. and Hicks, Michael},
+  year = {2006},
+  keywords = {context-sensitivity,correlation,locksmith,multi-threaded programming,race detection,type inference},
+  pages = {320--331},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/N47ZFN4X/Pratikakis et al. - 2006 - LOCKSMITH Context-sensitive Correlation Analysis .pdf:application/pdf}
+}
+
+@article{pratikakis_locksmith:_2011,
+  title = {{{LOCKSMITH}}: {{Practical Static Race Detection}} for {{C}}},
+  volume = {33},
+  issn = {0164-0925},
+  shorttitle = {{{LOCKSMITH}}},
+  doi = {10.1145/1889997.1890000},
+  abstract = {Locksmith is a static analysis tool for automatically detecting data races in C programs. In this article, we describe each of Locksmith's component analyses precisely, and present systematic measurements that isolate interesting trade-offs between precision and efficiency in each analysis. Using a benchmark suite comprising stand-alone applications and Linux device drivers totaling more than 200,000 lines of code, we found that a simple no-worklist strategy yielded the most efficient interprocedural dataflow analysis; that our sharing analysis was able to determine that most locations are thread-local, and therefore need not be protected by locks; that modeling C structs and void pointers precisely is key to both precision and efficiency; and that context sensitivity yields a much more precise analysis, though with decreased scalability. Put together, our results illuminate some of the key engineering challenges in building Locksmith and data race detection analyses in particular, and constraint-based program analyses in general.},
+  timestamp = {2016-01-25T17:12:16Z},
+  number = {1},
+  urldate = {2016-01-25},
+  journal = {ACM Trans. Program. Lang. Syst.},
+  author = {Pratikakis, Polyvios and Foster, Jeffrey S. and Hicks, Michael},
+  month = jan,
+  year = {2011},
+  keywords = {context sensitivity,contextual effects,correlation inference,Data race,locksmith,race detection,sharing analysis,Static Analysis},
+  pages = {3:1--3:55},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/EMUNK8H6/Pratikakis et al. - 2011 - LOCKSMITH Practical Static Race Detection for C.pdf:application/pdf}
 }
 
 @inproceedings{erickson_effective_2010,
@@ -102,20 +87,160 @@
   urldate = {2016-01-25},
   booktitle = {Proceedings of the 9th {{USENIX Conference}} on {{Operating Systems Design}} and {{Implementation}}},
   publisher = {{USENIX Association}},
-  author = {{Erickson}, John and {Musuvathi}, Madanlal and {Burckhardt}, Sebastian and {Olynyk}, Kirk},
+  author = {Erickson, John and Musuvathi, Madanlal and Burckhardt, Sebastian and Olynyk, Kirk},
   year = {2010},
   pages = {1--16},
   file = {DataCollider - OSDI2010.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/6ZW8CID8/DataCollider - OSDI2010.pdf:application/pdf}
 }
 
-@inproceedings{deligiannis_fast_2015,
-  title = {Fast and {{Precise Symbolic Analysis}} of {{Concurrency Bugs}} in {{Device Drivers}}},
-  timestamp = {2016-01-26T17:33:01Z},
-  booktitle = {Proceedings of the 30th {{IEEE}}/{{ACM International Conference}} on {{Automated Software Engineering}} ({{ASE}})},
-  author = {{Deligiannis}, Pantazis and {Donaldson}, Alastair F. and {Rakamari{\'c}}, Zvonimir},
-  year = {2015},
-  note = {to appear},
-  file = {whoop.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/ZEQ4FGWB/whoop.pdf:application/pdf}
+@article{lamport_time_1978,
+  title = {Time, {{Clocks}}, and the {{Ordering}} of {{Events}} in a {{Distributed System}}},
+  volume = {21},
+  issn = {0001-0782},
+  doi = {10.1145/359545.359563},
+  abstract = {The concept of one event happening before another in a distributed system is examined, and is shown to define a partial ordering of the events. A distributed algorithm is given for synchronizing a system of logical clocks which can be used to totally order the events. The use of the total ordering is illustrated with a method for solving synchronization problems. The algorithm is then specialized for synchronizing physical clocks, and a bound is derived on how far out of synchrony the clocks can become.},
+  timestamp = {2016-01-25T17:17:10Z},
+  number = {7},
+  urldate = {2016-01-25},
+  journal = {Commun. ACM},
+  author = {Lamport, Leslie},
+  month = jul,
+  year = {1978},
+  keywords = {clock synchronization,computer networks,distributed systems,multiprocess systems},
+  pages = {558--565},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/JX3ZMP9Z/Lamport - 1978 - Time, Clocks, and the Ordering of Events in a Dist.pdf:application/pdf}
+}
+
+@misc{corbet_user-space_2013,
+  title = {User-space lockdep [{{LWN}}.net]},
+  shorttitle = {User-space lockdep},
+  abstract = {The kernel's locking validator (often known as "lockdep") is one of the community's most useful pro-active debugging tools. Since its introduction in 2006, it has eliminated most deadlock-causing bugs from the system. Given that deadlocks can be extremely difficult to reproduce and diagnose, the result is a far more reliable kernel and happier users. There is a shortage of equivalent tools for user-space programming, despite the fact that deadlock issues can happen there as well. As it happens, making lockdep available in user space may be far easier than almost anybody might have thought.},
+  timestamp = {2016-01-26T13:01:04Z},
+  urldate = {2016-01-26},
+  howpublished = {\url{https://lwn.net/Articles/536363/}},
+  author = {Corbet, Jonathan},
+  month = feb,
+  year = {2013},
+  file = {User-space lockdep [LWN.net]:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/8MH66SRA/536363.html:text/html}
+}
+
+@misc{corbet_kernel_2006,
+  title = {The kernel lock validator [{{LWN}}.net]},
+  shorttitle = {The kernel lock validator},
+  abstract = {Locking is a necessary evil in operating systems; without a solid locking regime, different parts of the system will collide when trying to access the same resources, leading to data corruption and general chaos. But locking has hazards of its own; carelessly implemented locking can cause system deadlocks. As a simple example, consider two locks L1 and L2. Any code which requires both locks must take care to acquire the locks in the right order. If one function acquires L1 before L2, but another function acquires them in the opposite order, eventually the system will find itself in a situation where each function has acquired one lock and is blocked waiting for the other - a deadlock.},
+  timestamp = {2016-01-26T13:02:55Z},
+  urldate = {2016-01-26},
+  howpublished = {\url{https://lwn.net/Articles/185666/}},
+  author = {Corbet, Jonathan},
+  month = may,
+  year = {2006},
+  file = {The kernel lock validator [LWN.net]:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/DCEQ29RN/185666.html:text/html}
+}
+
+@misc{torvalds_availability_2000,
+  title = {Availability of kdb},
+  abstract = {Opinion of Linus on kernel debuggers.},
+  timestamp = {2016-01-26T13:08:18Z},
+  urldate = {2016-01-26},
+  howpublished = {\url{http://lwn.net/2000/0914/a/lt-debugger.php3}},
+  author = {Torvalds, Linus},
+  month = sep,
+  year = {2000},
+  file = {a/lt-debugger:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/7ZT494JZ/lt-debugger.html:text/html}
+}
+
+@article{ball_decade_2011,
+  title = {A {{Decade}} of {{Software Model Checking}} with {{SLAM}}},
+  volume = {54},
+  issn = {0001-0782},
+  doi = {10.1145/1965724.1965743},
+  abstract = {SLAM is a program-analysis engine used to check if clients of an API follow the API's stateful usage rules.},
+  timestamp = {2016-01-26T13:15:34Z},
+  number = {7},
+  urldate = {2016-01-26},
+  journal = {Commun. ACM},
+  author = {Ball, Thomas and Levin, Vladimir and Rajamani, Sriram K.},
+  month = jul,
+  year = {2011},
+  pages = {68--76},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/H34KTX5U/Ball et al. - 2011 - A Decade of Software Model Checking with SLAM.pdf:application/pdf}
+}
+
+@inproceedings{komarov_implementation_2013,
+  title = {On the {{Implementation}} of {{Data-Breakpoints Based Race Detection}} for {{Linux Kernel Modules}}},
+  doi = {10.15514/SYRCOSE-2013-7-14},
+  timestamp = {2016-01-26T13:17:51Z},
+  urldate = {2016-01-26},
+  author = {Komarov, Nikita},
+  year = {2013},
+  file = {14_syrcose2013.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/AABVJHNF/14_syrcose2013.pdf:application/pdf}
+}
+
+@phdthesis{apinis_frameworks_2014,
+  address = {Munich},
+  title = {Frameworks for analyzing multi-threaded {{C}}},
+  timestamp = {2016-08-07T21:12:22Z},
+  school = {Technische Universit{\"a}t M{\"u}nchen},
+  author = {Apinis, Kalmer},
+  year = {2014}
+}
+
+@misc{_goblint_????,
+  title = {Goblint},
+  timestamp = {2016-08-11T18:04:57Z},
+  howpublished = {\url{http://goblint.in.tum.de/}}
+}
+
+@inproceedings{serebryany_threadsanitizer:_2009,
+  address = {New York, NY, USA},
+  series = {WBIA '09},
+  title = {{{ThreadSanitizer}}: {{Data Race Detection}} in {{Practice}}},
+  isbn = {978-1-60558-793-6},
+  shorttitle = {{{ThreadSanitizer}}},
+  doi = {10.1145/1791194.1791203},
+  abstract = {Data races are a particularly unpleasant kind of threading bugs. They are hard to find and reproduce -- you may not observe a bug during the entire testing cycle and will only see it in production as rare unexplainable failures. This paper presents ThreadSanitizer -- a dynamic detector of data races. We describe the hybrid algorithm (based on happens-before and locksets) used in the detector. We introduce what we call dynamic annotations -- a sort of race detection API that allows a user to inform the detector about any tricky synchronization in the user program. Various practical aspects of using ThreadSanitizer for testing multithreaded C++ code at Google are also discussed.},
+  timestamp = {2016-01-26T13:26:53Z},
+  urldate = {2016-01-26},
+  booktitle = {Proceedings of the {{Workshop}} on {{Binary Instrumentation}} and {{Applications}}},
+  publisher = {{ACM}},
+  author = {Serebryany, Konstantin and Iskhodzhanov, Timur},
+  year = {2009},
+  keywords = {concurrency bugs,dynamic data race detection,testing,Valgrind},
+  pages = {62--71},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/2J68PWVM/Serebryany and Iskhodzhanov - 2009 - ThreadSanitizer Data Race Detection in Practice.pdf:application/pdf}
+}
+
+@misc{shatokhin_kernel_????,
+  title = {Kernel {{Strider}}},
+  abstract = {kernel-strider - Main repository for KernelStrider project},
+  timestamp = {2016-01-26T13:29:30Z},
+  urldate = {2016-01-26},
+  howpublished = {\url{https://github.com/euspectre/kernel-strider}},
+  journal = {GitHub},
+  author = {Shatokhin, Eugene},
+  file = {Snapshot:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/VS9ZSR5G/kernel-strider.html:text/html}
+}
+
+@article{mutilin_analysis_2012,
+  title = {Analysis of typical faults in {{Linux}} operating system drivers},
+  volume = {22},
+  issn = {20798156, 22206426},
+  doi = {10.15514/ISPRAS-2012-22-19},
+  timestamp = {2016-01-26T13:30:28Z},
+  urldate = {2016-01-26},
+  journal = {Proceedings of the Institute for System Programming of RAS},
+  author = {Mutilin, V.S. and Novikov, E.M. and Khoroshilov, A.V.},
+  year = {2012},
+  pages = {349--374},
+  file = {isp_22_2012_349.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/45UI4R8J/isp_22_2012_349.pdf:application/pdf}
+}
+
+@inproceedings{vojdani_static_2016,
+  title = {Static {{Race Detection}} for {{Device Drivers}}},
+  timestamp = {2016-08-11T08:12:36Z},
+  author = {Vojdani, Vesal and Apinis, Kalmer and R{\~o}tov, Vootele and {Seidl,}, Helmut and Vene, Varmo and Vogler, Ralf},
+  year = {2016},
+  note = {Accepted for publication}
 }
 
 @inproceedings{palix_faults_2011,
@@ -130,19 +255,11 @@
   urldate = {2016-01-26},
   booktitle = {Proceedings of the {{Sixteenth International Conference}} on {{Architectural Support}} for {{Programming Languages}} and {{Operating Systems}}},
   publisher = {{ACM}},
-  author = {{Palix}, Nicolas and {Thomas}, Ga{\"e}l and {Saha}, Suman and {Calv{\`e}s}, Christophe and {Lawall}, Julia and {Muller}, Gilles},
+  author = {Palix, Nicolas and Thomas, Ga{\"e}l and Saha, Suman and Calv{\`e}s, Christophe and Lawall, Julia and Muller, Gilles},
   year = {2011},
   keywords = {fault-finding tools,linux},
   pages = {305--318},
   file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/64RG6N9V/Palix et al. - 2011 - Faults in Linux Ten Years Later.pdf:application/pdf}
-}
-
-@misc{_helgrind,
-  title = {Helgrind},
-  timestamp = {2016-01-26T13:37:49Z},
-  urldate = {2016-01-26},
-  howpublished = {\url{http://valgrind.org/docs/manual/hg-manual.html}},
-  file = {Valgrind:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/QMM5ZSWA/hg-manual.html:}
 }
 
 @inproceedings{swift_improving_2003,
@@ -156,22 +273,47 @@
   urldate = {2016-01-26},
   booktitle = {Proceedings of the {{Nineteenth ACM Symposium}} on {{Operating Systems Principles}}},
   publisher = {{ACM}},
-  author = {{Swift}, Michael M. and {Bershad}, Brian N. and {Levy}, Henry M.},
+  author = {Swift, Michael M. and Bershad, Brian N. and Levy, Henry M.},
   year = {2003},
   keywords = {device drivers,I/O,protection,recovery,virtual memory},
   pages = {207--222},
   file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/MBJTSJBG/Swift et al. - 2003 - Improving the Reliability of Commodity Operating S.pdf:application/pdf}
 }
 
-@misc{shatokhin_kernel,
-  title = {Kernel {{Strider}}},
-  abstract = {kernel-strider - Main repository for KernelStrider project},
-  timestamp = {2016-01-26T13:29:30Z},
+@inproceedings{chou_empirical_2001,
+  address = {New York, NY, USA},
+  series = {SOSP '01},
+  title = {An {{Empirical Study}} of {{Operating Systems Errors}}},
+  isbn = {1-58113-389-8},
+  doi = {10.1145/502034.502042},
+  abstract = {We present a study of operating system errors found by automatic, static, compiler analysis applied to the Linux and OpenBSD kernels. Our approach differs from previous studies that consider errors found by manual inspection of logs, testing, and surveys because static analysis is applied uniformly to the entire kernel source, though our approach necessarily considers a less comprehensive variety of errors than previous studies. In addition, automation allows us to track errors over multiple versions of the kernel source to estimate how long errors remain in the system before they are fixed.We found that device drivers have error rates up to three to seven times higher than the rest of the kernel. We found that the largest quartile of functions have error rates two to six times higher than the smallest quartile. We found that the newest quartile of files have error rates up to twice that of the oldest quartile, which provides evidence that code "hardens" over time. Finally, we found that bugs remain in the Linux kernel an average of 1.8 years before being fixed.},
+  timestamp = {2016-01-26T13:33:01Z},
   urldate = {2016-01-26},
-  howpublished = {\url{https://github.com/euspectre/kernel-strider}},
-  journal = {GitHub},
-  author = {{Shatokhin}, Eugene},
-  file = {Snapshot:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/VS9ZSR5G/kernel-strider.html:}
+  booktitle = {Proceedings of the {{Eighteenth ACM Symposium}} on {{Operating Systems Principles}}},
+  publisher = {{ACM}},
+  author = {Chou, Andy and Yang, Junfeng and Chelf, Benjamin and Hallem, Seth and Engler, Dawson},
+  year = {2001},
+  pages = {73--88},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/DQQH3S8F/Chou et al. - 2001 - An Empirical Study of Operating Systems Errors.pdf:application/pdf}
+}
+
+@inproceedings{ryzhyk_dingo_2009,
+  address = {New York, NY, USA},
+  series = {EuroSys '09},
+  title = {Dingo: {{Taming Device Drivers}}},
+  isbn = {978-1-60558-482-9},
+  shorttitle = {Dingo},
+  doi = {10.1145/1519065.1519095},
+  abstract = {Device drivers are notorious for being a major source of failure in operating systems. In analysing a sample of real defects in Linux drivers, we found that a large proportion (39\%) of bugs are due to two key shortcomings in the device-driver architecture enforced by current operating systems: poorly-defined communication protocols between drivers and the OS, which confuse developers and lead to protocol violations, and a multithreaded model of computation that leads to numerous race conditions and deadlocks. We claim that a better device driver architecture can help reduce the occurrence of these faults, and present our Dingo framework as constructive proof. Dingo provides a formal, state-machine based, language for describing driver protocols, which avoids confusion and ambiguity, and helps driver writers implement correct behaviour. It also enforces an event-driven model of computation, which eliminates most concurrency-related faults. Our implementation of the Dingo architecture in Linux offers these improvements, while introducing negligible performance overhead. It allows Dingo and native Linux drivers to coexist, providing a gradual migration path to more reliable device drivers.},
+  timestamp = {2016-01-26T13:33:27Z},
+  urldate = {2016-01-26},
+  booktitle = {Proceedings of the 4th {{ACM European Conference}} on {{Computer Systems}}},
+  publisher = {{ACM}},
+  author = {Ryzhyk, Leonid and Chubb, Peter and Kuz, Ihor and Heiser, Gernot},
+  year = {2009},
+  keywords = {concurrent programming,device drivers,domain-specific languages,fault avoidance,reliability},
+  pages = {275--288},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/7ZFMRRJP/Ryzhyk et al. - 2009 - Dingo Taming Device Drivers.pdf:application/pdf}
 }
 
 @misc{torvalds_linux,
@@ -181,139 +323,19 @@
   urldate = {2016-01-26},
   howpublished = {\url{https://github.com/torvalds/linux}},
   journal = {GitHub},
-  author = {{Torvalds}, Linus},
-  file = {Snapshot:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/ZV4XJZKD/v4.html:}
+  author = {Torvalds, Linus},
+  file = {Snapshot:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/ZV4XJZKD/v4.html:text/html}
 }
 
-@inproceedings{pratikakis_locksmith_2006,
-  address = {New York, NY, USA},
-  series = {PLDI '06},
-  title = {{{LOCKSMITH}}: {{Context}}-sensitive {{Correlation Analysis}} for {{Race Detection}}},
-  isbn = {1-59593-320-4},
-  shorttitle = {{{LOCKSMITH}}},
-  doi = {10.1145/1133981.1134019},
-  abstract = {One common technique for preventing data races in multi-threaded programs is to ensure that all accesses to shared locations are consistently protected by a lock. We present a tool called LOCKSMITH for detecting data races in C programs by looking for violations of this pattern. We call the relationship between locks and the locations they protect consistent correlation, and the core of our technique is a novel constraint-based analysis that infers consistent correlation context-sensitively, using the results to check that locations are properly guarded by locks. We present the core of our algorithm for a simple formal language \ensuremath{{\lambda}>} which we have proven sound, and discuss how we scale it up to an algorithm that aims to be sound for all of C. We develop several techniques to improve the precision and performance of the analysis, including a sharing analysis for inferring thread locality; existential quantification for modeling locks in data structures; and heuristics for modeling unsafe features of C such as type casts. When applied to several benchmarks, including multi-threaded servers and Linux device drivers, LOCKSMITH found several races while producing a modest number of false alarm.},
-  timestamp = {2016-01-25T17:08:59Z},
-  urldate = {2016-01-25},
-  booktitle = {Proceedings of the 27th {{ACM SIGPLAN Conference}} on {{Programming Language Design}} and {{Implementation}}},
-  publisher = {{ACM}},
-  author = {{Pratikakis}, Polyvios and {Foster}, Jeffrey S. and {Hicks}, Michael},
-  year = {2006},
-  keywords = {context-sensitivity,correlation,locksmith,multi-threaded programming,race detection,type inference},
-  pages = {320--331},
-  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/N47ZFN4X/Pratikakis et al. - 2006 - LOCKSMITH Context-sensitive Correlation Analysis .pdf:application/pdf}
-}
-
-@article{pratikakis_locksmith_2011,
-  title = {{{LOCKSMITH}}: {{Practical Static Race Detection}} for {{C}}},
-  volume = {33},
-  issn = {0164-0925},
-  shorttitle = {{{LOCKSMITH}}},
-  doi = {10.1145/1889997.1890000},
-  abstract = {Locksmith is a static analysis tool for automatically detecting data races in C programs. In this article, we describe each of Locksmith's component analyses precisely, and present systematic measurements that isolate interesting trade-offs between precision and efficiency in each analysis. Using a benchmark suite comprising stand-alone applications and Linux device drivers totaling more than 200,000 lines of code, we found that a simple no-worklist strategy yielded the most efficient interprocedural dataflow analysis; that our sharing analysis was able to determine that most locations are thread-local, and therefore need not be protected by locks; that modeling C structs and void pointers precisely is key to both precision and efficiency; and that context sensitivity yields a much more precise analysis, though with decreased scalability. Put together, our results illuminate some of the key engineering challenges in building Locksmith and data race detection analyses in particular, and constraint-based program analyses in general.},
-  timestamp = {2016-01-25T17:12:16Z},
-  number = {1},
-  urldate = {2016-01-25},
-  journal = {ACM Trans. Program. Lang. Syst.},
-  author = {{Pratikakis}, Polyvios and {Foster}, Jeffrey S. and {Hicks}, Michael},
-  month = jan,
-  year = {2011},
-  keywords = {context sensitivity,contextual effects,correlation inference,Data race,locksmith,race detection,sharing analysis,Static Analysis},
-  pages = {3:1--3:55},
-  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/EMUNK8H6/Pratikakis et al. - 2011 - LOCKSMITH Practical Static Race Detection for C.pdf:application/pdf}
-}
-
-@inproceedings{komarov_implementation_2013,
-  title = {On the {{Implementation}} of {{Data-Breakpoints Based Race Detection}} for {{Linux Kernel Modules}}},
-  doi = {10.15514/SYRCOSE-2013-7-14},
-  timestamp = {2016-01-26T13:17:51Z},
+@misc{_helgrind_????,
+  title = {Helgrind},
+  timestamp = {2016-01-26T13:37:49Z},
   urldate = {2016-01-26},
-  author = {{Komarov}, Nikita},
-  year = {2013},
-  file = {14_syrcose2013.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/AABVJHNF/14_syrcose2013.pdf:application/pdf}
+  howpublished = {\url{http://valgrind.org/docs/manual/hg-manual.html}},
+  file = {Valgrind:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/QMM5ZSWA/hg-manual.html:text/html}
 }
 
-@inproceedings{qadeer_poirot_2011,
-  address = {Berlin, Heidelberg},
-  series = {ICFEM'11},
-  title = {Poirot: {{A Concurrency Sleuth}}},
-  isbn = {978-3-642-24558-9},
-  shorttitle = {Poirot},
-  abstract = {Concurrent programming is difficult. The challenges are foundational: unlike sequential control flow, asynchronous control flow is difficult to understand and reason about. Not surprisingly, even expert programmers find it difficult to write concurrent software. We desperately need software engineering techniques and tools to move concurrent programming from black art to a rigorous engineering discipline. I believe that automated tools that reduce the cognitive burden of reasoning about concurrency can help tremendously in improving the productivity of concurrent programmers. In collaboration with my colleagues at Microsoft Research, I have developed Poirot (http://research.microsoft.com/ en-us/projects/poirot/), a tool for answering semantic queries about a concurrent program by statically searching over its executions. Poirot exploits sequential encodings of concurrent semantics, structural underand over-approximations for sequential control flow, and advances in automated theorem proving to search concurrent program executions efficiently. Poirot is being used in many different applications--bug detection, program understanding, and symbolic debugging. This lecture will present both a demonstration and an explanation of the techniques underlying the search engine inside Poirot. Poirot is joint work with Akash Lal and Shuvendu Lahiri.},
-  timestamp = {2016-01-31T20:13:30Z},
-  urldate = {2016-01-31},
-  booktitle = {Proceedings of the 13th {{International Conference}} on {{Formal Methods}} and {{Software Engineering}}},
-  publisher = {{Springer-Verlag}},
-  author = {{Qadeer}, Shaz},
-  year = {2011},
-  pages = {15--15},
-  file = {chp%3A10.1007%2F978-3-642-24559-6_3.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/8V42UXAU/chp%3A10.1007%2F978-3-642-24559-6_3.pdf:application/pdf}
-}
-
-@misc{corbet_kernel_2006,
-  title = {The kernel lock validator {[}{{LWN}}.net]},
-  shorttitle = {The kernel lock validator},
-  abstract = {Locking is a necessary evil in operating systems; without a solid locking regime, different parts of the system will collide when trying to access the same resources, leading to data corruption and general chaos. But locking has hazards of its own; carelessly implemented locking can cause system deadlocks. As a simple example, consider two locks L1 and L2. Any code which requires both locks must take care to acquire the locks in the right order. If one function acquires L1 before L2, but another function acquires them in the opposite order, eventually the system will find itself in a situation where each function has acquired one lock and is blocked waiting for the other - a deadlock.},
-  timestamp = {2016-01-26T13:02:55Z},
-  urldate = {2016-01-26},
-  howpublished = {\url{https://lwn.net/Articles/185666/}},
-  author = {{Corbet}, Jonathan},
-  month = may,
-  year = {2006},
-  file = {The kernel lock validator [LWN.net]:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/DCEQ29RN/185666.html:}
-}
-
-@inproceedings{serebryany_threadsanitizer_2009,
-  address = {New York, NY, USA},
-  series = {WBIA '09},
-  title = {{{ThreadSanitizer}}: {{Data Race Detection}} in {{Practice}}},
-  isbn = {978-1-60558-793-6},
-  shorttitle = {{{ThreadSanitizer}}},
-  doi = {10.1145/1791194.1791203},
-  abstract = {Data races are a particularly unpleasant kind of threading bugs. They are hard to find and reproduce -- you may not observe a bug during the entire testing cycle and will only see it in production as rare unexplainable failures. This paper presents ThreadSanitizer -- a dynamic detector of data races. We describe the hybrid algorithm (based on happens-before and locksets) used in the detector. We introduce what we call dynamic annotations -- a sort of race detection API that allows a user to inform the detector about any tricky synchronization in the user program. Various practical aspects of using ThreadSanitizer for testing multithreaded C++ code at Google are also discussed.},
-  timestamp = {2016-01-26T13:26:53Z},
-  urldate = {2016-01-26},
-  booktitle = {Proceedings of the {{Workshop}} on {{Binary Instrumentation}} and {{Applications}}},
-  publisher = {{ACM}},
-  author = {{Serebryany}, Konstantin and {Iskhodzhanov}, Timur},
-  year = {2009},
-  keywords = {concurrency bugs,dynamic data race detection,testing,Valgrind},
-  pages = {62--71},
-  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/2J68PWVM/Serebryany and Iskhodzhanov - 2009 - ThreadSanitizer Data Race Detection in Practice.pdf:application/pdf}
-}
-
-@article{lamport_time_1978,
-  title = {Time, {{Clocks}}, and the {{Ordering}} of {{Events}} in a {{Distributed System}}},
-  volume = {21},
-  issn = {0001-0782},
-  doi = {10.1145/359545.359563},
-  abstract = {The concept of one event happening before another in a distributed system is examined, and is shown to define a partial ordering of the events. A distributed algorithm is given for synchronizing a system of logical clocks which can be used to totally order the events. The use of the total ordering is illustrated with a method for solving synchronization problems. The algorithm is then specialized for synchronizing physical clocks, and a bound is derived on how far out of synchrony the clocks can become.},
-  timestamp = {2016-01-25T17:17:10Z},
-  number = {7},
-  urldate = {2016-01-25},
-  journal = {Commun. ACM},
-  author = {{Lamport}, Leslie},
-  month = jul,
-  year = {1978},
-  keywords = {clock synchronization,computer networks,distributed systems,multiprocess systems},
-  pages = {558--565},
-  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/JX3ZMP9Z/Lamport - 1978 - Time, Clocks, and the Ordering of Events in a Dist.pdf:application/pdf}
-}
-
-@misc{corbet_userspace_2013,
-  title = {User-space lockdep {[}{{LWN}}.net]},
-  shorttitle = {User-space lockdep},
-  abstract = {The kernel's locking validator (often known as "lockdep") is one of the community's most useful pro-active debugging tools. Since its introduction in 2006, it has eliminated most deadlock-causing bugs from the system. Given that deadlocks can be extremely difficult to reproduce and diagnose, the result is a far more reliable kernel and happier users. There is a shortage of equivalent tools for user-space programming, despite the fact that deadlock issues can happen there as well. As it happens, making lockdep available in user space may be far easier than almost anybody might have thought.},
-  timestamp = {2016-01-26T13:01:04Z},
-  urldate = {2016-01-26},
-  howpublished = {\url{https://lwn.net/Articles/536363/}},
-  author = {{Corbet}, Jonathan},
-  month = feb,
-  year = {2013},
-  file = {User-space lockdep [LWN.net]:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/8MH66SRA/536363.html:}
-}
-
-@inproceedings{nethercote_valgrind_2007,
+@inproceedings{nethercote_valgrind:_2007,
   address = {New York, NY, USA},
   series = {PLDI '07},
   title = {Valgrind: {{A Framework}} for {{Heavyweight Dynamic Binary Instrumentation}}},
@@ -325,11 +347,86 @@
   urldate = {2016-01-26},
   booktitle = {Proceedings of the 28th {{ACM SIGPLAN Conference}} on {{Programming Language Design}} and {{Implementation}}},
   publisher = {{ACM}},
-  author = {{Nethercote}, Nicholas and {Seward}, Julian},
+  author = {Nethercote, Nicholas and Seward, Julian},
   year = {2007},
   keywords = {dynamic binary analysis,dynamic binary instrumentation,Memcheck,shadow values,Valgrind},
   pages = {89--100},
   file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/6RNBDAD7/Nethercote and Seward - 2007 - Valgrind A Framework for Heavyweight Dynamic Bina.pdf:application/pdf}
+}
+
+@inproceedings{deligiannis_fast_2015,
+  title = {Fast and {{Precise Symbolic Analysis}} of {{Concurrency Bugs}} in {{Device Drivers}}},
+  timestamp = {2016-01-26T17:33:01Z},
+  booktitle = {Proceedings of the 30th {{IEEE}}/{{ACM International Conference}} on {{Automated Software Engineering}} ({{ASE}})},
+  author = {Deligiannis, Pantazis and Donaldson, Alastair F. and Rakamari{\'c}, Zvonimir},
+  year = {2015},
+  note = {to appear},
+  file = {whoop.pdf:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/ZEQ4FGWB/whoop.pdf:application/pdf}
+}
+
+@inproceedings{cousot_abstract_1977,
+  address = {Los Angeles},
+  title = {Abstract interpretation: a unified lattice model for static    analysis of programs by construction or approximation of fixpoints.},
+  timestamp = {2016-08-11T11:25:53Z},
+  booktitle = {Conference {{Record}} of the {{Fourth Annual ACM    SIGPLAN-SIGACT Symposium}} on {{Principles}} of {{Programming Languages}}},
+  author = {Cousot, Patrick and Cousot, Radhia},
+  year = {1977},
+  pages = {238--252}
+}
+
+@book{nielson_principles_1999,
+  address = {Berlin, Heidelberg},
+  title = {Principles of {{Program Analysis}}},
+  isbn = {978-3-642-08474-4 978-3-662-03811-6},
+  language = {en},
+  timestamp = {2016-08-11T13:23:51Z},
+  urldate = {2016-08-11},
+  publisher = {{Springer Berlin Heidelberg}},
+  author = {Nielson, Flemming and Nielson, Hanne Riis and Hankin, Chris},
+  year = {1999}
+}
+
+@inproceedings{engler_racerx:_2003,
+  address = {New York, NY, USA},
+  series = {SOSP '03},
+  title = {{{RacerX}}: {{Effective}}, {{Static Detection}} of {{Race Conditions}} and {{Deadlocks}}},
+  isbn = {978-1-58113-757-6},
+  shorttitle = {{{RacerX}}},
+  doi = {10.1145/945445.945468},
+  abstract = {This paper describes RacerX, a static tool that uses flow-sensitive, interprocedural analysis to detect both race conditions and deadlocks. It is explicitly designed to find errors in large, complex multithreaded systems. It aggressively infers checking information such as which locks protect which operations, which code contexts are multithreaded, and which shared accesses are dangerous. It tracks a set of code features which it uses to sort errors both from most to least severe. It uses novel techniques to counter the impact of analysis mistakes. The tool is fast, requiring between 2-14 minutes to analyze a 1.8 million line system. We have applied it to Linux, FreeBSD, and a large commercial code base, finding serious errors in all of them. RacerX is a static tool that uses flow-sensitive, interprocedural analysis to detect both race conditions and deadlocks. It uses novel strategies to infer checking information such as which locks protect which operations, which code contexts are multithreaded, and which shared accesses are dangerous. We applied it to FreeBSD, Linux and a large commercial code base and found serious errors in all of them.},
+  timestamp = {2016-08-11T14:32:00Z},
+  urldate = {2016-08-11},
+  booktitle = {Proceedings of the {{Nineteenth ACM Symposium}} on {{Operating Systems Principles}}},
+  publisher = {{ACM}},
+  author = {Engler, Dawson and Ashcraft, Ken},
+  year = {2003},
+  keywords = {deadlock detection,program checking,race detection},
+  pages = {237--252},
+  file = {ACM Full Text PDF:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/SK785FPM/Engler and Ashcraft - 2003 - RacerX Effective, Static Detection of Race Condit.pdf:application/pdf}
+}
+
+@misc{_cil_????,
+  title = {{{CIL}}},
+  timestamp = {2016-08-11T17:30:30Z},
+  urldate = {2016-08-11},
+  howpublished = {\url{http://dl.acm.org/citation.cfm?id=727796}},
+  file = {CIL:/home/vootele/.zotero/zotero/w5uxgidq.default/zotero/storage/ADFSFCH6/citation.html:text/html}
+}
+
+@inproceedings{necula_cil:_2002,
+  address = {London, UK, UK},
+  series = {CC '02},
+  title = {{{CIL}}: {{Intermediate Language}} and {{Tools}} for {{Analysis}} and {{Transformation}} of {{C Programs}}},
+  isbn = {978-3-540-43369-9},
+  shorttitle = {{{CIL}}},
+  abstract = {This paper describes the C Intermediate Language: a high-level representation along with a set of tools that permit easy analysis and source-to-source transformation of C programs.Compared to C, CIL has fewer constructs. It breaks down certain complicated constructs of C into simpler ones, and thus it works at a lower level than abstract-syntax trees. But CIL is also more high-level than typical intermediate languages (e.g., three-address code) designed for compilation. As a result, what we have is a representation that makes it easy to analyze and manipulate C programs, and emit them in a form that resembles the original source. Moreover, it comes with a front-end that translates to CIL not only ANSI C programs but also those using Microsoft C or GNU C extensions.We describe the structure of CIL with a focus on how it disambiguates those features of C that we found to be most confusing for program analysis and transformation. We also describe a whole-program merger based on structural type equality, allowing a complete project to be viewed as a single compilation unit. As a representative application of CIL, we show a transformation aimed at making code immune to stack-smashing attacks. We are currently using CIL as part of a system that analyzes and instruments C programs with run-time checks to ensure type safety. CIL has served us very well in this project, and we believe it can usefully be applied in other situations as well.},
+  timestamp = {2016-08-11T17:38:27Z},
+  urldate = {2016-08-11},
+  booktitle = {Proceedings of the 11th {{International Conference}} on {{Compiler Construction}}},
+  publisher = {{Springer-Verlag}},
+  author = {Necula, George C. and McPeak, Scott and Rahul, Shree Prakash and Weimer, Westley},
+  year = {2002},
+  pages = {213--228}
 }
 
 

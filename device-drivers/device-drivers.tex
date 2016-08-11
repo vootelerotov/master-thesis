@@ -143,7 +143,7 @@ it out-weights the extra CPU cycles used by the tight loop of a spinlock.
 Spinlocks also offer a lock that differentiates between reads and writes, allowing multiple concurrent reads.
 
 One of the most commonly used locking primitives is the \textit{mutually exclusive lock} (mutex). It also the one that should be used, if possible
-\cite[Documentation/locking/mutex-design.txt]{torvalds_linux}. Older implementations of mutex put the thread to sleep if acquiring the lock failed,
+\cite[locking/mutex-design.txt]{torvalds_linux}. Older implementations of mutex put the thread to sleep if acquiring the lock failed,
 whereas the current implementation is also capable of spinning for a limited time before resorting to explicitly putting the thread to sleep.
 
 To eliminate a possible data race from our example driver, we could add a lock to the driver and acquire it on every read and write operation.

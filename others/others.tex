@@ -7,12 +7,12 @@ We will now give an overview of notable tools that detect data races in device d
 
 \subsubsection{KernelStrider}
 
-KernelStrider\cite{shatokhin_kernel} is a dynamic analyser front-end for kernel space programs.
+KernelStrider\cite{shatokhin_kernel_????} is a dynamic analyser front-end for kernel space programs.
 It collects information about the execution of a device driver and forwards it to user-space.
 This makes it possible to use programs developed to detect data races in any C program to be used with device drivers.
-KernelStrider aims to make use of ThreadSanitizer\cite{serebryany_threadsanitizer_2009}, a dynamic data race analyser by Google for user-space,
+KernelStrider aims to make use of ThreadSanitizer\cite{serebryany_threadsanitizer:_2009}, a dynamic data race analyser by Google for user-space,
 that uses both lockset analysis and happens-before. Another user-space dynamic analyser that KernelStrider output could be used with is Helgrind,
-\cite{_helgrind,nethercote_valgrind_2007} which utilizes happens-before.
+\cite{_helgrind_????,nethercote_valgrind:_2007} which utilizes happens-before.
 
 \subsubsection{RaceHound}
 
@@ -26,15 +26,15 @@ The main benefit of this approach is the relatively low overhead of around 5\% t
 This approach is precise, but not sound.
 
 \subsubsection{Locksmith}
-Locksmith\cite{pratikakis_locksmith_2006} is a static analyser of data races in C programs, including device drivers.
+Locksmith\cite{pratikakis_locksmith:_2006} is a static analyser of data races in C programs, including device drivers.
 Locksmith was one of the earliest static analysers available for Linux device drivers and it validated the lockset based approach for static analyses. 
 
 For practically inclined, the authors of Locksmith share their experience with static analysis of data races,
-describing the importance of identifying thread-local variables as a preprocessing step and of modelling fields of the structs field-sensitively and lazily\cite{pratikakis_locksmith_2011}.
+describing the importance of identifying thread-local variables as a preprocessing step and of modelling fields of the structs field-sensitively and lazily\cite{pratikakis_locksmith:_2011}.
 
 \subsubsection{Checkmate}
 
-Checkmate\cite{ferrara_checkmate_2009} is a generic static analyser of Java bytecode.
+Checkmate\cite{ferrara_checkmate:_2009} is a generic static analyser of Java bytecode.
 It offers support for analysing different runtime properties of a multi-threaded program running on JVM, among them data race detection.
 
 Checkmate stands out by making extensive use of happens-before relation and not relying on lockset analysis for detecting data races.
