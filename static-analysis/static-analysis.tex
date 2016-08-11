@@ -29,7 +29,7 @@ about all the possible runs of a program under all possible behaviors of the env
 
 As one might guess, there are a lot of techniques that fit the wide definition given for the static analysis.
 We will be focusing on one of them --- \textit{abstract interpretation} \cite{cousot_abstract_1977}. 
-nlike most static checkers found in IDEs, abstract interpretation does not simply search for bug patterns; instead,
+Unlike most static checkers found in IDEs, abstract interpretation does not simply search for bug patterns; instead,
 it attempts to compute all possible behaviors of the system in a way that is mathematically reliable.
 
 \toguide{Okay, what is abstract interpretation?}
@@ -50,8 +50,8 @@ int main(void) {
 }
 \end{lstlisting}
 
-One can easily deduce that the program will always exit with error code $1$ \footnote{Presuming that the constant \inlinecode{RAND\_MAX} has not been redefined.},
-without having to calculate the exact value of  \inlinecode{y * z * rand()}, what would not be possible statically.
+One can easily deduce that the program will always exit with the error code $1$ \footnote{Presuming that the constant \inlinecode{RAND\_MAX} has not been redefined.},
+without having to calculate the exact value of  \inlinecode{y * z * rand()}, which would not be possible statically.
 Instead, we can interpret all the values the variables have as negative ($-$), $0$ or positive ($+$) and evaluate \inlinecode{y * z * rand()}  as $-*-*+ = +$.
 
 With this simplification, we do lose precision. Let's consider another example:
@@ -167,7 +167,7 @@ and $\mathword{main} \in \mathword{Proc}$ is one of the procedures designated as
 
 As it is not feasible to offer a formalization of all the statements and expressions available in any common higher-level programming language
 as a part of this thesis, we have elected to leave the sets $\mathword{Stmt}$ and $\mathword{Exp}$ formally undefined, instead relying on the reader's previous experience
-with statements and expressions in any of the C family languages. For the interested, a formalization for a subset of C is can be found in \cite[17]{vojdanivesal_static_2010}.
+with statements and expressions in any of the C family languages. For the interested, a formalization for a subset of C can be found in \cite[17]{vojdanivesal_static_2010}.
 
 \toguide{So, what can we do with this program?}
 
@@ -231,10 +231,10 @@ the rule applied depends on the type of the edge under evaluation.
 
 \toguide{ What about procedure calls?}
 
-To support inter-procedural evaluation of our program, we need to keep track of the caller of the process. For that we will use, as is usually done, a \textit{call stack}.
-For that, we will maintain a stack where we will, at every function call, enter a node where the call was made. When a return node is reached,
-a node will be popped from stack and the program evaluation will continue from there.
-More formally, call stack is a tuple of CFG nodes. Let $\mathword{Stack}$ be a set of all call stacks of the program $P$. 
+To support inter-procedural evaluation of our program, we need to keep track of the caller of the process. For that we will use, as it is usually done, a \textit{call stack}.
+At every function call, we add a node where the call was made from to the stack. When a return node is reached,
+a node will be popped from the stack and the program evaluation will continue from there.
+More formally, a call stack is a tuple of CFG nodes. Let $\mathword{Stack}$ be a set of all call stacks of the program $P$. 
 
 We will define inter-procedural evaluation relation for single-threaded program $P$ as follows:
 
@@ -460,7 +460,7 @@ To analyze the program we would like to find for every point $n \in N$ in our pr
 To expand, we want $d$ to be such that it describes the least amount of states in our concrete implementation,
 while still describing all the states that our program could be at point $n$. So, an \textit{analysis} of program $P$ is a function $\analyze : N \to D$.
 
-For our running example, as we care only about the signs of variable, a suitable $D$ would be a set of functions from set of all variables in program $P$ to power set of $\lb -, 0, + \rb$,
+For our running example, as we only care about the signs of variables, a suitable $D$ would be a set of functions from the set of all variables in the program $P$ to the power set of $\lb -, 0, + \rb$,
 that is $d \in D, d : \mathword{Var}_P \to 2^{\lb -, 0, + \rb}$. 
 $D$ is ordered point-wise, that is $d_1 \sqsubseteq d_2 \iff \forall v \in \mathword{Var}_p, d_1 v \subseteq d_2 v$. 
 
@@ -629,11 +629,11 @@ the most obvious is the possible computational complexity as the number of paths
 the number of walks do not have to be finite. Additionally, it is not clear how to handle infinite walks. 
 
 We will be using another approach for defining $\analyze$. Instead of considering all paths and joining information at the very end,
-we will join information as soon an different paths converge. It can be shown that this solution over-approximates the MOP solution \cite[80]{nielson_principles_1999}.
+we will join information as soon different paths converge. It can be shown that this solution over-approximates the MOP solution \cite[80]{nielson_principles_1999}.
 
 Let's consider a specific edge in our program, $\lp v, s, u \rp$. Now, let $d = \analyze \lp v \rp$. Then, presuming that $d$ is precise,
-$\analyze \lp u \rp $ should not be more precise than $\lllb s \rrrb_{Stmt} \lp d \rp$ as otherways we would have gained some information about
-the program using our abstract transfer function that over using the concrete transfer function.
+$\analyze \lp u \rp $ should not be more precise than $\lllb s \rrrb_{Stmt} \lp d \rp$ as otherwise we would have gained more information about
+the program using our abstract transfer function than when using the concrete transfer function.
 
 From this, we get the following constraint system
 
@@ -821,16 +821,16 @@ which directly implies that $s \lbk v \rbk = s \lbk v \rbk \sqcup f \lp s \rp$.
 f the constraint $\lp v, f \rp$  is not satisfied, the value of $v$ in the potential solution is updated with the upper bound of the current
 value and the value of $f$ at the current potential solution.
 
-Let $L = \lp D, \sqsubseteq \rp$ be a lattice where the constraint system $C$ being solved with the round-robin solver is defined on.
+Let $L = \lp D, \sqsubseteq \rp$ be a lattice that the constraint system $C$ being solved with the round-robin solver is defined on.
 As the maximum number of times a value for a constraint system variable can be updated is the height of the lattice,
 then the outer loop of the algorithm cannot run more than $h \cdot \left| \mathword{Var}_C \right| + 1$ times, while the inner loop runs for $\left| C \right|$ times.
-Altogether, the maximum amount of times we have to evaluate the constraint function is upper bounded by $h \cdot \left| \mathword{Var}_C \right| \cdot \left| C \right| + \left| C \right|$.
+Altogether, the maximum amount of times we have to evaluate the constraint function is upper-bounded by $h \cdot \left| \mathword{Var}_C \right| \cdot \left| C \right| + \left| C \right|$.
 Although this algorithm is efficient enough to be feasibly used in practice,
 there are faster algorithms that can be used to solve the constraint system and
 the round-robin algorithm serves here as a proof of the feasibility of a computation for solving the constraint system.
 
 With this we have given a brief overview of abstract interpretation and how to compute analyses. In the latter,
-we did limit ourselves to single procedure programs. This approach can be generalized, with some effort, to multithreaded programs involving procedure calls.
+we did limit ourselves to single procedure programs. With some effort, this approach can be generalized to multithreaded programs involving procedure calls.
 
 Next we will look into two key ideas the static detection of data races is based on.
 
