@@ -471,7 +471,7 @@ It is worth noting that $D$ is also a lattice as for every subset $X$,
 \begin{equation*}
   \bigsqcup X = \lb \lp v, b \rp | \forall v \in \mathword{Var}, b = \bigsqcup \lb d \lp v \rp | d \in X \rb \rb
 \end{equation*}
-and $\bigcap X$ is defined dually.
+and $\bigsqcap X$ is defined dually.
 
 \toguide{So, why bother with the lattice, what does it give us?}
 
@@ -709,8 +709,7 @@ In the following, we will see when can we find the least solution to the constra
 
 \begin{defin}
 A \textit{constraint system} $C$ over lattice $\lp D, \sqsubseteq \rp$ is a set of \textit{constraints} -- pairs $\lp v, f \rp$,
-where $v$ is a constraint variable $v \in \mathword{Var}_C$ and $f$ is a function from assignment of constraint variables $asg: \mathword{Var}_C \to D$ to domain element $d \in D$,
-that is $f : \lp \mathword{Var}_C \to D \rp \to D$.
+where $v$ is a constraint variable $v \in \mathword{Var}_C$, and $f$ is a function from assignment of constraint variables $\mathword{Var}_C \to D$ to domain element $D$.
 
 A \textit{solution} is such an assignment of variables $s : \mathword{Var}_C -> D$ that for every constraint $\lp v, f \rp$ , $ s \lp v \rp \sqsupseteq f \lp s \rp$. 
 \end{defin}
