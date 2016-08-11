@@ -4,17 +4,25 @@
 
 \toadd{what did you do?} 
 \toadd{Mention this somewhere else!!!}
-The goal of this thesis was to improve the precision of Goblint, a static analyser for detecting data races in Linux device drivers. I focused on the false-positives found during the review of Goblint's performance on a benchmark suite as part of the work done for \toadd{In the arcticle}. 
+The goal of this thesis was to improve the precision of Goblint, a static analyser for detecting data races in Linux device drivers.
+I focused on the false-positives found during the review of Goblint's performance on a benchmark suite. 
 
-The region analysis of Goblint, which divides memory to disjoint regions to rule out data races in certain situations, was enhanched with an additional dimension corresponding to time. This allows Goblint to eliminate a possibilty of data race on the basis of happens-before relationship. 
+The region analysis of Goblint, which divides memory to disjoint regions to rule out data races in certain situations, was enhanched with an additional dimension corresponding to time.
+This allows Goblint to eliminate a possibilty of data race on the basis of happens-before relationship. 
 
-In addition to implementing the enhanched analysis in Goblint, I also provided a theorectical overview of the said enhanchment. Background knowledege regarding Linux device drivers, abstract interpretation, static analysis of data races and Goblint is provided, in the hope of making the thesis self-contained. Lastly, we introduce other notable tools that analyse data races in device drivers.
+In addition to implementing the enhanched analysis in Goblint, I also provided a theorectical overview of the said enhanchment.
+Background knowledege regarding Linux device drivers, abstract interpretation, static analysis of data races and Goblint is provided,
+in the hope of making the thesis self-contained. Lastly, we introduce other notable tools that analyse data races in device drivers.
 
 \toadd{What are the results?}
-As a result of the enhancement, the percision of Goblint on the mentioned benchmark suit was improved. Notably, in 6 out of 25 drivers, over half of the potential races where deemed to be false-positives by the enhanched region analysis.
+As a result of the enhancement, the percision of Goblint on the mentioned benchmark suit was improved. Notably, in 6 out of 25 drivers,
+over half of the potential races where deemed to be false-positives by the enhanched region analysis.
  
 \toadd{future work?}
-For futher improvements in precision I hope to introduce further partitions of time. Before that, however, further work on benchmarking is required, to both see if the improvements seen on the benchmark set of device drivers can be generalized to all device drivers and to find false-positives that can be eliminated by further paritioning of time. The technical challenges are to provide a way to introduce new time partitions conveniently, for example through a configuration file, and to increase the modularity of the implementation.
+For futher improvements in precision I hope to introduce further partitions of time. Before that, however, further work on benchmarking is required,
+to both see if the improvements seen on the benchmark set of device drivers can be generalized to all device drivers and to find false-positives that
+can be eliminated by further paritioning of time. The technical challenges are to provide a way to introduce new time partitions conveniently,
+for example through a configuration file, and to increase the modularity of the implementation.
 
 \toask{New information in conclusion, but as futher work. Okay?}
 In addition to that, it would be very interesting to see how such an analysis fares in conditions where the happens-before guarantees are formally specified, for example by Java Memory Model.

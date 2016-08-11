@@ -12,12 +12,8 @@
 \todisc{Punase niidi osas olen nõus. Proovisin kirjutades vastata küsimustele, mis minul kui lugejal võiks tekkida -- see lähenemine muutis kirjutamise mõnevõrra lihtsamaks aga kindlasti nõrgendas keskset narratiivi. }
 
 \toguide{What is it in simple terms (title)?}
-Goblint is a sound static analyser for detecting data races in Linux device drivers, developed in the University of Tartu and Technical University of Munich. 
-The key challenge for Goblint is to assure that the results of analysis would not only be sound, but would also contain as few false-positives as possible.
-The aim of this thesis is to increase the precision of Goblint by eliminating one type of false-positives. These were found while manually reviewing the data races detected in the Goblint benchmark suite as part of my contribution to . 
+ 
 
-\toadd{Cite article}.
-\toadd{analyser for -> analyser of}
 \toguide{Why should anyone care?}
 
 Device drivers are open programs that work in difficult environment. One of the difficulties is that device drivers have no control over when the callbacks they provide to the Linux kernel
@@ -26,9 +22,10 @@ means that debugging the concurrency issues in device drivers is notoriously dif
 device drivers \cite{chou_empirical_2001,palix_faults_2011}.  
 In addition to that, these bugs have a big impact and contribute to a large share of system crashes \cite{swift_improving_2003}. 
 
-Goblint detects a subtype of concurrency issues called data races -- situations where more than one thread simultaneously tries to access a shared memory location.
-If Goblint as a sound tool does not find any data races, it has verified that the driver under analysis is free of data races. 
-However, Goblint is not precise and there is a possibility of false-positives. The degree of precision is paramount. High precision results either in outright verification of the driver or provides the user with valuable feedback. Low precision, however, produces too much noise to be useful.
+\toadd{analyser for -> analyser of}
+
+Goblint is a sound static analyser for detecting data races in Linux device drivers, developed in the University of Tartu and Technical University of Munich. Goblint detects a subtype of concurrency issues called data races -- situations where more than one thread simultaneously tries to access a shared memory location.
+If Goblint as a sound tool does not find any data races, it has verified that the driver under analysis is free of data races.The key challenge for Goblint is to assure that the results of analysis would not only be sound, but would also contain as few false-positives as possible. High precision results either in outright verification of the driver or provides the user with valuable feedback. Low precision, however, produces too much noise to be useful. The aim of this thesis is to increase the precision of Goblint by eliminating one type of false-positives. These were found while manually reviewing the data races detected in the Goblint benchmark suite as part of my contribution to a research paper \cite{vojdani_static_2016}.
   
 \toguide{What was my contribution?} 
 
