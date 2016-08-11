@@ -16,7 +16,7 @@ that uses both lockset analysis and happens-before. Another user-space dynamic a
 
 \subsubsection{RaceHound}
 
-RaceHound\cite{komarov_implementation_2013} is a dynamic analyser for Linux device drivers.
+RaceHound\cite{komarov_implementation_2013} is a dynamic analyser for the Linux device drivers.
 It borrows heavily from DataCollider \cite{erickson_effective_2010}, an analyser for Microsoft drivers.
 RaceHound places random software breakpoints to the driver under test,
 then finds out which memory address was accessed and attaches a hardware breakpoint to that memory address and stops the thread for a while.
@@ -27,7 +27,7 @@ This approach is precise, but not sound.
 
 \subsubsection{Locksmith}
 Locksmith\cite{pratikakis_locksmith:_2006} is a static analyser of data races in C programs, including device drivers.
-Locksmith was one of the earliest static analysers available for Linux device drivers and it validated the lockset based approach for static analyses. 
+Locksmith was one of the earliest static analysers available for the Linux device drivers and it validated the lockset based approach for static analyses. 
 
 For practically inclined, the authors of Locksmith share their experience with static analysis of data races,
 describing the importance of identifying thread-local variables as a preprocessing step and of modelling fields of the structs field-sensitively and lazily\cite{pratikakis_locksmith:_2011}.
@@ -37,12 +37,12 @@ describing the importance of identifying thread-local variables as a preprocessi
 Checkmate\cite{ferrara_checkmate:_2009} is a generic static analyser of Java bytecode.
 It offers support for analysing different runtime properties of a multi-threaded program running on JVM, among them data race detection.
 
-Checkmate stands out by making extensive use of happens-before relation and not relying on lockset analysis for detecting data races.
+Checkmate stands out by making extensive use of happens-before relation and not relying on the lockset analysis for detecting data races.
 The happens-before used by Checkmate over-approximates Java Memory Model.
 
 \subsubsection{Whoop}
 
-Whoop\cite{deligiannis_fast_2015} is a static analysis tool for finding data races in Linux device drivers. 
+Whoop\cite{deligiannis_fast_2015} is a static analysis tool for finding data races in the Linux device drivers. 
 
 Whoop is a sound tool, making use of the lockset analysis. Whoop is based on the observation that data races happen between two specific threads and as such,
 it is enough to verify that there is no possibility of data race between any pair of threads, instead of considering all the threads at the same time.
@@ -52,7 +52,7 @@ Whoop produces a sound model of the driver that can then be processed further by
 
 The fitting together of a quite complex pipeline of tools to provide the analysis is a remarkable result of the project behind Whoop.
 
-As of now, Whoop supports classical mutexes and spin-locks, but does not cover rest of the primitive locking options that are usable in Linux device drivers. 
+As of now, Whoop supports classical mutexes and spin-locks, but does not cover rest of the primitive locking options that are usable in the Linux device drivers. 
 
 \subsubsection{SDV and SLAM}
 
