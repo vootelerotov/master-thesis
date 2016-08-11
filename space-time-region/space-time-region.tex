@@ -272,7 +272,7 @@ Let the example driver have two memory regions, $A$ and $B$, and let \inlinecode
     \caption{Memory partition for the example driver as done by region analysis.}
 \end{figure}
 
-This does allow to eliminate the data race between the assignments to \inlinecode{i} in \inlinecode{init} and \inlinecode{exit} functions.
+Unfortunately, this does not allow us to eliminate the data race between the assignments to \inlinecode{i} in \inlinecode{init} and \inlinecode{exit} functions.
 However, if we would enhance the region analysis with one more dimension that would roughly correspond to time,
 we could divide the memory as seen on the following illustration. 
 
@@ -293,53 +293,59 @@ we could divide the memory as seen on the following illustration.
       \node at (0.285*\cubex,0.15*\cubey,0.7*\cubez) (ip) {\figsubcode{i}{init}};
       \node at (0.285*\cubex,0.8*\cubey,0.7*\cubez) (i) {\figsubcode{i}{exit}};
 
-      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$init$} ++(0,0.5*\cubey,0)  -- node[anchor= east] {$postInit$}  ++(0,0.5*\cubey,0);
+      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$\mathword{init}$} ++(0,0.5*\cubey,0)  -- node[anchor= east] {$\mathword{postInit}$}  ++(0,0.5*\cubey,0);
     \end{tikzpicture}
     \caption{Memory partition with addition of time dimension}
 \end{figure}
 
-This would let us exclude the possibility of race between these two operations. 
+Here, $\mathword{init}$ and $\mathword{postInit}$ are both \textit{time regions}.
+
+This would let us exclude the possibility of race between these two stamements. 
 
 \toguide{How is it done?}
 
-To do this, we would need to track information for each read and write operation.
-
-\toask{\sout{operation bad word?}}
-\toask{Should this be moved to region analyses? Seems like a better fit as it originates from there, just using it in timed region analyses. The downside of that would be that I would have to rework the examples (or leave example and introduction far apart, what I have tried to avoid)?}
+To do this, we would need to track information for each read and write statement.
 
 We will divide the information tracked into \textit{left} and \textit{right} side. 
 
-On the left side, information regarding the memory region of the variable is stored as a set of sets, $C$,
- such that every element of $C$, $I$ describes an intersection of memory regions.
+On the left side, information regarding the region of the statement is stored as a set of sets, $C$,
+such that every element of $C$, $I$ describes an intersection of regions.
 
-In our example driver, the $C$ for the increment operation on $i$ in the $init$ function would be 
+Conceptually, every element of $C$ describes a possible region for the statement. So if we know that the set $C$ for $x_{a}$ is in
+   
+\begin{equation*}
+\lb \lb A, \mathword{init} \rb, \lb B, \mathword{postInit} \rb \rb 
+\end{equation*}
 
-\kalmer{Sa pead nendele hulkadele mingi interpretatsiooni andma. $\{\{\alpha,\beta\},\{\gamma\}\}$ on $(\alpha\land{}\beta)\lor{}\gamma$ kus $A \implies \neg{}B$ ja $B\implies\neg{A}$.}
+then we can say that the statement is either located in region $A$ and region $\mathword{init}$ or in region $B$ and region $\mathword{postInit}$. 
+
+In our example driver, the $C$ for the increment statement of $i$ in the $init$ function would be 
 
 \begin{equation*}
 \lb \lb A, init \rb \rb \text{.}
 \end{equation*} 
 
-On the right side, information regarding possible reasons why data race cannot take place with another read or write operation is stored in a set $M$.
-For an example, $M$ could contain the set of locks held at the specific operation or whether or not the thread running the procedure containing the operation is guaranteed to be unique.
+On the right side, information regarding possible reasons why data race cannot take place with another read or write statement is stored in a set $M$.
+For an example, $M$ could contain the set of locks held at the time the statement is executed or whether or not the thread running the procedure containing the statement is guaranteed to be unique.
 
-When deciding if there is a possibility of a data race between operations $a$ and $b$, we use two predicates, $L$ and $R$ to evaluate left and right sides of these operations. 
+When deciding if there is a possibility of a data race between statements $a$ and $b$, we use two predicates, $L$ and $R$ to evaluate left and right sides of these statements. 
 
 \kalmer{see L ja R on ikka jube segane}
+\todisc{Parem?}
 
-The first of those predicates is defined as follows
+The first of those predicates, $L$, is true if it is possible that the statements share the same region. It is defined as follows
 
 \begin{equation*}
-L \lp C_a, C_b \rp =  C_a \cap C_b \neq \emptyset \text{.}
+L \lp C_a, C_b \rp = \exists I \in C_a \exists J \in C_B  I \subseteq J \lor J \subseteq I \emptyset \text{.}
 \end{equation*}
 
-If $L \lp C_a, C_b \rp$ evaluates to false it means that the two operations do not share a common memory region and hence there cannot be a data race. 
+If $L \lp C_a, C_b \rp$ evaluates to false it means that the two statements cannot share a common region and hence there cannot be a data race. 
 
-The second predicate, $R$ evaluates the sets $M_a$ and $M_b$ and returns true if there is something that guarantees that the operations $a$ and $b$ cannot race.
- For example, it could be when performing both of these operations, lock $l$ must be held or in case of $a=b$,
- there is a guarantee that there can be only one thread running that executes the operation.
+The second predicate, $R$ evaluates the sets $M_a$ and $M_b$ and returns true if there is something that guarantees that the statements $a$ and $b$ cannot race.
+For example, it could be when performing both of these statements, lock $l$ must be held or in case of $a=b$,
+there is a guarantee that there can be only one thread running that executes the statement.
 
-Equipped with those definitions, we can guarantee that operations $a$ and $b$ cannot race if the implication
+Equipped with those definitions, we can guarantee that statements $a$ and $b$ cannot race if the implication
 
 \begin{equation}
 \label{implication}
@@ -350,8 +356,6 @@ holds.
 
 Coming back to our example driver, one can see that using the enhanced region analyses, we can now see that there cannot be a race between $i_{init}$ and $i_{exit}$.
 Indeed, as
-
-\toask{Or should we take A as a set of regions, i.e instead of $\lb A, init \rb $ have $C_A \cup \lb init \rb$ ? Would be more correct, but increases complexity?}
 
 \begin{equation*}
  \lb \lb A, init \rb \rb \cap  \lb \lb A, postInit \rb \rb = \emptyset
@@ -375,7 +379,7 @@ Based on that information $R \lp M_{i_{init}}, M_{i_{init}} \rp$ holds and so do
 One might have noticed that our example drivers has two extra function, $a$ and $b$. Lets now suppose that similar property holds for $a$ and $b$ --
 during the lifetime of driver, we can only call $a$ once and $b$ once and call to $a$  must happen before call to $b$.
 
-Let this be the regions of the program, enhanced with the extra dimension, taking into account only the division by $a$ and $b$:
+Let the following be the regions of the program, enhanced with the extra dimension, taking into account only the division by $a$ and $b$.
 
 %%%%%%%%%%%%%%%%%%%%% Height values for a and b %%%%%%%%%%%%%%%%%%%%
 
@@ -411,15 +415,15 @@ Let this be the regions of the program, enhanced with the extra dimension, takin
       \node at (0.65*\cubex,0.1*\cubey,0.4*\cubez) (ip) {\figsubcode{j}{a}};
       \node at (0.65*\cubex,0.5*\cubey,0.4*\cubez) (i) {\figsubcode{j}{b}};
 
-      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$default$} (0,\defaultH*\cubey,\cubez) -- node[anchor= east] {$a$}  (0,\defaultH*\cubey,\cubez)  --
-      node[anchor= east] {$b$}  (0,\bH*\cubey,\cubez) -- node[anchor= east] {$default$}  (0,\cubey,\cubez);
+      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$\mathword{default}$} (0,\defaultH*\cubey,\cubez) -- node[anchor= east] {$a$}  (0,\defaultH*\cubey,\cubez)  --
+      node[anchor= east] {$b$}  (0,\bH*\cubey,\cubez) -- node[anchor= east] {$\mathword{default}$}  (0,\cubey,\cubez);
 
 
     \end{tikzpicture}
     \caption{Memory partition with addition of time dimension by $a$ and $b$.}
 \end{figure}
 
-If we want to combine this time division with the one we could find the Cartesian product of the two and use that as demonstrated on the next figure.
+If we want to combine this time division with the one we had for functions \inlinecode{init} and \inlinecode{exit}, we could find the Cartesian product of the two and use elements of that set as time regions. The resulting partition is shown on the next figure.
 
 \begin{figure}[H]
   \centering
@@ -454,49 +458,45 @@ If we want to combine this time division with the one we could find the Cartesia
 
       \drawoutercube
 
-      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$default \land init$} (0,\defaultH*\cubey,\cubez) -- node[anchor= east] {$a \land init$}  (0,\aH*\cubey,\cubez) 
-      -- node[anchor= east] {$b \land init$}  (0,0.5*\cubey,\cubez)-- node[anchor= east] {$b \land postInit$}  (0,\bH*\cubey,\cubez) --
-      node[anchor= east] {$default \land postInit$}  (0,\cubey,\cubez);
+      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$\lp \mathword{default}, \mathword{init} \rp$} (0,\defaultH*\cubey,\cubez) --
+      node[anchor= east] {$\lp a, \mathword{init} \rp$}  (0,\aH*\cubey,\cubez)  -- 
+      node[anchor= east] {$\lp b, \mathword{init} \rp $}  (0,0.5*\cubey,\cubez)-- node[anchor= east] {$\lp b, \mathword{postInit} \rp$}  (0,\bH*\cubey,\cubez) --
+      node[anchor= east] {$\lp \mathword{default},  \mathword{postInit} \rp$}  (0,\cubey,\cubez);
 
 
     \end{tikzpicture}
     \caption{Memory partition with addition of combined time dimension.}
 \end{figure}
 
-Here, the set $C$ for the increment operation of $i$ in the $init$ function would be
+Here, the set $C$ for the increment statement of $i$ in the $\mathword{init}$ function would be
 
 \begin{equation*}
-\lb \lb A, init, default \rb, \lb A, init, a \rb, \lb A, init, b \rb \rb
+\lb \lb A, \lp \mathword{init}, \mathword{default} \rp \rb, \lb A, \lp \mathword{init}, a  \rp \rb, \lb A, \lp \mathword{init}, b \rp \rb \rb
 \end{equation*}
 
-and for the decrement operation of $j$ in $b$ it would be
+and for the decrement statement of $j$ in $b$ it would be
 
 \begin{equation*}
-\lb \lb B, init, b \rb, \lb B, postInit, b \rb \rb \text{.}
+\lb \lb B, \lp \mathword{init}, b \rp  \rb, \lb B, \lp \mathword{postInit}, b \rp \rb \rb \text{.}
 \end{equation*}
 
 \toguide{Wait, this does not really scale, does it?}
 
-It is easy to see that this approach does not scale too well -- in the worst case the computational difficulty will grow exponentially with added time partition.
+It is easy to see that this approach does not scale too well -- in the worst case the computational difficulty will grow exponentially
+with each component of the Cartesian product that form the time partition.
 
-\toask{Memory region?}
+However, lets notice that when we evaluate the left sides of two statements, the time dimension only has an effect if memory regions of the statements overlap. 
 
-However, lets notice that when we evaluate the left sides of two operations, the time dimension only has an effect if memory regions of the operations match. 
-
-Indeed, let $Mem$ be the set of all memory regions, let \inlinesubcode{i}{a} and \inlinesubcode{i}{b} be two operations with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region,
-that is
+Indeed, let $\mathword{Mem}$ be the set of all memory regions, let \inlinesubcode{i}{a} and \inlinesubcode{i}{b} be two statements with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region, that is
 
 \begin{equation*}
-\forall \lp c_1, c_2 \rp, c_1 \in C_{i_a} , c_2 \in C_{i_b} , \lnot \lp \exists m \in Mem,  m \in c_1 \land m \in c_2 \rp
+\forall \lp c_1, c_2 \rp, c_1 \in C_{i_a} , c_2 \in C_{i_b} , \lnot \lp \exists m \in \mathword{Mem},  m \in c_1 \land m \in c_2 \rp
 \end{equation*} 
 
-\toask{Should require this somewhere?}
+and as at same time, all the entries of the left hand side must contain a memory region then it is clear that $\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
 
-and as at same time, all the entries of the left hand side must contain a memory region then it is clear that $C_{i_{a}} \cap C_{i_{b}} = \emptyset$ and by definition,
-$\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
-
-With that in mind, then for the time partition of memory region $A$ we can take Cartesian product off all the time partitions that effect an operation located in region $A$.
-For our running example, the partition would look as follows:
+With that in mind, then we can construct the time regions for memory region $A$ by combining only the relevant time partitions for variables in region $A$. 
+For our running example, the partition would look as follows.
 
 \begin{figure}[H]
   \centering
@@ -523,24 +523,24 @@ For our running example, the partition would look as follows:
       \drawoutercube
 
       
-      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$init$} ++(0,0.5*\cubey,0)  -- node[anchor= east] {$postInit$}  ++(0,0.5*\cubey,0);
-      \draw[thick,-] (\cubex,0,0) -- node[anchor= west] {$default$} (\cubex,\defaultH*\cubey,0) -- node[anchor= west] {$a$}  (\cubex,\aH*\cubey,0)  --
-      node[anchor= west] {$b$}  (\cubex,\bH*\cubey,0) -- node[anchor= west] {$default$} (\cubex,\cubey,0);
+      \draw[thick,-] (0,0,\cubez) -- node[anchor= east] {$\mathword{init}$} ++(0,0.5*\cubey,0)  -- node[anchor= east] {$\mathword{postInit}$}  ++(0,0.5*\cubey,0);
+      \draw[thick,-] (\cubex,0,0) -- node[anchor= west] {$\mathword{default}$} (\cubex,\defaultH*\cubey,0) -- node[anchor= west] {$a$}  (\cubex,\aH*\cubey,0)  --
+      node[anchor= west] {$b$}  (\cubex,\bH*\cubey,0) -- node[anchor= west] {$\mathword{default}$} (\cubex,\cubey,0);
 
     \end{tikzpicture}
     \caption{Memory partition with local time partition.}
 \end{figure}
 
-With this partition, the set $C$ for the increment operation of $i$ in the $init$ function would be
+With this partition, the set $C$ for the increment statement of $i$ in the $init$ function would be
 
 \begin{equation*}
-\lb \lb A, init \rb \rb
+\lb \lb A, \mathword{init} \rb \rb
 \end{equation*}
 
-and for the decrement operation of $j$ in $b$ it would be
+and for the decrement statement of $j$ in $b$ it would be
 
 \begin{equation*}
-\lb \lb B, init, b \rb \rb \text{.}
+\lb \lb B,  b \rb \rb \text{.}
 \end{equation*}
 
 
@@ -575,7 +575,7 @@ It is guaranteed that file $f$ can only be closed one time after it has been ope
 cannot race in functions \inlinecode{file\_open} and \inlinecode{file\_release}. At same time, it is very possible that there is a race between the operations on \inlinecode{j} in \inlinecode{file\_open} and \inlinecode{file\_release}
 -- it is possible that file $f_1$ is being opened at same time as $f_2$ is being closed. 
 
-If we are able to separate the memory region only containing \inlinecode{file} then we can partition this further by dividing the time dimension to $default, file\_open$ and $file\_release$,
-while not applying the same division of time dimension to the region containing \inlinecode{j}. 
+If we are able to separate the memory region only containing \inlinecode{file} then we can partition this further by dividing the time dimension to $\mathword{default}, \mathword{file\_open}$ and $\mathword{file\_release}$,
+while not applying the same division of time dimension to the memory region containing \inlinecode{j}. 
 
 \end{document}
