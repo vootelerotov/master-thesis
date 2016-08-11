@@ -66,25 +66,24 @@
 \newcommand{\postInitColor}{blue}
 \newcommand{\postInitLColor}{\postInitColor!30}
 \newcommand{\postInitRColor}{\postInitColor!75}
+\hyphenation{assign-ments}
 
 \begin{document}
 
-One of the key challenges for static analyzers based on abstract interpretation is to choose abstract domains in a way to minimize the loss
-of precision that stems from over-approximation.
-In case of analyses trying to detect data races, the loss of precision causes static analyzers to emit false-positives and it is clear
-that even if one can guarantee the soundness of the underlying analysis,
-then there is a threshold of incorrect warnings above what the results of the analysis contain too much noise to be of help for the end user.
+One of the key challenges for static analysers based on the abstract interpretation is to choose abstract domains in a way that minimizes the loss
+of precision stemming from over-approximation.
+The loss of precision causes static analysers to emit false-positives and it is clear
+that even if one can guarantee the soundness of the underlying analysis, there is a threshold of incorrect warnings above which the results of the analysis contain too much noise to be helpful to the end user.
 
-We will now introduce two analyses that, when combined with other analyses, help to increase the precision of a static analyzer that detects data-races.
-Both of these analyses are implemented in static analyzer \textit{Goblint}, that we will discuss further in the next section.
+We will now introduce two analyses that, when combined with other analyses, help to increase the precision of a static analyser that detects data races.
+Both of these analyses are implemented in the static analyser of \textit{Goblint} that we will discuss further in the next section.
 
 \toguide{Okay, what is the point of it?}
 
 \subsection{Region Analysis}
 
-First of those is the \textit{region analysis}. The key idea behind this analyses is to try to partition the memory used by the program under analyses into disjoint regions --
-based on this information we can deduce that memory accesses to different regions cannot data race.
-This does not exclude the possibility of a data-race inside a region, but it means that for every region there can be a separate locking mechanism.
+First of the analyses is the \textit{region analysis}. The key idea behind this analysis is to try to partition the memory used by the program under analysis into disjoint regions. Based on this information we can deduce that memory accesses to different regions cannot data race.
+This does not exclude the possibility of a data race inside a region, but it means that for every region there can be a separate locking mechanism.
 
 As an example, consider a hash table using chaining to handle hash collisions that has a lock for each of the buckets.
 
@@ -108,11 +107,11 @@ As an example, consider a hash table using chaining to handle hash collisions th
         }
       }
   \end{tikzpicture}
-  \caption{Separate chaining hash table with each bucket being protected by a lock.} 
+  \caption{Separate chaining hash table with each bucket being protected by a lock} 
 \end{figure}
 
-If the hashes of the keys $k_1$ and $k_2$ are different then accessing them in the hash table cannot cause a data race.
-On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real risk for data race and Goblint cannot exclude this possiblity without further information.
+If the hashes of the keys $k_1$ and $k_2$ are different, then accessing them in the hash table cannot cause a data race.
+On the other hand, if $k_1$ and $k_3$ produce the same hash, then there is a real risk of a data race and Goblint cannot exclude this possiblity without further information.
 It would be enough to know that in both cases, the lock protecting bucket corresponding to this hash was held during the access.
 
 \begin{figure}[H]
@@ -145,8 +144,8 @@ It would be enough to know that in both cases, the lock protecting bucket corres
 If we can guarantee that when adding an element for key $k_1$ and for key $k_3$,
 we are accessing different regions of the memory, then we can deduce that these additions cannot cause a data race.
 
-In case of the hash table, the most obvious partition for the regions would be to separate the buckets of the hash table.
-This can be done if we can guarantee that a same memory location is not accesible from different buckets.
+For a hash table, the most obvious partition for the regions would be to separate the buckets of the hash table.
+This can be done if we can guarantee that the same memory location is not accesible from different buckets.
 
 \begin{figure}[H]
   \centering
@@ -176,18 +175,18 @@ This can be done if we can guarantee that a same memory location is not accesibl
 
       \draw[thick,-] (0,0,0)  -- ++(0,0,\cubez) --  node [anchor = north] {$R_1$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_2$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_3$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_4$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_5$} ++(0.2*\cubex,0,0)  --  ++(0,0,-\cubez) -- ++(-\cubex,0,0);
     \end{tikzpicture}
-    \caption{Memory partition of the hash table.}
+    \caption{Memory partition of a hash table}
 \end{figure}
 
 More information regarding region analysis can be found in \cite[66]{vojdanivesal_static_2010}.
 
 \subsection{Region analysis for time}
 
-In addition to device drivers containing disjoint regions of memory, there are also disjoint time intervals.
+Device drivers contain not only disjoint regions of memory, but also disjoint time intervals.
 
 \toguide{How can you use happen-before here?}
 
-Consider following simplified device driver:
+Consider the following simplified device driver:
 
 
 \begin{lstlisting}[language=c,style=def]
@@ -243,12 +242,12 @@ int exit(...)
 
 \end{lstlisting}
 
-As mentioned previously, \inlinecode{init} and \inlinecode{exit} functions are used by kernel to register and deregister a device.
-As after publishing the file operations, we cannot any longer assume that the functions of the driver are called by one thread and
-a possible data-race should be detected between the operations on variable $i$ in functions \inlinecode{init} and \inlinecode{exit} by a static analyzer that detects data races.
-At same time, the Linux kernel does not allow a call to the \inlinecode{exit} function until the call to the \inlinecode{init} function is called and all the opened files are released.
+As mentioned previously, \inlinecode{init} and \inlinecode{exit} functions are used by the kernel to register and deregister a device.
+After publishing the file operations we can no longer assume that the functions of the driver are called by only one thread and
+hence the static analyser should detect a possible data-race (given there is no additional information) between the operations on the variable $i$ in functions \inlinecode{init} and \inlinecode{exit}. 
+At same time, the Linux kernel does not allow a call to the \inlinecode{exit} function until the call to the \inlinecode{init} function has completed and all the opened files are released.
 
-We would like to have an analysis that knows about such guarantees and can make use of the information that they provide.
+Our aim is to have an analysis that knows about such guarantees and can make use of the information the guarantees provide.
 
 \toguide{Example makes sense, but how to practically make use of it?}
 
@@ -256,7 +255,7 @@ To do so, inspired by the happens-before relation,  we extend the region analysi
 
 \toguide{Erghh, was not the easiest part of the Goblint section. A bit of refreshment would be great.}
 
-Let the example driver have two memory regions, $A$ and $B$, and let \inlinecode{i} belong to region $A$ and \inlinecode{j} to region $B$.
+Let the example driver have two memory regions, $A$ and $B$, and let \inlinecode{i} belong to the region $A$ and \inlinecode{j} to the region $B$.
 
 \begin{figure}[H]
   \centering
@@ -269,11 +268,11 @@ Let the example driver have two memory regions, $A$ and $B$, and let \inlinecode
       \node at (0.25*\cubex,0,0.35*\cubez) (i) {\figcode{i}};
       \node at (0.65*\cubex,0,0.4*\cubez) (j) {\figcode{j}};
     \end{tikzpicture}
-    \caption{Memory partition for the example driver as done by region analysis.}
+    \caption{Memory partition for the example driver as done by region analysis}
 \end{figure}
 
 Unfortunately, this does not allow us to eliminate the data race between the assignments to \inlinecode{i} in \inlinecode{init} and \inlinecode{exit} functions.
-However, if we would enhance the region analysis with one more dimension that would roughly correspond to time,
+However, if we would enhance the region analysis with an additional dimension that would roughly correspond to time,
 we could divide the memory as seen on the following illustration. 
 
 \begin{figure}[H]
@@ -304,9 +303,9 @@ This would let us exclude the possibility of race between these two stamements.
 
 \toguide{How is it done?}
 
-To do this, we would need to track information for each read and write statement.
+To do this, we would need to track the information of each read and write statement.
 
-We will divide the information tracked into \textit{left} and \textit{right} side. 
+We will divide the tracked information into the \textit{left} and \textit{right} side. 
 
 On the left side, information regarding the region of the statement is stored as a set of sets, $C$,
 such that every element of $C$, $I$ describes an intersection of regions.
@@ -325,21 +324,21 @@ In our example driver, the $C$ for the increment statement of $i$ in the $init$ 
 \lb \lb A, init \rb \rb \text{.}
 \end{equation*} 
 
-On the right side, information regarding possible reasons why data race cannot take place with another read or write statement is stored in a set $M$.
-For an example, $M$ could contain the set of locks held at the time the statement is executed or whether or not the thread running the procedure containing the statement is guaranteed to be unique.
+On the right side, information regarding possible reasons about why a data race cannot take place with another read or write statement is stored in a set $M$.
+For example, $M$ could contain the set of locks held at the time the statement is executed or information about the guaranteed uniqueness of the thread running the procedure that contains the statement.
 
-When deciding if there is a possibility of a data race between statements $a$ and $b$, we use two predicates, $L$ and $R$ to evaluate left and right sides of these statements. 
+When deciding on the possibility of a data race between statements $a$ and $b$, we use two predicates, $L$ and $R$ to evaluate left and right sides of these statements. 
 
 \kalmer{see L ja R on ikka jube segane}
 \todisc{Parem?}
 
-The first of those predicates, $L$, is true if it is possible that the statements share the same region. It is defined as follows
+The first of these predicates, $L$, is true if it is possible that the statements share the same region. It is defined as follows:
 
 \begin{equation*}
-L \lp C_a, C_b \rp = \exists I \in C_a \exists J \in C_B  I \subseteq J \lor J \subseteq I \emptyset \text{.}
+L \lp C_a, C_b \rp = \exists I \in C_a \exists \lp J \in C_B  I \subseteq J \lor J \subseteq I \rp \text{.}
 \end{equation*}
 
-If $L \lp C_a, C_b \rp$ evaluates to false it means that the two statements cannot share a common region and hence there cannot be a data race. 
+If $L \lp C_a, C_b \rp$ evaluates to false, it means that the two statements cannot share a common region and hence there cannot be a data race. 
 
 The second predicate, $R$ evaluates the sets $M_a$ and $M_b$ and returns true if there is something that guarantees that the statements $a$ and $b$ cannot race.
 For example, it could be when performing both of these statements, lock $l$ must be held or in case of $a=b$,
@@ -354,7 +353,7 @@ L \lp C_a, C_b \rp \implies R \lp M_a, M_b \rp
 
 holds.
 
-Coming back to our example driver, one can see that using the enhanced region analyses, we can now see that there cannot be a race between $i_{init}$ and $i_{exit}$.
+Returning to our example driver, one can see that using the enhanced region analysis, there cannot be a race between $i_{init}$ and $i_{exit}$.
 Indeed, as
 
 \begin{equation*}
@@ -363,21 +362,20 @@ Indeed, as
 
 then $L \lp C_{i_{init}}, C_{i_{postInit}} \rp$ is false and the implication (\ref{implication}) holds for $i_{init}$ and $i_{exit}$.
 
-As an example of right hand sides excluding an data race, if we take both $a$ and $b$ to be $i_{init}$ then when evaluating 
+As an example of right-hand sides excluding a data race, if we take both $a$ and $b$ to be $i_{init}$, then when evaluating 
 
 \begin{equation*}
 R \lp M_{i_{init}}, M_{i_{init}} \rp
 \end{equation*} 
 
-we can take into account that Linux kernel does not allow one to register the same driver more than once and as such,
+we can take into account that the Linux kernel does not allow one to register the same driver more than once and as such,
 we can guarantee that the thread running the $init$ function is unique.
 
 Based on that information $R \lp M_{i_{init}}, M_{i_{init}} \rp$ holds and so does the implication (\ref{implication}).
 
 \toguide{Does this thing scale, anything else you can do other than init/exit?}
 
-One might have noticed that our example drivers has two extra function, $a$ and $b$. Lets now suppose that similar property holds for $a$ and $b$ --
-during the lifetime of driver, we can only call $a$ once and $b$ once and call to $a$  must happen before call to $b$.
+One might have noticed that our example drivers have two extra functions, $a$ and $b$. Let's now suppose that a similar property holds for $a$ and $b$. During the lifetime of the driver, we can only call $a$ once and $b$ once and the call to $a$  must happen before the call to $b$.
 
 Let the following be the regions of the program, enhanced with the extra dimension, taking into account only the division by $a$ and $b$.
 
@@ -423,7 +421,7 @@ Let the following be the regions of the program, enhanced with the extra dimensi
     \caption{Memory partition with addition of time dimension by $a$ and $b$.}
 \end{figure}
 
-If we want to combine this time division with the one we had for functions \inlinecode{init} and \inlinecode{exit}, we could find the Cartesian product of the two and use elements of that set as time regions. The resulting partition is shown on the next figure.
+If we want to combine this time division with the one we had for functions \inlinecode{init} and \inlinecode{exit}, we could find the Cartesian product of the two and use elements of that set as time regions. The resulting partition is shown in the next figure.
 
 \begin{figure}[H]
   \centering
@@ -465,7 +463,7 @@ If we want to combine this time division with the one we had for functions \inli
 
 
     \end{tikzpicture}
-    \caption{Memory partition with addition of combined time dimension.}
+    \caption{Memory partition with addition of combined time dimension}
 \end{figure}
 
 Here, the set $C$ for the increment statement of $i$ in the $\mathword{init}$ function would be
@@ -485,17 +483,17 @@ and for the decrement statement of $j$ in $b$ it would be
 It is easy to see that this approach does not scale too well -- in the worst case the computational difficulty will grow exponentially
 with each component of the Cartesian product that form the time partition.
 
-However, lets notice that when we evaluate the left sides of two statements, the time dimension only has an effect if memory regions of the statements overlap. 
+However, let's notice that when we evaluate the left sides of the two statements, the time dimension only has an effect if memory regions of the statements overlap. 
 
-Indeed, let $\mathword{Mem}$ be the set of all memory regions, let \inlinesubcode{i}{a} and \inlinesubcode{i}{b} be two statements with left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region, that is
+Indeed, let $\mathword{Mem}$ be the set of all memory regions, let \inlinesubcode{i}{a} and \inlinesubcode{i}{b} be two statements with the left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region, that is
 
 \begin{equation*}
 \forall \lp c_1, c_2 \rp, c_1 \in C_{i_a} , c_2 \in C_{i_b} , \lnot \lp \exists m \in \mathword{Mem},  m \in c_1 \land m \in c_2 \rp
 \end{equation*} 
 
-and as at same time, all the entries of the left hand side must contain a memory region then it is clear that $\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
+and as at same time, all the entries of the left-hand side must contain a memory region, then it is clear that $\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
 
-With that in mind, then we can construct the time regions for memory region $A$ by combining only the relevant time partitions for variables in region $A$. 
+With that in mind, we can construct the time regions for the memory region $A$ by combining only the relevant time partitions for the variables in the region $A$. 
 For our running example, the partition would look as follows.
 
 \begin{figure}[H]
@@ -551,7 +549,7 @@ This approach scales well if we are able to divide memory into small areas.
 
 In addition, the finer granularity of this approach lets us easily support more specific guarantees.
 
-Once again, consider the running example driver we have used in this section, more specifically, the functions \inlinecode{file\_open} and \inlinecode{file\_release}.
+Once again, let's consider the functions \inlinecode{file\_open} and \inlinecode{file\_release} of the example driver we have used in this section.
 
 \begin{lstlisting}[language=c,style=def]
 static int file_open(file* f, ...)
@@ -571,11 +569,11 @@ static int file_release(file* f, ...)
 }
 \end{lstlisting}
 
-It is guaranteed that file $f$ can only be closed one time after it has been opened. This means that the operations on \inlinecode{file -> private\_data}
-cannot race in functions \inlinecode{file\_open} and \inlinecode{file\_release}. At same time, it is very possible that there is a race between the operations on \inlinecode{j} in \inlinecode{file\_open} and \inlinecode{file\_release}
--- it is possible that file $f_1$ is being opened at same time as $f_2$ is being closed. 
+It is guaranteed that the file $f$ can only be closed once for each time it is opened and the operations have to alternate. This means that the operations on \inlinecode{file -> private\_data}
+cannot race in functions \inlinecode{file\_open} and \inlinecode{file\_release}. At the same time, it is very possible that there is a race between the operations on \inlinecode{j} in \inlinecode{file\_open} and \inlinecode{file\_release}
+-- it is possible that the file $f_1$ is being opened at same time as $f_2$ is being closed. 
 
-If we are able to separate the memory region only containing \inlinecode{file} then we can partition this further by dividing the time dimension to $\mathword{default}, \mathword{file\_open}$ and $\mathword{file\_release}$,
-while not applying the same division of time dimension to the memory region containing \inlinecode{j}. 
+If we are able to separate the memory region that only contains \inlinecode{file}, then we can partition this further by dividing the time dimension to $\mathword{default}$, $\mathword{file\_open}$ and $\mathword{file\_release}$,
+while not applying the same division of time dimension to the memory region that contains \inlinecode{j}. 
 
 \end{document}
