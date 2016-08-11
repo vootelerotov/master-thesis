@@ -24,9 +24,7 @@
 
 \toguide{What is the point here?}
 
-In this section, we give an overview  of \textit{Goblint}, a static analyser for detecting data races in C programs with the focus on Linux device drivers that has been developed in the University of Tartu and in the Technical University of Munich for over 10 years \cite{_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
-
-\toadd{Cite the article written, \sout{doctoral thesis of Kalmer and Vesal, github repo}}
+In this section, we give an overview  of \textit{Goblint}, a static analyser for detecting data races in C programs with the focus on Linux device drivers that has been developed in the University of Tartu and in the Technical University of Munich for over 10 years \cite{vojdani_static_2016,_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
 
 \toask{Should cite something else?}
 
@@ -36,6 +34,7 @@ The original work presented in this thesis builds on top of what is done in Gobl
 
 \tosup{So keep in mind that this is the main objective! I will give some comments, but you should also go through each paragraph of this section and ask if it helps provide context to the next section or is just distracting details.}
 \todisc{A lot of refactoring, this still relevant?}
+
 \toguide{Okay, got it. So, what is Goblint?}
 
 Goblint is a constraint system based analysis tool that performs abstract interpretation, building on top of the theoretical ideas described in the previous sections. Goblint is written in OCaml and is publicly available on Github.
@@ -78,7 +77,7 @@ Finally, the output is mapped to the original C program and displayed to the use
     \draw [arrow] (generic) -- (analyzer);
 
   \end{tikzpicture}
-  \caption{The structure of Goblint}
+  \caption{The structure of Goblint.}
 \end{figure}
 
 
@@ -144,9 +143,6 @@ sig
 
   val special : (D.t, G.t) ctx -> lval option -> varinfo -> exp list -> D.t
 
-  val enter   : (D.t, G.t) ctx -> lval option -> varinfo -> exp list -> (D.t * D.t) list
-  val combine : (D.t, G.t) ctx -> lval option -> exp -> varinfo -> exp list -> D.t -> D.t
-
   ...
 
 end
@@ -185,8 +181,6 @@ that the access to the left hand side is a write access.
 The \inlinecode{special} function handles functions for which the source code is not available for Goblint to analyse. In the mutex analysis,
 this function modifies the abstract state -- function calls to functions such as \inlinecode{\_\_raw\_lock\_unlock} and \inlinecode{\_lock\_kernel} 
 remove and add mutexes to the set of held locks.
-
-\toadd{Enter and combine, makes sense if I had this to theoretical part as well. Big if.}
 
 \toguide{Okay, pretty dense stuff.}
 \tosup{\sout{This is a pretty big shift in tone from internals to a conceptual description of the analysis. I think both are needed, but it's pretty bad structurally. I might even suggest merging region analysis with your conceptual description of your own contribution and put all implementation details after that chapter where you describe goblint as is and show what changes you made.}}
@@ -246,7 +240,7 @@ As a result of accesses to the \inlinecode{private\_data} being in different reg
 
 \begin{figure}[H]
 \includegraphics[width=0.9\textwidth]{goblint-out}
-\caption{Snippet from Goblint output}
+\caption{Snippet from Goblint output.}
 \label{Goblint-example}
 \end{figure}
 \subsubsection{Evaluation}
@@ -292,7 +286,7 @@ Evaluating the effect of the enhanced region analysis on the set of character de
     ttyprintk.c & 193 & 193 & 3 & 3 \\
    \hline
 \end{tabular}
-\caption{Results of benchmarking region analysis with and without time partitioning}
+\caption{Results of benchmarking region analysis with and without time partitioning.}
 \end{figure}
 
 We divide the potential data races into two categories. We say that the potential race is \textit{direct} if Goblint deems it unsafe based on the direct access present in the source code

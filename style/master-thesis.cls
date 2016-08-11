@@ -171,7 +171,7 @@
 
 
 %todo
-\usepackage[disable]{todonotes}
+\usepackage{todonotes}
 
 
 % for comment
@@ -191,3 +191,6 @@
 
 % table
 \usepackage{multirow}
+
+% smart spaces
+\usepackage{xspace}

@@ -69,35 +69,33 @@
 
 \begin{document}
 
-The key challenge for static analyzers based on abstract interpretation is to minimize the loss of precision that inevitably accompanies the over-approximation.
-In case of analyses trying to detect data-races, the loss of precision causes static analyzers to emit false-positives and it is clear
+One of the key challenges for static analyzers based on abstract interpretation is to choose abstract domains in a way to minimize the loss
+of precision that stems from over-approximation.
+In case of analyses trying to detect data races, the loss of precision causes static analyzers to emit false-positives and it is clear
 that even if one can guarantee the soundness of the underlying analysis,
 then there is a threshold of incorrect warnings above what the results of the analysis contain too much noise to be of help for the end user.
 
-\kalmer{"inevitable loss of precision is inevitable" --> peaksid ütlema midagi sellist, et tuleb valida sobiv abstraktne domeen või jälgida sobivaid omadusi. Muidu see on ok.}
-
-We will now introduce two analyses that, when combined with other analyses, help to increase the precision of a static analyzer that detects data-races. Both of these analyses are implemented in static analyzer \textit{Goblint}, that we will discuss further in the next section.
-
-\toadd{Check that Goblint is mentioned in next section}
+We will now introduce two analyses that, when combined with other analyses, help to increase the precision of a static analyzer that detects data-races.
+Both of these analyses are implemented in static analyzer \textit{Goblint}, that we will discuss further in the next section.
 
 \toguide{Okay, what is the point of it?}
 
 \subsection{Region Analysis}
 
-First of those is the \textit{region analysis}. The key idea behind this analyses is to try to partition the memory used by the program under analyses into disjoint regions -- based on this information we can deduce that memory accesses to different regions cannot data-race.
+First of those is the \textit{region analysis}. The key idea behind this analyses is to try to partition the memory used by the program under analyses into disjoint regions --
+based on this information we can deduce that memory accesses to different regions cannot data race.
+This does not exclude the possibility of a data-race inside a region, but it means that for every region there can be a separate locking mechanism.
 
-\kalmer{"kui meil õnnestub eraldada mälu erinevateks regioonideks, siis võib iga regioooni kaitsta eri lukustus-mehhanismiga", näiteks räsitabelid}
+As an example, consider a hash table using chaining to handle hash collisions that has a lock for each of the buckets.
 
-Consider a hash table using chaining to handle hash collisions that has a lock for each of the buckets.
-
-\kalmer{joonista lukud ka pildile}
 
 \begin{figure}[H]
   \centering
   \begin{tikzpicture}
     \foreach \y in {0,...,5}
       {
-        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$L_{\y}$};
+        \draw[->, dashed] (-2,5.5 - \y) node [black, anchor =  east] {$L_{\y}$} -- (0,5.5- \y);
+        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$B_{\y}$};
         \draw[->, thick] (1,5 - \y + 0.5) -- ++(0.5,0);
         \foreach \x in {1,...,5}
         {
@@ -110,23 +108,20 @@ Consider a hash table using chaining to handle hash collisions that has a lock f
         }
       }
   \end{tikzpicture}
-  \caption{Separate chaining hash table} 
+  \caption{Separate chaining hash table with each bucket being protected by a lock.} 
 \end{figure}
 
-
-An usual way to synchronize such an hash table is to protect each bucket with its own lock --
-if the hashes of the keys $k_1$ and $k_2$ are different then accessing them in the hash table cannot cause a data race.
-On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real risk for data race.
-
-\kalmer{see on õige, aga lukk võetakse räsi järgi. õige negatiivne näide on siis, kui räsitabelis on salvestatud viit jagatud muutujale (mis on siis mitmes regioonis korraga)}
-
+If the hashes of the keys $k_1$ and $k_2$ are different then accessing them in the hash table cannot cause a data race.
+On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real risk for data race and Goblint cannot exclude this possiblity without further information.
+It would be enough to know that in both cases, the lock protecting bucket corresponding to this hash was held during the access.
 
 \begin{figure}[H]
   \centering
   \begin{tikzpicture}
     \foreach \y in {0,...,5}
       {
-        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$L_{\y}$};
+        \draw[->, dashed] (-2,5.5 - \y) node [black, anchor =  east] {$L_{\y}$} -- (0,5.5- \y);
+        \draw[thick]  (0,5 - \y) rectangle  ++(1,1) node[midway] {$B_{\y}$};
         \draw[->, thick] (1,5 - \y + 0.5) -- ++(0.5,0);
         \foreach \x in {1,...,5}
         {
@@ -138,22 +133,20 @@ On the other hand, if $k_1$ and $k_3$ produce the same hash then there is a real
           \draw[->] (1.5*\x + 0.3, 5 - \y + 0.8) to [bend left=45] ++(1.5,0);
         }
       }
-    \draw[red, ->, shorten >= 5pt, thick] (-2,2.5) node [black, anchor =  east] {$H\lp k_3 \rp$} -- (0,3.5);
-    \draw[red, ->, shorten >= 5pt, thick] (-2,0.5) node [black, anchor =  east] {$H\lp k_2 \rp$} -- (0,0.5); 
-    \draw[red, ->, shorten >= 5pt, thick] (-2,4.5) node [black, anchor =  east] {$H\lp k_1 \rp$} -- (0,3.5);
+    \draw[red, ->, shorten >= 5pt, thick] (-3,3) node [black, anchor =  east] {$H\lp k_3 \rp$} -- (0,3.5);
+    \draw[red, ->, shorten >= 5pt, thick] (-3,1) node [black, anchor =  east] {$H\lp k_2 \rp$} -- (0,0.5); 
+    \draw[red, ->, shorten >= 5pt, thick] (-3,4) node [black, anchor =  east] {$H\lp k_1 \rp$} -- (0,3.5);
       
   \end{tikzpicture}
   \caption{Separate chaining hash table} 
 \end{figure}
 
 
-If we can guarantee that when adding an element for key $k_1$ and for key $k_3$, we are accessing different regions of the memory, then we can deduce that these additions cannot cause a data race.
-
-\kalmer{jälle, sa ei tohi unustada lukke --- ilma lukuta race-b sama lõim iseendaag}
+If we can guarantee that when adding an element for key $k_1$ and for key $k_3$,
+we are accessing different regions of the memory, then we can deduce that these additions cannot cause a data race.
 
 In case of the hash table, the most obvious partition for the regions would be to separate the buckets of the hash table.
-
-\kalmer{jah aga seda sa ei saa vabalt valida: kui jagatud viit salvestatakse räsitabelisse siis ei saa jagada niimoodi eraldi regioonideks}
+This can be done if we can guarantee that a same memory location is not accesible from different buckets.
 
 \begin{figure}[H]
   \centering
@@ -183,7 +176,7 @@ In case of the hash table, the most obvious partition for the regions would be t
 
       \draw[thick,-] (0,0,0)  -- ++(0,0,\cubez) --  node [anchor = north] {$R_1$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_2$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_3$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_4$} ++(0.2*\cubex,0,0) -- node [anchor = north] {$R_5$} ++(0.2*\cubex,0,0)  --  ++(0,0,-\cubez) -- ++(-\cubex,0,0);
     \end{tikzpicture}
-    \caption{Memory partition of the hash table}
+    \caption{Memory partition of the hash table.}
 \end{figure}
 
 More information regarding region analysis can be found in \cite[66]{vojdanivesal_static_2010}.
@@ -195,8 +188,9 @@ In addition to device drivers containing disjoint regions of memory, there are a
 \toguide{How can you use happen-before here?}
 
 Consider following simplified device driver:
-\kalmer{mina soovitan alati kasutada ``columns=fullflexible''}
-\begin{lstlisting}[language=c,style=def,columns=fullflexible]
+
+
+\begin{lstlisting}[language=c,style=def]
 
 static int i = 0;
 static int j = 0;
@@ -249,12 +243,10 @@ int exit(...)
 
 \end{lstlisting}
 
-\kalmer{palun kasuta siin mingit näidise-environment-i ... väga raske on jälgida kuna näide ära lõppeb ja kuna uus algab.}
-
 As mentioned previously, \inlinecode{init} and \inlinecode{exit} functions are used by kernel to register and deregister a device.
 As after publishing the file operations, we cannot any longer assume that the functions of the driver are called by one thread and
 a possible data-race should be detected between the operations on variable $i$ in functions \inlinecode{init} and \inlinecode{exit} by a static analyzer that detects data races.
-At same time, the Linux Kernel does not allow a call to the \inlinecode{exit} function until the call to the \inlinecode{init} function is called and all the opened files are released.
+At same time, the Linux kernel does not allow a call to the \inlinecode{exit} function until the call to the \inlinecode{init} function is called and all the opened files are released.
 
 We would like to have an analysis that knows about such guarantees and can make use of the information that they provide.
 
@@ -263,47 +255,8 @@ We would like to have an analysis that knows about such guarantees and can make 
 To do so, inspired by the happens-before relation,  we extend the region analysis to cover time in addition to space.
 
 \toguide{Erghh, was not the easiest part of the Goblint section. A bit of refreshment would be great.}
-\tosup{I am now even more convinced that you should have a chapter on ``Region Analysis for Space and Time'' where you first describe the current region analysis and extend it with timed partitions. Then, you have a section with just implementation. The only question is where to put any experimental results.}
 
-For example, let us have two procedures , \inlinecode{f} and \inlinecode{g} that can be ran simultaneously in different threads.
-
-\kalmer{sa mõtled siin ikka \texttt{*p} ja \texttt{*q} ---  deklareerides alati kirjuta * muutuja külge, ehk \texttt{*p} tüüp on \texttt{int} siis jääb see lihtsalt meelde}
-
-\begin{lstlisting}[language=c,style=def]
-
-int* p;
-int* q;
-
-void f()
-{
-  &p = &q - 1; 
-}
-
-void g()
-{
-  &q = &q + 1; 
-}
-
-\end{lstlisting}
-
-\kalmer{Siin on kõik segamini nagu puder ja kapsad. Tee eraldi näited ja ära unusta lukke. mina soovitaks isegi teha nagu siin .tex kommentaaris
-% void close()
-% {
-%   lock(\&close\_lock);
-%   *p = *q - 1;
-%   unlock(\&release\_lock);
-% }
-% void open()
-% {
-%   lock(\&open\_lock);
-%   *q = *q + 1;
-%   unlock(\&open\_lock);
-% }
-}
-
-If we can divide the memory used by the program to two regions, $A$ and $B$ that are disjoint and we can guarantee that the pointer \inlinecode{p} points
-to integer variable stored in region $A$ and \inlinecode{q} points to integer variable stored in region $B$ then we can safely assume that there
-can be no data-race between the increment and decrement operations in function \inlinecode{f} and \inlinecode{g}. This can be done by the region analysis.
+Let the example driver have two memory regions, $A$ and $B$, and let \inlinecode{i} belong to region $A$ and \inlinecode{j} to region $B$.
 
 \begin{figure}[H]
   \centering
@@ -313,15 +266,13 @@ can be no data-race between the increment and decrement operations in function \
       \fill[opacity=\opacity,red!30,draw=black,xzp=0] (0,0) rectangle (2.5,5);
       \fill[opacity=\opacity,red!75,draw=black,xzp=0] (2.5,0) rectangle (5,5);
 
-      \node at (0.15*\cubex,0,0.6*\cubez) (p) {\figcode{\&p}};
-      \node at (0.8*\cubex,0,0.75*\cubez) (q) {\figcode{\&q}};
-
-      \node at (0.35*\cubex,0,0.35*\cubez) (q) {\figcode{i}};
+      \node at (0.25*\cubex,0,0.35*\cubez) (i) {\figcode{i}};
+      \node at (0.65*\cubex,0,0.4*\cubez) (j) {\figcode{j}};
     \end{tikzpicture}
-    \caption{Memory partition as done by region analyses}
+    \caption{Memory partition for the example driver as done by region analysis.}
 \end{figure}
 
-Going back to the example driver, this does allow to eliminate the data race between the assignments to \inlinecode{i} in \inlinecode{init} and \inlinecode{exit} functions.
+This does allow to eliminate the data race between the assignments to \inlinecode{i} in \inlinecode{init} and \inlinecode{exit} functions.
 However, if we would enhance the region analysis with one more dimension that would roughly correspond to time,
 we could divide the memory as seen on the following illustration. 
 
@@ -465,7 +416,7 @@ Let this be the regions of the program, enhanced with the extra dimension, takin
 
 
     \end{tikzpicture}
-    \caption{Memory partition with addition of time dimension by $a$ and $b$}
+    \caption{Memory partition with addition of time dimension by $a$ and $b$.}
 \end{figure}
 
 If we want to combine this time division with the one we could find the Cartesian product of the two and use that as demonstrated on the next figure.
@@ -509,7 +460,7 @@ If we want to combine this time division with the one we could find the Cartesia
 
 
     \end{tikzpicture}
-    \caption{Memory partition with addition of combined time dimension}
+    \caption{Memory partition with addition of combined time dimension.}
 \end{figure}
 
 Here, the set $C$ for the increment operation of $i$ in the $init$ function would be
@@ -577,7 +528,7 @@ For our running example, the partition would look as follows:
       node[anchor= west] {$b$}  (\cubex,\bH*\cubey,0) -- node[anchor= west] {$default$} (\cubex,\cubey,0);
 
     \end{tikzpicture}
-    \caption{Memory partition with local time partition}
+    \caption{Memory partition with local time partition.}
 \end{figure}
 
 With this partition, the set $C$ for the increment operation of $i$ in the $init$ function would be
@@ -593,16 +544,14 @@ and for the decrement operation of $j$ in $b$ it would be
 \end{equation*}
 
 
-This approach scales well if we are able to divide memory into small areas and although there are no theoretical guarantees for that,
-in majority of the Linux device drivers in the Goblint benchmark suit this is possible.
+This approach scales well if we are able to divide memory into small areas.
 
-\toask{Too bold of a claim?}
 
 \toguide{Okay, neat, solves the scaling issue. That is it?}
 
 In addition, the finer granularity of this approach lets us easily support more specific guarantees.
 
-Once again, consider the running example driver we have used in this section, more specifically, the functions \inlinecode{file\_open} and \inlinecode{file\_close}.
+Once again, consider the running example driver we have used in this section, more specifically, the functions \inlinecode{file\_open} and \inlinecode{file\_release}.
 
 \begin{lstlisting}[language=c,style=def]
 static int file_open(file* f, ...)
@@ -610,10 +559,10 @@ static int file_open(file* f, ...)
     printk( "Opening device \n");
     file -> private_data += 1;
     j += 1;
-    return 0;    j += 1;
+    return 0;
 }
 
-static int file_close(file* f, ...)
+static int file_release(file* f, ...)
 {
     printk( "Closing device \n");
     file -> private_data -= 1
@@ -623,10 +572,10 @@ static int file_close(file* f, ...)
 \end{lstlisting}
 
 It is guaranteed that file $f$ can only be closed one time after it has been opened. This means that the operations on \inlinecode{file -> private\_data}
-cannot race in functions \inlinecode{file\_open} and \inlinecode{file\_closed}. At same time, it is very possible that there is a race between the operations on \inlinecode{j} in \inlinecode{file\_open} and \inlinecode{file\_close}
+cannot race in functions \inlinecode{file\_open} and \inlinecode{file\_release}. At same time, it is very possible that there is a race between the operations on \inlinecode{j} in \inlinecode{file\_open} and \inlinecode{file\_release}
 -- it is possible that file $f_1$ is being opened at same time as $f_2$ is being closed. 
 
-If we are able to separate the memory region only containing \inlinecode{file} then we can partition this further by dividing the time dimension to $default, file\_open$ and $file\_closed$,
+If we are able to separate the memory region only containing \inlinecode{file} then we can partition this further by dividing the time dimension to $default, file\_open$ and $file\_release$,
 while not applying the same division of time dimension to the region containing \inlinecode{j}. 
 
 \end{document}

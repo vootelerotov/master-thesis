@@ -74,36 +74,41 @@ Computer Science Curriculum\\[2mm]
 \selectlanguage{english}
 \noindent\textbf{\large \articleName}
 \vspace*{3ex}
-{\flushleft{\textbf{Abstract:}} The concurrent nature of device drivers makes them notoriously difficult to manually debug.
-Goblint, a static analysis framework tries to automatically verify the inexistence of data races. 
-The key challenge in doing that is the precision of the analysis.
-This paper proposes an enhancement to the region analysis of Goblint to incorporate domain specific happens-before guarantees. 
-The proposed addition is implemented and evaluated on the Goblint benchmark suite.
-We show that the given enhancement increases the precision of Goblint when analysing character drivers.
-}
+\begin{flushleft}
+  \textbf{Abstract:} The concurrent nature of device drivers makes them notoriously difficult to manually debug.
+  Goblint, a static analysis framework tries to automatically verify the inexistence of data races. 
+  The key challenge in doing that is the precision of the analysis.
+  This paper proposes an enhancement to the region analysis of Goblint to incorporate domain specific happens-before guarantees. 
+  The proposed addition is implemented and evaluated on the Goblint benchmark suite.
+  We show that the given enhancement increases the precision of Goblint when analysing character drivers.
+\end{flushleft}
+
 
 \vspace*{3ex}
 \begin{flushleft}
-  \textbf{Keywords:} Concurrency, race condition, abstract interpretation, happens-before, device drivers, Goblint
+  \textbf{Keywords:} Concurrency, race condition, data race, abstract interpretation, happens-before, device drivers, Goblint
 \end{flushleft}
 \vspace*{3ex}
 
 \noindent\textbf{CERCS:} P170, Computer science, numerical analysis, systems, control
 \selectlanguage{estonian}
 
+\toadd{Grammar check}
 \vspace*{6ex}
-\toadd{PEALKIRI!}
-\noindent\textbf{Goblint on parim!}
+\noindent\textbf{\large \articleNameEE}
 \vspace*{3ex}
 
-
-\toadd{Eesti keelde}
-\noindent\textbf{Lühikokkuvõte:} 
-\vspace*{3ex}
-
-\toadd{List of keywords, eesti keeles??}
 \begin{flushleft}
-  \textbf{Võtmesõnad:} Goblint
+  \textbf{Lühikokkuvõte:} Seadmedraiverite ehk ohjurite paralleelne olemus muudab nendest vigade leidmise inimiese jaoks väga keeruliseks.
+  Staatiline analüsaator Goblint üritab automaatselt verifitseerida andmejooksude puudumist ohjuris. Sealjuures on suureks väljakutseks analüüsi täpsus.
+  Käesolev töö pakkub välja edasiarenduse Goblinti regiooni analüüsile mis võimaldab võtta arvesse valdkonna spetsiifilisi \textit{happens-before} garantiisid.
+  Väljapakutud täiendus on implementeeritud ning muudatuste mõju analüüsitud Linuxi ohjurite alamhulga peal.
+  Me näitame et mainitud edasiarendus tõstab Goblinti täpsust \textit{character} tüüpi ohjurite analüüsimisel.
+\end{flushleft}
+\vspace*{3ex}
+
+\begin{flushleft}
+  \textbf{Võtmesõnad:} Paralleelsus, andmejooks, abstraktne interpertatsioon, seadmedraiverid, ohjurid, Goblint
 \end{flushleft}
 \vspace*{3ex}
 

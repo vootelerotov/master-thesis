@@ -1,5 +1,5 @@
-\newcommand{\articleName}{Goblint is the best, kill all the others
-static analyzers!}
+\newcommand{\articleName}{Time Partitioning in Goblint: \\ Extending region analysis with happens-before information}
+\newcommand{\articleNameEE}{Goblint ja aeg}
 
 % shortcuts for brackets/parens
 \newcommand{\lp}{\left(}
@@ -29,7 +29,7 @@ static analyzers!}
 
 
 % other macros
-\newcommand{\allstates}{\textsl{S}}
+\newcommand{\allstates}{\mathcal{S}}
 \newcommand{\descriptor}{\Delta}
 \newcommand{\absint}{*}
 \newcommand{\analyze}{\mathcal{A}}
@@ -39,6 +39,8 @@ static analyzers!}
 \newcommand{\figsubcode}[2]{$\text{\figcode{#1}}_{\text{\figcode{#2}}}$}
 \newcommand{\inlinecode}[1]{\texttt{#1}}
 \newcommand{\inlinesubcode}[2]{$\text{\figcode{#1}}_{\text{\figcode{#2}}}$}
+\newcommand{\mathword}[1]{\mathit{#1}}
+
 
 % todo notes
 \newcommand{\kalmer}[1]{\todo[color=red!60,inline]{Kalmer: #1}}
@@ -52,4 +54,5 @@ static analyzers!}
 
 
 \newcommand{\tocomment}[1]{\todo[inline]{#1}}
-\newcommand{\toguide}[1]{\todo[color=green!80,inline]{#1}}
+%\newcommand{\toguide}[1]{\todo[color=green!80,inline]{#1}}
+\newcommand{\toguide}[1]{}
