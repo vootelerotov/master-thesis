@@ -18,8 +18,8 @@ for which one would have to know about all the usages of a specific variable in 
 
 
 There are good reasons for preferring a static analysis over a dynamic (or combined) one.
-To pick a few, it allows us to say something about programs that do not compile (and as such, cannot be analyzed dynamically) and also about open programs,
-such as modules and device drivers, that cannot be run in isolation, but can, however, be analyzed statically.  
+To pick a few, it allows us to say something about programs that do not compile (and as such, cannot be analysed dynamically) and also about open programs,
+such as modules and device drivers, that cannot be run in isolation, but can, however, be analysed statically.  
 It is faster than a dynamic analysis, which cannot be performed faster than the time it takes to execute the program.
 As static analyses do not depend on any information gathered from a specific run, it is possible to have an analysis that says something
 about all the possible runs of a program under all possible behaviors of the environment (and not only, say, for all the possible runs that the analysis has witnessed).
@@ -453,7 +453,7 @@ Lattices will serve as \textit{abstract domains} for abstract interpretation.
 Intuitively, the elements of abstract domain will fulfill the same role as the states in concrete interpretation, offering context for interpreting the program.
 For abstract domain (that is, a complete lattice) $D,\sqsubseteq$,
 we will choose $D$ to be a set of elements that each describe some set of states of our concrete implementation.
-To analyze the program we would like to find for every point $n \in N$ in our program the most precise element $d \in D$ that describes the program state at that point.
+To analyse the program we would like to find for every point $n \in N$ in our program the most precise element $d \in D$ that describes the program state at that point.
 To expand, we want $d$ to be such that it describes the least amount of states in our concrete implementation,
 while still describing all the states that our program could be at point $n$. So, an \textit{analysis} of program $P$ is a function $\analyze : N \to D$.
 
@@ -787,7 +787,7 @@ As mentioned before, we could calculate the chain in Kleene's fixed point iterat
 However, there are also other approaches that are computationally cheaper.
 In the following, we will look at one of the simplest of them and show that computing the solution with it is feasible.
 
-The solver we will analyze is the \textit{round-robin} solver:
+The solver we will analyse is the \textit{round-robin} solver:
 
 
 \begin{algorithm}[H]
