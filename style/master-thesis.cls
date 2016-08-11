@@ -171,7 +171,7 @@
 
 
 %todo
-\usepackage[disable]{todonotes}
+\usepackage{todonotes}
 
 
 % for comment
