@@ -80,7 +80,7 @@ Both of these analyses are implemented in the static analyser of \textit{Goblint
 
 \toguide{Okay, what is the point of it?}
 
-\subsection{Region Analysis}
+\subsection{The Original Region Analysis}
 
 First of the analyses is the \textit{region analysis}. The key idea behind this analysis is to try to partition the memory used by the program under analysis into disjoint regions. Based on this information we can deduce that memory accesses to different regions cannot data race.
 This does not exclude the possibility of a data race inside a region, but it means that for every region there can be a separate locking mechanism.
@@ -178,9 +178,10 @@ This can be done if we can guarantee that the same memory location is not accesi
     \caption{Memory partition of a hash table}
 \end{figure}
 
-More information regarding region analysis can be found in \cite[66]{vojdanivesal_static_2010}.
+More information regarding region analysis can be found in~\cite{SeidlVojdani09}, 
+while the analysis tracking the equalities between hash table keys is described in~\cite{SVV09}.
 
-\subsection{Region analysis for time}
+\subsection{Regions in Time}
 
 Device drivers contain not only disjoint regions of memory, but also disjoint time intervals.
 
@@ -248,13 +249,13 @@ hence the static analyser should detect a possible data-race (given there is no 
 At same time, the Linux kernel does not allow a call to the \inlinecode{exit} function until the call to the \inlinecode{init} function has completed and all the opened files are released.
 
 Our aim is to have an analysis that knows about such guarantees and can make use of the information the guarantees provide.
-
-\toguide{Example makes sense, but how to practically make use of it?}
-
+%
+%\toguide{Example makes sense, but how to practically make use of it?}
+%
 To do so, inspired by the happens-before relation,  we extend the region analysis to cover time in addition to space.
-
-\toguide{Erghh, was not the easiest part of the Goblint section. A bit of refreshment would be great.}
-
+%
+%\toguide{Erghh, was not the easiest part of the Goblint section. A bit of refreshment would be great.}
+%
 Let the example driver have two memory regions, $A$ and $B$, and let \inlinecode{i} belong to the region $A$ and \inlinecode{j} to the region $B$.
 
 \begin{figure}[H]
@@ -298,19 +299,25 @@ we could divide the memory as seen on the following illustration.
 \end{figure}
 
 Here, $\mathword{init}$ and $\mathword{postInit}$ are both \textit{time regions}.
+%
+This lets us exclude the possibility of race between these two stamements. 
+%
+%\toguide{How is it done?}
 
-This would let us exclude the possibility of race between these two stamements. 
-
-\toguide{How is it done?}
-
-To do this, we would need to track the information of each read and write statement.
-
-We will divide the tracked information into the \textit{left} and \textit{right} side. 
-
+To do this more generally, we need to consider the information that we track for
+each read and write access.
+%
+We will divide the tracked information into the \textit{left} and \textit{right}
+side of an implication: if two accesses may collide, then certain safety conditions
+must hold to avoid a race condition.
+%
 On the left side, information regarding the region of the statement is stored as a set of sets, $C$,
-such that every element of $C$, $I$ describes an intersection of regions.
+such that every element $I \in C$ describes an intersection of regions. This
+allows an extensible and modular framework, such that we can add an analysis to
+provide a different means of partitioning accesses without being concerned
+with the already existing ones. 
 
-Conceptually, every element of $C$ describes a possible region for the statement. So if we know that the set $C$ for $x_{a}$ is in
+Conceptually, every element of $C$ describes a possible region for the access. So if we know that the set $C$ for $x_{a}$ is in
    
 \begin{equation*}
 \lb \lb A, \mathword{init} \rb, \lb B, \mathword{postInit} \rb \rb 
@@ -335,7 +342,7 @@ When deciding on the possibility of a data race between statements $a$ and $b$, 
 The first of these predicates, $L$, is true if it is possible that the statements share the same region. It is defined as follows:
 
 \begin{equation*}
-L \lp C_a, C_b \rp = \exists I \in C_a \exists \lp J \in C_B  I \subseteq J \lor J \subseteq I \rp \text{.}
+L \lp C_a, C_b \rp = \exists I \in C_a,\, \exists J \in C_B  \lp I \subseteq J \lor J \subseteq I \rp \text{.}
 \end{equation*}
 
 If $L \lp C_a, C_b \rp$ evaluates to false, it means that the two statements cannot share a common region and hence there cannot be a data race. 
@@ -344,14 +351,13 @@ The second predicate, $R$ evaluates the sets $M_a$ and $M_b$ and returns true if
 For example, it could be when performing both of these statements, lock $l$ must be held or in case of $a=b$,
 there is a guarantee that there can be only one thread running that executes the statement.
 
-Equipped with those definitions, we can guarantee that statements $a$ and $b$ cannot race if the implication
-
+Equipped with those definitions, we can guarantee that statements $a$ and $b$
+cannot race if the following implication holds.
 \begin{equation}
 \label{implication}
 L \lp C_a, C_b \rp \implies R \lp M_a, M_b \rp  
 \end{equation}
-
-holds.
+%See on sul ikka väga halb harjumus displayed asju lausete keskel toppida!
 
 Returning to our example driver, one can see that using the enhanced region analysis, there cannot be a race between $i_{init}$ and $i_{exit}$.
 Indeed, as
@@ -483,16 +489,19 @@ and for the decrement statement of $j$ in $b$ it would be
 It is easy to see that this approach does not scale too well -- in the worst case the computational difficulty will grow exponentially
 with each component of the Cartesian product that form the time partition.
 
-However, let's notice that when we evaluate the left sides of the two statements, the time dimension only has an effect if memory regions of the statements overlap. 
-
-Indeed, let $\mathword{Mem}$ be the set of all memory regions, let \inlinesubcode{i}{a} and \inlinesubcode{i}{b} be two statements with the left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region, that is
-
-\begin{equation*}
-\forall \lp c_1, c_2 \rp, c_1 \in C_{i_a} , c_2 \in C_{i_b} , \lnot \lp \exists m \in \mathword{Mem},  m \in c_1 \land m \in c_2 \rp
-\end{equation*} 
-
-and as at same time, all the entries of the left-hand side must contain a memory region, then it is clear that $\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
-
+However, notice that when we evaluate the left sides of the two statements, the
+time dimension only has an effect if memory regions of the statements overlap;
+if the memory regions are disjoint, the predicate $L$ is already false.
+% See indeed oli siin rohkem segadust tekitav, sest asi, mida tõestatakse on
+% väga otseselt usutav, aga selgitus on pikk ja kogu point järgmise asjaga kaob. 
+%Indeed, let $\mathword{Mem}$ be the set of all memory regions, let \inlinesubcode{i}{a} and \inlinesubcode{i}{b} be two statements with the left sides $C_{i_{a}}$ and $C_{i_{b}}$ such that they do not share a common memory region, that is
+%
+%\begin{equation*}
+%\forall \lp c_1, c_2 \rp, c_1 \in C_{i_a} , c_2 \in C_{i_b} , \lnot \lp \exists m \in \mathword{Mem},  m \in c_1 \land m \in c_2 \rp
+%\end{equation*} 
+%
+%and as at same time, all the entries of the left-hand side must contain a memory region, then it is clear that $\lnot L \lp C_{i_{a}}, C_{i_{b}} \rp $. 
+%
 With that in mind, we can construct the time regions for the memory region $A$ by combining only the relevant time partitions for the variables in the region $A$. 
 For our running example, the partition would look as follows.
 
@@ -543,12 +552,12 @@ and for the decrement statement of $j$ in $b$ it would be
 
 
 This approach scales well if we are able to divide memory into small areas.
-
-
-\toguide{Okay, neat, solves the scaling issue. That is it?}
-
-In addition, the finer granularity of this approach lets us easily support more specific guarantees.
-
+%
+%
+%\toguide{Okay, neat, solves the scaling issue. That is it?}
+%
+More importantly, the finer granularity of this approach lets us support more specific guarantees.
+%
 Once again, let's consider the functions \inlinecode{file\_open} and \inlinecode{file\_release} of the example driver we have used in this section.
 
 \begin{lstlisting}[language=c,style=def]

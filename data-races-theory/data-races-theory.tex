@@ -6,7 +6,7 @@ As discussed previously, it is possible that the same function of a driver is ex
 Let \textit{thread template} be the executable code reachable from one of the registered entry points of the driver.
 There can be any number of threads executing a single thread template at any point, corresponding to multiple calls to the same function of a device driver.
 
-\subsection{Lockset analysis}
+\subsection{Lockset Analysis}
 
 Lockset analysis is a high-level idea about how to verify the absence of data races in a program.
 It relies on the assumption that the access to a shared variable should be governed by a lock.
@@ -34,7 +34,7 @@ Let's note that although this analysis is sound (we will not verify a program th
 it is not precise, as there might be other ways than locking to make sure that no data race can take place. This idea was first applied in \cite{engler_racerx:_2003}.
 
 
-\subsection{Happens-before}
+\subsection{The Happens-Before Relation}
 
 \textit{Happens-before} relation $R$ is a partial-ordering of the statements, such that if $a$ and $b$ are statements then $a,b \in R$ if and only if $a$ is executed before $b$.
 The concept was first introduced by Leslie Lamport \cite{lamport_time_1978}, under the name happened-before.

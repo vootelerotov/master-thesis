@@ -28,7 +28,7 @@ Both of the drivers for the example devices above are char drivers. We will
 first consider the common interface used to access the operations of the device
 drivers and then discuss what can go wrong when these drivers execute in a concurrent setting.
 
-\subsection{Interface of a character device driver}
+\subsection{Interface of a Character Device Driver}
 
 Devices are exposed to the end user as entries in the file system and therefore it is natural
 to use the same terminology for talking about device drivers' operations as about normal file operations.
@@ -102,7 +102,7 @@ static struct file_operations f_ops = {
 Device drivers also expose \inlinecode{init} and \inlinecode{exit}, which the kernel can use to register and de-register a device driver. In case of Counter,
 registering the device initializes the counter \inlinecode{i} to zero and then registers the file operations. 
 
-\subsection{Data races in device drivers}
+\subsection{Data Races in Device Drivers}
 
 When registering our driver, we exposed multiple endpoints to the kernel. From that moment onwards, kernel can invoke any of the registered methods,
 at any time, until the driver is de-registered. 
@@ -161,7 +161,7 @@ Here, \inlinecode{my\_mutex} is a static mutex.
 
 After adding the same locking pattern to write operations, data race will no longer plague the example driver.
 
-\subsection{Impact of data races on device drivers}
+\subsection{Impact of Data Races on Device Drivers}
 
 We have seen that data races are a real possibility in device drivers and also that there are ways to protect oneself against them. 
 
