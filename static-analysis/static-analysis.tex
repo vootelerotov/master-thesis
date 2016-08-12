@@ -82,7 +82,7 @@ we can decide based on the analysis that the first \inlinecode{if} block can saf
 
 In the following, the definitions have been inspired by \cite{vojdanivesal_static_2010, apinis_frameworks_2014}.
 
-\subsection{Concrete semantics}
+\subsection{Concrete Semantics}
 
 To build a mathematically sturdy foundation for abstract interpretation we first need to give a more formal definition for executing a program.
 This is known as program's \emph{concrete semantics}.
@@ -303,7 +303,7 @@ Equipped with set $\allstates$, we would have information about the program at a
  it is clear that computing the set $\allstates$ is not feasible in most cases --- the set might not be finite and even if it is,
  all the possible states of even a simple program might be quite big.
 
-\subsection{Abstract domains}
+\subsection{Abstract Domains}
 
 As in the example we gave at the start of this section, we can, however, simplify the program by \textit{abstracting} away parts
 of the state that are not interesting for us for finding out if a certain property holds for the program under analysis. 
@@ -599,7 +599,7 @@ This requirement is quite natural -- the monotonicity of the evaluation function
 then the resulting state has to be at least as precise as if we would have evaluated the same statement in the context of less precise domain element.  
 
 
-\subsection{Abstract interpretation}
+\subsection{Abstract Interpretation}
 %või Data Flow Analysis või Intra-procedural analysis, kui tuleb pärast protseduurid ja lõimed.
 
 In this subsection, let's limit ourselves to intraprocedural analyses for simplicity.

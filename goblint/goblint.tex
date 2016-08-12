@@ -22,32 +22,29 @@
 
 \toguide{What is the point here?}
 
-In this section, we give an overview of \textit{Goblint}, a static analyser for detecting data races in C programs with the focus on Linux device drivers
-that has been developed in the University of Tartu and in the Technical University of Munich for over 10 years
-\cite{vojdani_static_2016,_goblint_????,apinis_frameworks_2014,vojdanivesal_static_2010}.
-
-\toask{Should cite something else?}
-
-\toguide{Why are we intrested in Goblint?}
-
-The original work presented in this thesis builds on top of what is done in Goblint.
-The background information given in this section will hopefully enable the reader to put that in context.
-
-\tosup{So keep in mind that this is the main objective! I will give some comments, but you should also go through each paragraph of this section and ask if it helps provide context to the next section or is just distracting details.}
-\todisc{A lot of refactoring, this still relevant?}
+In this section, we give describe the implementation time partitions in the
+\textit{Goblint} analysis framework. Goblint is a static analyser for detecting
+data races in C programs with the focus on Linux device drivers that has been
+developed in the University of Tartu and in the Technical University of Munich
+for over 10 years~\cite{vojdanivene_2009,vojdanivesal_static_2010,apinis_frameworks_2014,vojdani_static_2016}.
+As the original work presented in this thesis builds on top of what is done in Goblint,
+we will first give the necessary background information that will hopefully enable the reader to put that in context.
 
 \toguide{Okay, got it. So, what is Goblint?}
 
+
+\subsection{The Anatomy of Goblint}
+
 Goblint is a constraint system based analysis tool that performs abstract interpretation,
-building on top of the theoretical ideas described in the previous sections. Goblint is written in OCaml and is publicly available on Github.
+building on top of the theoretical ideas described in the previous sections.
+It is written in OCaml and is publicly available on Github.\footnote{\url{https://github.com/goblint/analyzer}}
 
 Goblint takes a C program as an input and uses the CIL framework \cite{necula_cil:_2002} to process it into an intermediate form that can then be converted into a control flow graph (\textit{CFG}). 
-
-
+%
 As the next step, the enabled \textit{analyses specifications} are combined and a constraint system that corresponds to the combined analyses and CFG of the program is produced.
-
+%
 The generated constraint system is then solved with a generic constraint system solver. 
-
+%
 Finally, the output is mapped to the original C program and displayed to the user in a suitable format.
 
 \begin{figure}[H]
@@ -190,8 +187,7 @@ remove and add mutexes to the set of held locks.
 
 \toguide{Okay, pretty dense stuff.}
 
-\subsection{Changes}
-\toask{Divide this section into two (what is Goblint? My changes and their effect.) or create one more section?}
+\subsection{Implementation of Time Partitions}
 
 As part of this thesis, the region analysis was extended to include the time dimension in addition.
 
@@ -206,7 +202,7 @@ Meanwhile, a fork of Goblint containing these changes is available here: \url{ht
 
 \toguide{Any effect?}
 
-\subsubsection{Concrete example}
+%\subsubsection{Concrete example}
 
 For a concrete example, let's consider the following device driver:
 
@@ -242,7 +238,8 @@ Since accesses to the \inlinecode{private\_data} are in different regions, Gobli
 \caption{Snippet from Goblint output.}
 \label{Goblint-example}
 \end{figure}
-\subsubsection{Evaluation}
+
+\subsection{Evaluation}
 
 Evaluating the effect of the enhanced region analysis on the set of character devices used as benchmark suit for Goblint gave the following results.
 
