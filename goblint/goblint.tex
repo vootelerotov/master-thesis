@@ -54,8 +54,8 @@ Finally, the output is mapped to the original C program and displayed to the use
     \node (cfg) [component, below of=cil] {control flow graph constructor};
     \node (conssyst) [component, below of = cfg] {constraint system constructor} ;
     \node (analyses) [component, right  =of conssyst] {analyses combiner};
-    \node (analysesb) [component, right  =of analyses] {analyses b};
-    \node (analysesa) [component, above of = analysesb] {analyses a};
+    \node (analysesb) [component, right  =of analyses] {analysis b};
+    \node (analysesa) [component, above of = analysesb] {analysis a};
     \node (analysesrest) [component, below of = analysesb] {$\ldots$};
     \node (analyzer) [component, below of = conssyst] {analyser};
     \node (generic) [component, right  =of analyzer] {generic constraint system solver};
